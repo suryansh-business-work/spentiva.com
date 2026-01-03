@@ -1,4 +1,4 @@
-name: Check SSH Connection
+name: Check SSH Connection Spentiva Services
 
 on:
   push:

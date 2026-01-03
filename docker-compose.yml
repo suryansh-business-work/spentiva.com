@@ -16,6 +16,7 @@ services:
   spentiva-website:
     image: ${DOCKERHUB_USERNAME:-suryanshwork}/spentiva-website:latest
     container_name: spentiva-website
+    pull_policy: always
     restart: unless-stopped
     ports:
       - "5000:5000"
@@ -36,6 +37,7 @@ services:
   spentiva-app-ui:
     image: ${DOCKERHUB_USERNAME:-suryanshwork}/spentiva-app-ui:latest
     container_name: spentiva-app-ui
+    pull_policy: always
     restart: unless-stopped
     ports:
       - "5001:80"
@@ -55,6 +57,7 @@ services:
   spentiva-app-server:
     image: ${DOCKERHUB_USERNAME:-suryanshwork}/spentiva-app-server:latest
     container_name: spentiva-app-server
+    pull_policy: always
     restart: unless-stopped
     ports:
       - "5002:5002"

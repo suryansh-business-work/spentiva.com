@@ -3,7 +3,7 @@
 # Service: website | Port: 5000 | Domain: spentiva.com
 # =============================================================================
 
-name: 🌐 Deploy Website
+name: 🌐 Deploy Spentiva Website
 
 on:
   push:

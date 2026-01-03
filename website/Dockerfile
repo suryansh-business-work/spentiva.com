@@ -1,7 +1,7 @@
 FROM node:23 AS node-builder
 WORKDIR /app
 COPY . .
-RUN npm ci
+RUN npm install
 RUN npm run build
 
 FROM node:23
@@ -11,7 +11,7 @@ COPY --from=node-builder /app/dist ./dist
 COPY --from=node-builder /app/package.json ./
 COPY --from=node-builder /app/package-lock.json ./
 
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 ENV HOST=0.0.0.0
 ENV PORT=5000

@@ -3,7 +3,7 @@
 # Service: app-server | Port: 5002 | Domain: server.spentiva.com
 # =============================================================================
 
-name: ⚙️ Deploy App Server
+name: ⚙️ Deploy Spentiva App Server
 
 on:
   push:

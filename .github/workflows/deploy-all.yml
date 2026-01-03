@@ -3,7 +3,7 @@
 # Manually trigger to deploy all services
 # =============================================================================
 
-name: 🌐 Deploy ALL Services
+name: 🌐 Deploy Spentiva ALL Services
 
 on:
   workflow_dispatch:

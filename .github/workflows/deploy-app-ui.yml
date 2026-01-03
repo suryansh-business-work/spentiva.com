@@ -3,7 +3,7 @@
 # Service: app-ui | Port: 5001 | Domain: app.spentiva.com
 # =============================================================================
 
-name: 📱 Deploy App UI
+name: 📱 Deploy Spentiva App UI
 
 on:
   push:
