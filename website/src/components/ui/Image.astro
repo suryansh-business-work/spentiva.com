@@ -1,0 +1,69 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  loading?: "lazy" | "eager";
+  fallbackSrc?: string;
+  class?: string;
+  objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  loading = "lazy",
+  fallbackSrc = "/images/placeholder.svg",
+  class: className = "",
+  objectFit = "cover",
+} = Astro.props;
+
+const objectFitClass = `object-${objectFit}`;
+---
+
+<div class={`relative ${className}`} data-image-wrapper>
+  <img
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={loading}
+    data-fallback={fallbackSrc}
+    class={`w-full h-full ${objectFitClass} transition-opacity duration-300`}
+    onerror="this.onerror=null; this.src=this.dataset.fallback; this.classList.add('opacity-75', 'grayscale');"
+  />
+
+  <!-- Loading placeholder -->
+  <div
+    class="absolute inset-0 bg-gray-200 animate-pulse -z-10"
+    aria-hidden="true"
+  >
+  </div>
+</div>
+
+<style>
+  [data-image-wrapper] img {
+    background-color: #f3f4f6;
+  }
+</style>
+
+<script>
+  // Enhanced broken image handling
+  document.querySelectorAll("[data-image-wrapper] img").forEach((img) => {
+    const imgElement = img as HTMLImageElement;
+
+    // Check if image loaded successfully
+    if (imgElement.complete && imgElement.naturalHeight === 0) {
+      imgElement.src = imgElement.dataset.fallback || "/images/placeholder.svg";
+      imgElement.classList.add("opacity-75", "grayscale");
+    }
+
+    // Add loaded class when image loads
+    imgElement.addEventListener("load", () => {
+      imgElement.classList.add("image-loaded");
+    });
+  });
+</script>

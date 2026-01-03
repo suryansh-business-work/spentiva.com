@@ -1,0 +1,65 @@
+---
+interface Props {
+  variant?: "info" | "success" | "warning" | "error";
+  title?: string;
+  dismissible?: boolean;
+  icon?: string;
+}
+
+const { variant = "info", title, dismissible = false, icon } = Astro.props;
+
+const variantClasses = {
+  info: "bg-blue-50 border-blue-200 text-blue-900",
+  success: "bg-green-50 border-green-200 text-green-900",
+  warning: "bg-yellow-50 border-yellow-200 text-yellow-900",
+  error: "bg-red-50 border-red-200 text-red-900",
+};
+
+const iconClasses = {
+  info: "fa-info-circle text-blue-600",
+  success: "fa-check-circle text-green-600",
+  warning: "fa-exclamation-triangle text-yellow-600",
+  error: "fa-times-circle text-red-600",
+};
+
+const defaultIcons = {
+  info: "fas fa-info-circle",
+  success: "fas fa-check-circle",
+  warning: "fas fa-exclamation-triangle",
+  error: "fas fa-times-circle",
+};
+
+const displayIcon = icon || defaultIcons[variant];
+---
+
+<div
+  class={`relative rounded-lg border-2 p-4 ${variantClasses[variant]} transition-all duration-300`}
+  role="alert"
+  aria-live="polite"
+>
+  <div class="flex items-start">
+    <i
+      class={`${displayIcon} ${iconClasses[variant]} text-xl mr-3 mt-0.5`}
+      aria-hidden="true"></i>
+
+    <div class="flex-1">
+      {title && <h3 class="font-bold mb-1">{title}</h3>}
+      <div class="text-sm">
+        <slot />
+      </div>
+    </div>
+
+    {
+      dismissible && (
+        <button
+          type="button"
+          class="ml-4 -mr-1 -mt-1 p-1.5 rounded-lg hover:bg-black/5 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-current cursor-pointer"
+          aria-label="Dismiss alert"
+          onclick="this.closest('[role=alert]').remove()"
+        >
+          <i class="fas fa-times text-lg" aria-hidden="true" />
+        </button>
+      )
+    }
+  </div>
+</div>

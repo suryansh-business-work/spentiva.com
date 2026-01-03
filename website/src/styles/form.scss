@@ -1,0 +1,34 @@
+/* Global Form Styles */
+@layer components {
+  .form-group {
+    @apply mb-4;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-text-secondary mb-1;
+  }
+
+  .form-input {
+    @apply w-full px-4 py-2 bg-background-surface border border-border-default rounded-lg text-text-primary placeholder-text-placeholder transition-all duration-200;
+
+    &:focus {
+      @apply outline-none border-primary-400 ring-4 ring-primary-400/20;
+    }
+
+    &:disabled {
+      @apply bg-background-surfaceAlt text-text-placeholder cursor-not-allowed;
+    }
+  }
+
+  .form-checkbox {
+    @apply w-4 h-4 text-primary-400 border-border-default rounded focus:ring-primary-400;
+  }
+
+  .form-helper {
+    @apply mt-1 text-xs text-text-secondary;
+  }
+
+  .form-error {
+    @apply mt-1 text-xs text-error;
+  }
+}

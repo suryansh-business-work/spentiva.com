@@ -1,0 +1,229 @@
+---
+import Newsletter from "./Newsletter.astro";
+
+const currentYear = new Date().getFullYear();
+
+const footerLinks = {
+  product: [
+    { name: "Features", href: "/#features" },
+    { name: "Pricing", href: "/pricing" },
+    { name: "Use Cases", href: "/use-cases" },
+    { name: "FAQ", href: "/#faq" },
+  ],
+  resources: [
+    { name: "Upcoming Features", href: "/upcoming-features" },
+    { name: "Blog", href: "/blog" },
+    { name: "About Us", href: "/about" },
+    { name: "Contact", href: "/contact" },
+  ],
+  legal: [
+    { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Terms & Conditions", href: "/terms-and-conditions" },
+    { name: "Data Policy", href: "/data-policy" },
+    { name: "Cookie Policy", href: "/cookie-policy" },
+  ],
+};
+
+const socialLinks = [
+  {
+    name: "Facebook",
+    icon: "fab fa-facebook",
+    href: "#",
+    label: "Visit our Facebook page",
+  },
+  {
+    name: "Twitter",
+    icon: "fab fa-twitter",
+    href: "#",
+    label: "Follow us on Twitter",
+  },
+  {
+    name: "LinkedIn",
+    icon: "fab fa-linkedin",
+    href: "#",
+    label: "Connect on LinkedIn",
+  },
+  {
+    name: "Instagram",
+    icon: "fab fa-instagram",
+    href: "#",
+    label: "Follow us on Instagram",
+  },
+];
+---
+
+<footer class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white pt-20 pb-10 relative overflow-hidden" role="contentinfo">
+  <!-- Decorative background elements -->
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute top-0 left-0 w-96 h-96 bg-primary-500 rounded-full mix-blend-overlay filter blur-3xl"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-accent-500 rounded-full mix-blend-overlay filter blur-3xl"></div>
+  </div>
+  
+  <!-- Background pattern -->
+  <div class="absolute inset-0 opacity-5">
+    <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+  </div>
+  
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+    <Newsletter />
+
+    <!-- Footer Links - Enhanced -->
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 mb-16 pt-16 border-t border-white/10"
+    >
+      <!-- Brand Section - Enhanced -->
+      <div class="lg:col-span-4">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-lg">
+            <img
+              src="/logo.svg"
+              alt="Spentiva Logo"
+              class="w-8 h-8"
+              width="32"
+              height="32"
+            />
+          </div>
+          <div class="flex flex-col">
+            <span
+              class="font-bold text-2xl text-white tracking-tight leading-none"
+              >Spentiva</span
+            >
+            <span
+              class="text-[10px] tracking-widest text-gray-400 font-medium uppercase leading-none mt-1"
+              >By Exyconn</span
+            >
+          </div>
+        </div>
+        <p class="text-gray-300 mb-8 max-w-sm leading-relaxed">
+          AI-powered expense tracking made simple. Track, analyze, and optimize
+          your spending with intelligent insights.
+        </p>
+
+        <!-- Social Links - Enhanced -->
+        <div class="flex space-x-3">
+          {
+            socialLinks.map((social) => (
+              <a
+                href={social.href}
+                class="cursor-pointer w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center text-gray-300 hover:bg-gradient-to-br hover:from-primary-500 hover:to-primary-600 hover:text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-500/30 border border-white/10 hover:border-primary-400"
+                aria-label={social.label}
+              >
+                <i class={`${social.icon} text-lg`} aria-hidden="true" />
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <!-- Spacer -->
+      <div class="hidden lg:block lg:col-span-1"></div>
+
+      <!-- Product Links - Enhanced -->
+      <div class="lg:col-span-2">
+        <h3 class="font-bold text-white mb-6 text-lg flex items-center">
+          <i class="fas fa-box text-primary-400 mr-3"></i>
+          Product
+        </h3>
+        <ul class="space-y-4" role="list">
+          {
+            footerLinks.product.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="cursor-pointer text-gray-300 hover:text-primary-400 transition-colors duration-200 font-medium inline-flex items-center group"
+                  aria-label={link.name}
+                >
+                  <i class="fas fa-arrow-right text-xs mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                  {link.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Resources Links - Enhanced -->
+      <div class="lg:col-span-2">
+        <h3 class="font-bold text-white mb-6 text-lg flex items-center">
+          <i class="fas fa-book text-primary-400 mr-3"></i>
+          Resources
+        </h3>
+        <ul class="space-y-4" role="list">
+          {
+            footerLinks.resources.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="cursor-pointer text-gray-300 hover:text-primary-400 transition-colors duration-200 font-medium inline-flex items-center group"
+                  aria-label={link.name}
+                >
+                  <i class="fas fa-arrow-right text-xs mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                  {link.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Legal Links - Enhanced -->
+      <div class="lg:col-span-3">
+        <h3 class="font-bold text-white mb-6 text-lg flex items-center">
+          <i class="fas fa-gavel text-primary-400 mr-3"></i>
+          Legal
+        </h3>
+        <ul class="space-y-4" role="list">
+          {
+            footerLinks.legal.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="cursor-pointer text-gray-300 hover:text-primary-400 transition-colors duration-200 font-medium inline-flex items-center group"
+                  aria-label={link.name}
+                >
+                  <i class="fas fa-arrow-right text-xs mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                  {link.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom Bar - Enhanced -->
+    <div class="pt-10 border-t border-white/10">
+      <div
+        class="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0"
+      >
+        <p class="text-gray-400 text-center md:text-left">
+          © {currentYear} <span class="font-semibold text-white">Spentiva</span> by <span class="font-semibold text-primary-400">Exyconn</span>. All rights reserved.
+        </p>
+        <div class="flex items-center space-x-8 text-sm">
+          <a
+            href="/privacy-policy"
+            class="cursor-pointer text-gray-400 hover:text-primary-400 transition-colors font-medium"
+            aria-label="Privacy Policy">Privacy</a
+          >
+          <a
+            href="/terms-and-conditions"
+            class="cursor-pointer text-gray-400 hover:text-primary-400 transition-colors font-medium"
+            aria-label="Terms and Conditions">Terms</a
+          >
+          <a
+            href="/cookie-policy"
+            class="cursor-pointer text-gray-400 hover:text-primary-400 transition-colors font-medium"
+            aria-label="Cookie Policy">Cookies</a
+          >
+        </div>
+      </div>
+      
+      <!-- Additional footer info -->
+      <div class="mt-8 text-center">
+        <p class="text-gray-500 text-sm">
+          Made with <i class="fas fa-heart text-red-500"></i> for better financial management
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>

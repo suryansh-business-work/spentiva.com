@@ -1,0 +1,546 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import Banner from "../components/Banner.astro";
+
+const features = [
+  {
+    icon: "fas fa-brain",
+    title: "AI-Powered Insights",
+    description:
+      "Get intelligent analysis of your spending patterns with advanced AI technology.",
+  },
+  {
+    icon: "fas fa-mobile-alt",
+    title: "Mobile Friendly",
+    description:
+      "Track expenses on-the-go with our responsive web interface. Access anywhere, anytime.",
+  },
+  {
+    icon: "fas fa-chart-line",
+    title: "Real-time Analytics",
+    description:
+      "View comprehensive dashboards and reports to understand your financial health.",
+  },
+  {
+    icon: "fas fa-tags",
+    title: "Smart Categories",
+    description:
+      "Automatically categorize expenses with machine learning algorithms.",
+  },
+  {
+    icon: "fas fa-shield-alt",
+    title: "Bank-level Security",
+    description:
+      "Your data is encrypted and secure with enterprise-grade protection.",
+  },
+  {
+    icon: "fas fa-users",
+    title: "Multi-tracker Support",
+    description:
+      "Create multiple trackers for personal, business, or family expenses.",
+  },
+];
+
+const howItWorks = [
+  {
+    step: "1",
+    title: "Sign Up",
+    description: "Create your free account in seconds with phone verification.",
+    icon: "fas fa-user-plus",
+  },
+  {
+    step: "2",
+    title: "Create Tracker",
+    description: "Set up expense trackers for different purposes or accounts.",
+    icon: "fas fa-folder-plus",
+  },
+  {
+    step: "3",
+    title: "Add Expenses",
+    description:
+      "Use our intuitive web interface to log expenses quickly and easily.",
+    icon: "fas fa-paper-plane",
+  },
+  {
+    step: "4",
+    title: "Track & Optimize",
+    description: "View insights, analyze patterns, and optimize your spending.",
+    icon: "fas fa-chart-pie",
+  },
+];
+
+const testimonials = [
+  {
+    name: "Sarah Johnson",
+    role: "Small Business Owner",
+    image: "https://i.pravatar.cc/150?img=1",
+    content:
+      "Spentiva has transformed how I manage my business expenses. The AI insights help me make better financial decisions.",
+  },
+  {
+    name: "Michael Chen",
+    role: "Small Business Owner",
+    content:
+      "The AI insights helped me identify wasteful subscriptions I didn't even know I had. Highly recommended.",
+    image: "https://i.pravatar.cc/150?img=11",
+  },
+  {
+    name: "Emily Davis",
+    role: "Marketing Manager",
+    content:
+      "Finally, an expense tracker that doesn't feel like a chore. It's actually fun to use!",
+    image: "https://i.pravatar.cc/150?img=5",
+  },
+];
+
+const faqs = [
+  {
+    question: "Is Spentiva really free?",
+    answer:
+      "Yes! Our basic plan is free forever and includes all essential features. We also offer a premium plan for power users.",
+  },
+  {
+    question: "How secure is my data?",
+    answer:
+      "We use bank-grade encryption to protect your data. We never store your bank credentials and we never sell your data to third parties.",
+  },
+  {
+    question: "Can I export my data?",
+    answer:
+      "Absolutely. You can export your expense data to CSV or PDF formats at any time.",
+  },
+  {
+    question: "Do you support multiple currencies?",
+    answer:
+      "Yes, Spentiva supports over 150 currencies with real-time exchange rates.",
+  },
+];
+---
+
+<BaseLayout title="Spentiva - AI-Powered Expense Tracking by Exyconn">
+  <Header />
+
+  <Banner />
+
+  <!-- Features Section - Enhanced Design -->
+  <section id="features" class="py-20 sm:py-24 lg:py-32 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden">
+    <!-- Decorative Background Elements -->
+    <div class="absolute inset-0 opacity-30">
+      <div class="absolute top-20 left-10 w-72 h-72 bg-primary-100 rounded-full mix-blend-multiply filter blur-3xl"></div>
+      <div class="absolute bottom-20 right-10 w-72 h-72 bg-accent-100 rounded-full mix-blend-multiply filter blur-3xl"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+      <div class="text-center mb-20 max-w-3xl mx-auto">
+        <span class="inline-block px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-semibold mb-4 border border-primary-100">
+          ✨ Why Choose Spentiva
+        </span>
+        <h2
+          class="text-4xl sm:text-5xl lg:text-6xl font-bold text-text-primary mb-6 tracking-tight"
+        >
+          Powerful Features for
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-accent-500"> Smart Money Management</span>
+        </h2>
+        <p class="text-xl text-text-secondary leading-relaxed">
+          Everything you need to take control of your finances with cutting-edge AI technology
+        </p>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {
+          features.map((feature, index) => (
+            <div
+              class="bg-white rounded-2xl border border-border-light p-8 hover:border-primary-300 hover:shadow-2xl transition-all duration-500 group relative overflow-hidden"
+              style={`animation: fadeInUp 0.6s ease-out ${index * 0.1}s backwards`}
+            >
+              {/* Hover gradient effect */}
+              <div class="absolute inset-0 bg-gradient-to-br from-primary-50/0 to-primary-50/0 group-hover:from-primary-50/50 group-hover:to-accent-50/30 transition-all duration-500 rounded-2xl"></div>
+              
+              <div class="relative z-10">
+                <div class="w-16 h-16 bg-gradient-to-br from-primary-100 to-primary-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg shadow-primary-200/50">
+                  <i class={`${feature.icon} text-3xl text-primary-500`} />
+                </div>
+                <h3 class="text-2xl font-bold text-text-primary mb-4 group-hover:text-primary-600 transition-colors">
+                  {feature.title}
+                </h3>
+                <p class="text-text-secondary leading-relaxed text-base">
+                  {feature.description}
+                </p>
+              </div>
+              
+              {/* Decorative corner element */}
+              <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-primary-100/20 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section - Enhanced Design -->
+  <section
+    class="py-20 sm:py-24 lg:py-32 bg-gradient-to-br from-primary-50 via-white to-accent-50 border-y border-border-light relative overflow-hidden"
+  >
+    <!-- Background pattern -->
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute inset-0" style="background-image: radial-gradient(circle at 1px 1px, rgb(37, 168, 126) 1px, transparent 0); background-size: 40px 40px;"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+      <div class="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
+        <div class="order-2 lg:order-1">
+          <div class="relative group">
+            {/* Main Image with enhanced styling */}
+            <div class="absolute -inset-4 bg-gradient-to-r from-primary-200 to-accent-200 rounded-3xl blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-500"></div>
+            <img
+              src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              alt="Dashboard Preview"
+              class="relative rounded-2xl shadow-2xl border-4 border-white w-full transform group-hover:scale-[1.02] transition-all duration-500"
+            />
+
+            {/* Enhanced Floating stats card */}
+            <div
+              class="absolute -bottom-8 -right-8 bg-white p-6 rounded-2xl shadow-2xl border border-primary-100 hidden sm:block backdrop-blur-sm hover:scale-105 transition-all duration-300 cursor-pointer"
+              style="animation: float 3s ease-in-out infinite;"
+            >
+              <div class="flex items-center space-x-4">
+                <div
+                  class="w-14 h-14 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center text-white shadow-lg"
+                >
+                  <i class="fas fa-arrow-down text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-xs text-text-secondary font-semibold mb-1">Monthly Savings</p>
+                  <p class="font-bold text-text-primary text-2xl">+$450.00</p>
+                  <p class="text-xs text-green-600 font-medium">↑ 23% vs last month</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Additional floating badge */}
+            <div class="absolute -top-4 -left-4 bg-gradient-to-br from-primary-500 to-primary-600 text-white px-4 py-2 rounded-xl shadow-lg hidden lg:block">
+              <div class="flex items-center space-x-2">
+                <i class="fas fa-star text-yellow-300"></i>
+                <span class="font-bold text-sm">AI Powered</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="order-1 lg:order-2">
+          <span class="inline-block px-4 py-2 bg-white text-primary-600 rounded-full text-sm font-semibold mb-6 border border-primary-200 shadow-sm">
+            🚀 How It Works
+          </span>
+          <h2
+            class="text-4xl sm:text-5xl font-bold text-text-primary mb-8 tracking-tight leading-tight"
+          >
+            Effortless Expense Management
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-accent-500"> in 3 Simple Steps</span>
+          </h2>
+          <div class="space-y-6">
+            <div class="flex group hover:translate-x-2 transition-transform duration-300">
+              <div class="flex-shrink-0 mr-6">
+                <div
+                  class="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg shadow-primary-400/30 group-hover:shadow-2xl group-hover:shadow-primary-400/50 transition-all duration-300"
+                >
+                  1
+                </div>
+              </div>
+              <div class="flex-1 bg-white p-6 rounded-xl border border-border-light group-hover:border-primary-200 group-hover:shadow-lg transition-all duration-300">
+                <h3 class="text-xl font-bold text-text-primary mb-3 flex items-center">
+                  Connect Your Accounts
+                  <i class="fas fa-arrow-right ml-2 text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </h3>
+                <p class="text-text-secondary leading-relaxed">
+                  Securely link your bank accounts with military-grade encryption or start logging expenses manually in seconds.
+                </p>
+              </div>
+            </div>
+            <div class="flex group hover:translate-x-2 transition-transform duration-300">
+              <div class="flex-shrink-0 mr-6">
+                <div
+                  class="w-16 h-16 bg-gradient-to-br from-accent-500 to-accent-600 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg shadow-accent-400/30 group-hover:shadow-2xl group-hover:shadow-accent-400/50 transition-all duration-300"
+                >
+                  2
+                </div>
+              </div>
+              <div class="flex-1 bg-white p-6 rounded-xl border border-border-light group-hover:border-accent-200 group-hover:shadow-lg transition-all duration-300">
+                <h3 class="text-xl font-bold text-text-primary mb-3 flex items-center">
+                  Log Your Expenses
+                  <i class="fas fa-arrow-right ml-2 text-accent-500 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </h3>
+                <p class="text-text-secondary leading-relaxed">
+                  Use our intuitive web interface to quickly log expenses with AI-powered automatic categorization and smart tags.
+                </p>
+              </div>
+            </div>
+            <div class="flex group hover:translate-x-2 transition-transform duration-300">
+              <div class="flex-shrink-0 mr-6">
+                <div
+                  class="w-16 h-16 bg-gradient-to-br from-secondary-500 to-secondary-600 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg shadow-secondary-400/30 group-hover:shadow-2xl group-hover:shadow-secondary-400/50 transition-all duration-300"
+                >
+                  3
+                </div>
+              </div>
+              <div class="flex-1 bg-white p-6 rounded-xl border border-border-light group-hover:border-secondary-200 group-hover:shadow-lg transition-all duration-300">
+                <h3 class="text-xl font-bold text-text-primary mb-3 flex items-center">
+                  Get AI Insights
+                  <i class="fas fa-arrow-right ml-2 text-secondary-500 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </h3>
+                <p class="text-text-secondary leading-relaxed">
+                  Receive personalized reports, smart recommendations, and actionable insights to optimize your spending and increase savings.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section - Enhanced Design -->
+  <section class="py-20 sm:py-24 lg:py-32 bg-white relative overflow-hidden">
+    <!-- Decorative elements -->
+    <div class="absolute top-0 left-0 w-64 h-64 bg-primary-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+    <div class="absolute bottom-0 right-0 w-64 h-64 bg-accent-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+      <div class="text-center mb-20 max-w-3xl mx-auto">
+        <span class="inline-block px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-semibold mb-4 border border-primary-100">
+          💬 Customer Stories
+        </span>
+        <h2
+          class="text-4xl sm:text-5xl font-bold text-text-primary mb-6 tracking-tight"
+        >
+          Loved by <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-accent-500">Thousands</span>
+        </h2>
+        <p class="text-xl text-text-secondary leading-relaxed">
+          Join our community of financially savvy users transforming their lives with Spentiva
+        </p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8">
+        {
+          testimonials.map((testimonial, index) => (
+            <div
+              class="bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-border-light p-8 hover:border-primary-200 hover:shadow-2xl transition-all duration-500 group relative overflow-hidden"
+              style={`animation: fadeInUp 0.6s ease-out ${index * 0.15}s backwards`}
+            >
+              {/* Background gradient on hover */}
+              <div class="absolute inset-0 bg-gradient-to-br from-primary-50/0 to-accent-50/0 group-hover:from-primary-50/30 group-hover:to-accent-50/20 transition-all duration-500 rounded-2xl"></div>
+              
+              <div class="relative z-10">
+                {/* Star Rating */}
+                <div class="flex text-yellow-400 text-lg mb-6">
+                  <i class="fas fa-star" />
+                  <i class="fas fa-star" />
+                  <i class="fas fa-star" />
+                  <i class="fas fa-star" />
+                  <i class="fas fa-star" />
+                </div>
+                
+                {/* Testimonial Content */}
+                <p class="text-text-secondary leading-relaxed mb-8 text-base relative">
+                  <i class="fas fa-quote-left text-primary-300 absolute -left-1 -top-2 text-2xl"></i>
+                  <span class="ml-6">{testimonial.content}</span>
+                  <i class="fas fa-quote-right text-primary-300 text-2xl ml-1"></i>
+                </p>
+                
+                {/* Author Info */}
+                <div class="flex items-center border-t border-border-light pt-6">
+                  <div class="relative">
+                    <img
+                      src={testimonial.image}
+                      alt={testimonial.name}
+                      class="w-14 h-14 rounded-full object-cover ring-4 ring-primary-100 group-hover:ring-primary-200 transition-all duration-300"
+                    />
+                    <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></div>
+                  </div>
+                  <div class="ml-4">
+                    <h4 class="font-bold text-text-primary text-lg">
+                      {testimonial.name}
+                    </h4>
+                    <p class="text-sm text-primary-500 font-medium">
+                      {testimonial.role}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      
+      {/* Trust Badges */}
+      <div class="mt-16 pt-16 border-t border-border-light">
+        <div class="flex flex-wrap justify-center items-center gap-12 opacity-60">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-text-primary">50K+</div>
+            <div class="text-sm text-text-secondary mt-1">Happy Users</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-text-primary">4.9/5</div>
+            <div class="text-sm text-text-secondary mt-1">App Rating</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-text-primary">150+</div>
+            <div class="text-sm text-text-secondary mt-1">Countries</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-text-primary">$10M+</div>
+            <div class="text-sm text-text-secondary mt-1">Tracked</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section - Enhanced Design -->
+  <section
+    id="faq"
+    class="py-20 sm:py-24 lg:py-32 bg-gradient-to-br from-gray-50 via-white to-primary-50 border-t border-border-light relative overflow-hidden"
+  >
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, rgb(37, 168, 126) 1px, transparent 0); background-size: 32px 32px;"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+      <div class="text-center mb-20 max-w-3xl mx-auto">
+        <span class="inline-block px-4 py-2 bg-white text-primary-600 rounded-full text-sm font-semibold mb-4 border border-primary-200 shadow-sm">
+          ❓ Got Questions?
+        </span>
+        <h2
+          class="text-4xl sm:text-5xl font-bold text-text-primary mb-6 tracking-tight"
+        >
+          Frequently Asked
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-accent-500"> Questions</span>
+        </h2>
+        <p class="text-xl text-text-secondary leading-relaxed">
+          Everything you need to know about Spentiva and getting started
+        </p>
+      </div>
+      <div class="max-w-4xl mx-auto space-y-6">
+        {
+          faqs.map((faq, index) => (
+            <div 
+              class="bg-white rounded-2xl border-2 border-border-light p-8 hover:border-primary-300 hover:shadow-xl transition-all duration-500 group"
+              style={`animation: fadeInUp 0.5s ease-out ${index * 0.1}s backwards`}
+            >
+              <div class="flex items-start">
+                <div class="flex-shrink-0 mr-5">
+                  <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                    <i class="fas fa-question text-white text-lg" />
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <h3 class="text-xl font-bold text-text-primary mb-4 group-hover:text-primary-600 transition-colors leading-tight">
+                    {faq.question}
+                  </h3>
+                  <p class="text-text-secondary leading-relaxed text-base">
+                    {faq.answer}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      
+      {/* CTA for more questions */}
+      <div class="text-center mt-16">
+        <p class="text-text-secondary mb-6 text-lg">Still have questions?</p>
+        <a
+          href="/contact"
+          class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-primary-700 transform hover:-translate-y-1 transition-all shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/50"
+        >
+          <i class="fas fa-comments mr-2"></i>
+          Contact Support
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section - Enhanced Design -->
+  <section
+    class="py-20 sm:py-24 lg:py-32 bg-gradient-to-br from-primary-500 via-primary-600 to-accent-600 border-t border-primary-400 relative overflow-hidden"
+  >
+    <!-- Animated background elements -->
+    <div class="absolute inset-0">
+      <div class="absolute top-10 left-10 w-72 h-72 bg-white/10 rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
+      <div class="absolute bottom-10 right-10 w-72 h-72 bg-accent-300/20 rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-2000"></div>
+      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-400/10 rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-4000"></div>
+    </div>
+    
+    {/* Decorative pattern */}
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-center relative z-10">
+      {/* Badge */}
+      <div class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-sm font-semibold mb-8 border border-white/30">
+        <i class="fas fa-fire text-orange-300 mr-2"></i>
+        Join 50,000+ Users Managing Their Finances Better
+      </div>
+      
+      <h2
+        class="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 text-white tracking-tight leading-tight"
+      >
+        Ready to Master Your Finances?
+      </h2>
+      <p
+        class="text-xl md:text-2xl mb-12 text-white/90 max-w-3xl mx-auto leading-relaxed font-medium"
+      >
+        Join thousands of users who are saving money and achieving their
+        financial goals with Spentiva's AI-powered insights.
+      </p>
+      
+      {/* CTA Buttons */}
+      <div class="flex flex-col sm:flex-row gap-6 justify-center mb-12">
+        <a
+          href="https://app.spentiva.com/signup"
+          class="group inline-flex items-center justify-center px-10 py-5 bg-white text-primary-600 font-bold rounded-2xl hover:bg-gray-50 transform hover:-translate-y-1 transition-all shadow-2xl hover:shadow-3xl text-lg relative overflow-hidden"
+        >
+          <span class="relative z-10 flex items-center">
+            <i class="fas fa-rocket mr-3 text-xl"></i>
+            Get Started Free
+            <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
+          </span>
+          {/* Shimmer effect */}
+          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+        </a>
+        <a
+          href="#features"
+          class="inline-flex items-center justify-center px-10 py-5 bg-white/10 backdrop-blur-md border-2 border-white/40 text-white font-bold rounded-2xl hover:bg-white/20 hover:border-white/60 transform hover:-translate-y-1 transition-all shadow-xl text-lg"
+        >
+          <i class="fas fa-play-circle mr-3 text-xl"></i>
+          Watch Demo
+        </a>
+      </div>
+      
+      {/* Trust Indicators */}
+      <div class="flex flex-wrap justify-center items-center gap-8 text-white/90">
+        <div class="flex items-center">
+          <i
+            class="fas fa-check-circle mr-3 text-green-300 text-xl"
+          ></i>
+          <span class="font-medium">No credit card required</span>
+        </div>
+        <div class="flex items-center">
+          <i
+            class="fas fa-check-circle mr-3 text-green-300 text-xl"
+          ></i>
+          <span class="font-medium">Free forever plan</span>
+        </div>
+        <div class="flex items-center">
+          <i
+            class="fas fa-check-circle mr-3 text-green-300 text-xl"
+          ></i>
+          <span class="font-medium">Cancel anytime</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

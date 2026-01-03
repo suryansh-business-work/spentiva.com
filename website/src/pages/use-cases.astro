@@ -1,0 +1,414 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+type ColorKey = "blue" | "primary" | "purple" | "green" | "orange" | "pink";
+
+const useCases: Array<{
+  title: string;
+  icon: string;
+  description: string;
+  benefits: string[];
+  color: ColorKey;
+  stat: string;
+  statLabel: string;
+}> = [
+  {
+    title: "Freelancers & Contractors",
+    icon: "fas fa-laptop-code",
+    description:
+      "Track project expenses, client invoices, and tax deductions all in one place. Perfect for solopreneurs managing multiple income streams.",
+    benefits: [
+      "Separate business and personal expenses",
+      "Track income and expenses by client",
+      "Generate reports for tax season",
+      "Monitor profit margins on projects",
+    ],
+    color: "blue",
+    stat: "45%",
+    statLabel: "avg. tax savings found",
+  },
+  {
+    title: "Small Business Owners",
+    icon: "fas fa-store",
+    description:
+      "Manage business finances with multiple expense trackers for different departments or locations. Scale your financial visibility.",
+    benefits: [
+      "Track team expenses with approval workflows",
+      "Monitor cash flow in real-time",
+      "Categorize expenses by department",
+      "Export data for accounting software",
+    ],
+    color: "primary",
+    stat: "3hrs",
+    statLabel: "saved weekly on bookkeeping",
+  },
+  {
+    title: "Students",
+    icon: "fas fa-graduation-cap",
+    description:
+      "Stay on budget while in school with smart expense tracking and savings insights. Build healthy financial habits early.",
+    benefits: [
+      "Track textbooks, meals, and living expenses",
+      "Set monthly budgets for different categories",
+      "Identify areas to cut costs",
+      "Save money for future goals",
+    ],
+    color: "purple",
+    stat: "₹8K",
+    statLabel: "avg. monthly savings",
+  },
+  {
+    title: "Families",
+    icon: "fas fa-home",
+    description:
+      "Collaborate with family members to manage household expenses and savings goals. Keep everyone aligned financially.",
+    benefits: [
+      "Share expense trackers with family members",
+      "Track groceries, utilities, and subscriptions",
+      "Plan for major purchases together",
+      "Teach kids money management",
+    ],
+    color: "green",
+    stat: "100%",
+    statLabel: "budget visibility",
+  },
+  {
+    title: "Travelers",
+    icon: "fas fa-plane",
+    description:
+      "Keep track of trip expenses across multiple currencies and stay within budget. Perfect for frequent travelers and digital nomads.",
+    benefits: [
+      "Log expenses in different currencies",
+      "Track spending by trip or destination",
+      "Monitor daily budget limits",
+      "Generate trip expense reports",
+    ],
+    color: "orange",
+    stat: "50+",
+    statLabel: "currencies supported",
+  },
+  {
+    title: "Budget-Conscious Individuals",
+    icon: "fas fa-piggy-bank",
+    description:
+      "Take control of personal finances and achieve your savings goals with AI insights. Your path to financial freedom.",
+    benefits: [
+      "Identify unnecessary subscriptions",
+      "Get personalized saving recommendations",
+      "Track progress toward financial goals",
+      "Reduce impulse spending",
+    ],
+    color: "pink",
+    stat: "23%",
+    statLabel: "reduction in unnecessary spending",
+  },
+];
+
+const colorClasses: Record<ColorKey, { bg: string; text: string; light: string; border: string; gradient: string }> = {
+  blue: { bg: "bg-blue-500", text: "text-blue-600", light: "bg-blue-50", border: "border-blue-200", gradient: "from-blue-500 to-cyan-500" },
+  primary: { bg: "bg-primary-500", text: "text-primary-600", light: "bg-primary-50", border: "border-primary-200", gradient: "from-primary-400 to-emerald-400" },
+  purple: { bg: "bg-purple-500", text: "text-purple-600", light: "bg-purple-50", border: "border-purple-200", gradient: "from-purple-500 to-pink-500" },
+  green: { bg: "bg-green-500", text: "text-green-600", light: "bg-green-50", border: "border-green-200", gradient: "from-green-500 to-emerald-500" },
+  orange: { bg: "bg-orange-500", text: "text-orange-600", light: "bg-orange-50", border: "border-orange-200", gradient: "from-orange-500 to-amber-500" },
+  pink: { bg: "bg-pink-500", text: "text-pink-600", light: "bg-pink-50", border: "border-pink-200", gradient: "from-pink-500 to-rose-500" },
+};
+
+const whyFeatures = [
+  {
+    icon: "fas fa-rocket",
+    title: "Easy to Start",
+    description: "No complex setup required. Create an account and start tracking expenses in minutes.",
+    color: "primary",
+  },
+  {
+    icon: "fas fa-cogs",
+    title: "Highly Customizable",
+    description: "Create custom categories, set budgets, and organize trackers to fit your workflow.",
+    color: "blue",
+  },
+  {
+    icon: "fas fa-brain",
+    title: "AI-Powered Insights",
+    description: "Get intelligent recommendations tailored to your spending patterns and goals.",
+    color: "purple",
+  },
+];
+---
+
+<BaseLayout
+  title="Use Cases - Spentiva by Exyconn"
+  description="Discover how Spentiva helps freelancers, businesses, students, families, and travelers manage their finances better."
+>
+  <Header />
+
+  <!-- Hero Section with Premium Gradient -->
+  <section
+    class="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden"
+    style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);"
+  >
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-96 h-96 bg-primary-400/20 rounded-full blur-3xl animate-blob"></div>
+      <div class="absolute top-1/2 -left-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+      <div class="absolute bottom-0 right-1/3 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+      <div class="max-w-4xl mx-auto text-center fade-in-up">
+        <!-- Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary-400/20 to-emerald-400/20 border border-primary-400/30 mb-8">
+          <i class="fas fa-users text-primary-400"></i>
+          <span class="text-primary-400 text-sm font-semibold uppercase tracking-wider">For Everyone</span>
+        </div>
+        
+        <h1 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 text-white tracking-tight leading-tight">
+          Spentiva Adapts to
+          <span class="bg-gradient-to-r from-primary-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent"> Your Life</span>
+        </h1>
+        <p class="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-10">
+          Whether you're a freelancer, student, family, or business owner, Spentiva adapts to your unique financial needs and helps you take control.
+        </p>
+        
+        <!-- Trust Badges -->
+        <div class="flex flex-wrap justify-center gap-6 pt-8 border-t border-white/10">
+          <div class="flex items-center gap-2 text-gray-400">
+            <i class="fas fa-check-circle text-primary-400"></i>
+            <span class="text-sm">50,000+ Users</span>
+          </div>
+          <div class="flex items-center gap-2 text-gray-400">
+            <i class="fas fa-check-circle text-primary-400"></i>
+            <span class="text-sm">4.9★ App Rating</span>
+          </div>
+          <div class="flex items-center gap-2 text-gray-400">
+            <i class="fas fa-check-circle text-primary-400"></i>
+            <span class="text-sm">Bank-Level Security</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Wave Divider -->
+    <div class="absolute bottom-0 left-0 right-0">
+      <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
+        <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Use Cases Cards -->
+  <section class="py-16 sm:py-20 lg:py-24 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div class="text-center mb-16">
+        <span class="inline-block text-primary-400 text-sm font-bold uppercase tracking-wider mb-4">Use Cases</span>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-text-primary mb-4 tracking-tight">
+          Built for the Way You Live
+        </h2>
+        <p class="text-lg text-text-secondary max-w-2xl mx-auto">
+          See how different users leverage Spentiva to transform their financial lives
+        </p>
+      </div>
+      
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {
+          useCases.map((useCase, index) => (
+            <div
+              class={`group relative bg-white rounded-3xl border-2 ${colorClasses[useCase.color].border} p-8 hover:shadow-2xl transition-all duration-500 fade-in-up overflow-hidden`}
+              style={`animation-delay: ${index * 100}ms`}
+            >
+              <!-- Gradient Overlay on Hover -->
+              <div class={`absolute inset-0 bg-gradient-to-br ${colorClasses[useCase.color].gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
+              
+              <!-- Stat Badge -->
+              <div class="absolute top-6 right-6">
+                <div class={`${colorClasses[useCase.color].light} rounded-xl px-3 py-2 text-center`}>
+                  <div class={`text-xl font-bold ${colorClasses[useCase.color].text}`}>{useCase.stat}</div>
+                  <div class="text-[10px] text-gray-500 uppercase tracking-wider">{useCase.statLabel}</div>
+                </div>
+              </div>
+              
+              <!-- Icon -->
+              <div
+                class={`w-16 h-16 bg-gradient-to-br ${colorClasses[useCase.color].gradient} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
+              >
+                <i class={`${useCase.icon} text-2xl text-white`} />
+              </div>
+              
+              <h3 class="text-2xl font-bold text-text-primary mb-4 pr-20">
+                {useCase.title}
+              </h3>
+              <p class="text-text-secondary mb-6 leading-relaxed">
+                {useCase.description}
+              </p>
+              
+              <!-- Benefits -->
+              <ul class="space-y-3">
+                {useCase.benefits.map((benefit) => (
+                  <li class="flex items-start text-sm text-text-primary">
+                    <div class={`w-5 h-5 ${colorClasses[useCase.color].light} rounded-full flex items-center justify-center flex-shrink-0 mr-3 mt-0.5`}>
+                      <i class={`fas fa-check text-xs ${colorClasses[useCase.color].text}`}></i>
+                    </div>
+                    <span>{benefit}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Spentiva Section -->
+  <section
+    class="py-20 lg:py-28 bg-gradient-to-br from-gray-50 to-primary-50/30 overflow-hidden"
+  >
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div class="text-center mb-16 max-w-3xl mx-auto">
+        <span class="inline-block text-primary-400 text-sm font-bold uppercase tracking-wider mb-4">Why Spentiva</span>
+        <h2
+          class="text-3xl sm:text-4xl lg:text-5xl font-bold text-text-primary mb-4 tracking-tight"
+        >
+          Why Spentiva Works for Everyone
+        </h2>
+        <p class="text-lg text-text-secondary">
+          Flexible features that adapt to any financial situation
+        </p>
+      </div>
+      
+      <div class="grid md:grid-cols-3 gap-8">
+        {whyFeatures.map((feature, index) => (
+          <div
+            class="relative bg-white rounded-3xl p-8 text-center hover:shadow-2xl transition-all duration-500 border border-gray-100 group fade-in-up"
+            style={`animation-delay: ${index * 150}ms`}
+          >
+            <div
+              class={`w-20 h-20 bg-gradient-to-br ${colorClasses[feature.color as ColorKey].gradient} rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
+            >
+              <i class={`${feature.icon} text-3xl text-white`}></i>
+            </div>
+            <h3 class="text-xl font-bold text-text-primary mb-3">
+              {feature.title}
+            </h3>
+            <p class="text-text-secondary leading-relaxed">
+              {feature.description}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonial Section -->
+  <section class="py-20 lg:py-28 bg-white overflow-hidden">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div class="text-center mb-16">
+        <span class="inline-block text-primary-400 text-sm font-bold uppercase tracking-wider mb-4">Success Stories</span>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-text-primary mb-4 tracking-tight">
+          Real Results from Real Users
+        </h2>
+      </div>
+      
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-3xl p-8 border border-blue-100">
+          <div class="flex items-center gap-1 mb-4">
+            {[1,2,3,4,5].map(() => (
+              <i class="fas fa-star text-amber-400"></i>
+            ))}
+          </div>
+          <p class="text-text-secondary mb-6 italic leading-relaxed">
+            "As a freelancer, tracking project expenses was a nightmare. Spentiva made it so simple that I actually enjoy doing my taxes now!"
+          </p>
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">A</div>
+            <div>
+              <p class="font-bold text-text-primary">Aakash Sharma</p>
+              <p class="text-sm text-text-secondary">Freelance Developer</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-8 border border-purple-100">
+          <div class="flex items-center gap-1 mb-4">
+            {[1,2,3,4,5].map(() => (
+              <i class="fas fa-star text-amber-400"></i>
+            ))}
+          </div>
+          <p class="text-text-secondary mb-6 italic leading-relaxed">
+            "Finally got my spending under control during college. The budget alerts saved me from overspending multiple times!"
+          </p>
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">P</div>
+            <div>
+              <p class="font-bold text-text-primary">Priya Patel</p>
+              <p class="text-sm text-text-secondary">MBA Student</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 border border-green-100">
+          <div class="flex items-center gap-1 mb-4">
+            {[1,2,3,4,5].map(() => (
+              <i class="fas fa-star text-amber-400"></i>
+            ))}
+          </div>
+          <p class="text-text-secondary mb-6 italic leading-relaxed">
+            "Our family uses Spentiva to plan vacations together. Kids love seeing their savings goals grow!"
+          </p>
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-bold">R</div>
+            <div>
+              <p class="font-bold text-text-primary">Rajesh & Meera</p>
+              <p class="text-sm text-text-secondary">Family of 4</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section
+    class="relative py-20 lg:py-28 overflow-hidden"
+    style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);"
+  >
+    <!-- Background Effects -->
+    <div class="absolute inset-0">
+      <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary-400/20 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10 text-center">
+      <span class="inline-block text-primary-400 text-sm font-bold uppercase tracking-wider mb-4">Get Started Today</span>
+      <h2
+        class="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-6 text-white tracking-tight"
+      >
+        Ready to Take Control?
+      </h2>
+      <p
+        class="text-xl mb-10 text-gray-300 max-w-2xl mx-auto leading-relaxed"
+      >
+        Join thousands of users who are managing their finances smarter with Spentiva.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a
+          href="https://app.spentiva.com/signup"
+          class="cursor-pointer inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-primary-400 to-emerald-400 text-white font-semibold rounded-xl hover:shadow-xl hover:shadow-primary-400/30 transform hover:-translate-y-1 transition-all text-base"
+        >
+          <i class="fas fa-rocket mr-2"></i>
+          Get Started Free
+        </a>
+        <a
+          href="/pricing"
+          class="cursor-pointer inline-flex items-center justify-center px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 transform hover:-translate-y-1 transition-all text-base"
+        >
+          <i class="fas fa-tags mr-2"></i>
+          View Pricing
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

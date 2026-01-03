@@ -1,0 +1,251 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const lastUpdated = "October 25, 2023";
+
+const sections = [
+  {
+    id: "acceptance",
+    icon: "fas fa-handshake",
+    title: "Acceptance of Terms",
+    content: `By creating an account or using our services, you agree to comply with and be legally bound by these Terms. If you do not agree to these Terms, you may not use our services.`,
+    items: [],
+  },
+  {
+    id: "use-of-services",
+    icon: "fas fa-laptop",
+    title: "Use of Services",
+    content: `You agree to use our services only for lawful purposes and in accordance with these Terms. You agree not to:`,
+    items: [
+      "Use our services in any way that violates any applicable law or regulation",
+      "Impersonate any person or entity or misrepresent your affiliation with a person or entity",
+      "Interfere with or disrupt the operation of our services",
+      "Attempt to gain unauthorized access to our systems or user accounts",
+      "Use automated systems or software to extract data from our services",
+    ],
+  },
+  {
+    id: "user-accounts",
+    icon: "fas fa-user-shield",
+    title: "User Accounts",
+    content: `To access certain features of our services, you may be required to create an account. You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You agree to notify us immediately of any unauthorized use of your account.`,
+    items: [],
+  },
+  {
+    id: "intellectual-property",
+    icon: "fas fa-copyright",
+    title: "Intellectual Property",
+    content: `The content, features, and functionality of our services, including but not limited to text, graphics, logos, and software, are the exclusive property of Spentiva by Exyconn and are protected by copyright, trademark, and other intellectual property laws.`,
+    items: [],
+  },
+  {
+    id: "limitation",
+    icon: "fas fa-balance-scale",
+    title: "Limitation of Liability",
+    content: `In no event shall Spentiva by Exyconn, its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the services.`,
+    items: [],
+  },
+  {
+    id: "termination",
+    icon: "fas fa-ban",
+    title: "Termination",
+    content: `We may terminate or suspend your account and bar access to the services immediately, without prior notice or liability, under our sole discretion, for any reason whatsoever and without limitation, including but not limited to a breach of the Terms.`,
+    items: [],
+  },
+  {
+    id: "changes",
+    icon: "fas fa-edit",
+    title: "Changes to Terms",
+    content: `We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.`,
+    items: [],
+  },
+  {
+    id: "contact",
+    icon: "fas fa-envelope",
+    title: "Contact Us",
+    content: `If you have any questions about these Terms, please contact us.`,
+    items: [],
+    contactEmail: "legal@spentiva.com",
+  },
+];
+---
+
+<BaseLayout
+  title="Terms and Conditions - Spentiva by Exyconn"
+  description="Read our Terms and Conditions to understand the rules and regulations for using Spentiva's services."
+>
+  <Header />
+
+  <!-- Hero Section -->
+  <section
+    class="relative pt-32 pb-20 lg:pt-40 lg:pb-24 overflow-hidden"
+    style="background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);"
+  >
+    <!-- Background Elements -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 -left-20 w-60 h-60 bg-cyan-500/10 rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+      <div class="max-w-4xl mx-auto text-center fade-in-up">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-400/20 border border-blue-400/30 mb-6">
+          <i class="fas fa-file-contract text-blue-400"></i>
+          <span class="text-blue-400 text-sm font-semibold uppercase tracking-wider">Legal Agreement</span>
+        </div>
+        
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white tracking-tight">
+          Terms & Conditions
+        </h1>
+        <p class="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed mb-4">
+          Please read these terms carefully before using our services. By accessing Spentiva, you agree to be bound by these terms.
+        </p>
+        <p class="text-gray-400 text-sm">
+          <i class="fas fa-calendar-alt mr-2"></i>
+          Last Updated: {lastUpdated}
+        </p>
+      </div>
+    </div>
+    
+    <!-- Wave Divider -->
+    <div class="absolute bottom-0 left-0 right-0">
+      <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
+        <path d="M0 80L60 70C120 60 240 40 360 30C480 20 600 20 720 25C840 30 960 40 1080 45C1200 50 1320 50 1380 50L1440 50V80H1380C1320 80 1200 80 1080 80C960 80 840 80 720 80C600 80 480 80 360 80C240 80 120 80 60 80H0Z" fill="white"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Quick Navigation -->
+  <section class="py-8 bg-white border-b border-gray-100 sticky top-16 z-40 backdrop-blur-lg bg-white/95">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div class="flex flex-wrap justify-center gap-3">
+        {sections.slice(0, 6).map((section) => (
+          <a
+            href={`#${section.id}`}
+            class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+          >
+            <i class={`${section.icon} mr-2`}></i>
+            {section.title.split(' ').slice(0, 2).join(' ')}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <section class="py-16 lg:py-24 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+      <!-- Introduction -->
+      <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-8 mb-12 border border-blue-100">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-info-circle text-white text-xl"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-text-primary text-lg mb-2">Important Notice</h3>
+            <p class="text-text-secondary leading-relaxed">
+              Welcome to <strong>Spentiva by Exyconn</strong>! These Terms and Conditions ("Terms")
+              govern your use of our website and services. By accessing or using our
+              services, you agree to be bound by these Terms.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sections -->
+      <div class="space-y-12">
+        {sections.map((section, index) => (
+          <div id={section.id} class="scroll-mt-32 fade-in-up" style={`animation-delay: ${index * 100}ms`}>
+            <div class="flex items-start gap-4 mb-6">
+              <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                <i class={`${section.icon} text-xl text-white`}></i>
+              </div>
+              <div>
+                <span class="text-sm font-semibold text-blue-500 uppercase tracking-wider">Section {index + 1}</span>
+                <h2 class="text-2xl md:text-3xl font-bold text-text-primary">{section.title}</h2>
+              </div>
+            </div>
+            
+            <div class="pl-0 md:pl-[4.5rem]">
+              <p class="text-text-secondary leading-relaxed mb-6">{section.content}</p>
+              
+              {section.items.length > 0 && (
+                <div class="bg-gray-50 rounded-xl p-6 border border-gray-100">
+                  <ul class="space-y-3">
+                    {section.items.map((item) => (
+                      <li class="flex items-start gap-3 text-text-primary">
+                        <div class="w-5 h-5 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <i class="fas fa-times text-xs text-red-500"></i>
+                        </div>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              {section.contactEmail && (
+                <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl p-6 mt-6">
+                  <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                      <i class="fas fa-envelope text-white text-lg"></i>
+                    </div>
+                    <div>
+                      <p class="text-gray-400 text-sm">Email us at</p>
+                      <a
+                        href={`mailto:${section.contactEmail}`}
+                        class="text-xl font-bold text-white hover:text-blue-400 transition-colors"
+                      >
+                        {section.contactEmail}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Related Links -->
+  <section class="py-16 bg-gray-50 border-t border-gray-100">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div class="text-center mb-10">
+        <h2 class="text-2xl font-bold text-text-primary mb-2">Related Legal Documents</h2>
+        <p class="text-text-secondary">Review our other policies</p>
+      </div>
+      
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <a href="/privacy-policy" class="group bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all">
+          <div class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <i class="fas fa-shield-alt text-primary-500 text-xl"></i>
+          </div>
+          <h3 class="font-bold text-text-primary mb-2">Privacy Policy</h3>
+          <p class="text-sm text-text-secondary">How we protect your data</p>
+        </a>
+        
+        <a href="/data-policy" class="group bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all">
+          <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <i class="fas fa-database text-purple-500 text-xl"></i>
+          </div>
+          <h3 class="font-bold text-text-primary mb-2">Data Policy</h3>
+          <p class="text-sm text-text-secondary">How we handle your data</p>
+        </a>
+        
+        <a href="/cookie-policy" class="group bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all">
+          <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <i class="fas fa-cookie-bite text-orange-500 text-xl"></i>
+          </div>
+          <h3 class="font-bold text-text-primary mb-2">Cookie Policy</h3>
+          <p class="text-sm text-text-secondary">Learn about cookies we use</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

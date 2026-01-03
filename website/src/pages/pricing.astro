@@ -1,0 +1,481 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const plans = [
+  {
+    name: "Free",
+    priceMonthly: { usd: 0, inr: 0, eur: 0 },
+    priceYearly: { usd: 0, inr: 0, eur: 0 },
+    description: "Perfect for individuals just starting out.",
+    features: [
+      { text: "Manual Expense Tracking", included: true },
+      { text: "Basic Reports", included: true },
+      { text: "Up to 3 Expense Trackers", included: true },
+      { text: "1 Bank Account Link", included: true },
+      { text: "AI Insights", included: false },
+      { text: "Priority Support", included: false },
+    ],
+    cta: "Get Started",
+    ctaLink: "https://app.spentiva.com/signup",
+    popular: false,
+  },
+  {
+    name: "Pro",
+    priceMonthly: { usd: 9.99, inr: 99, eur: 8.99 },
+    priceYearly: { usd: 99, inr: 999, eur: 89 },
+    description: "For power users who want full control.",
+    features: [
+      { text: "Unlimited Expense Tracking", included: true },
+      { text: "Advanced Analytics & Reports", included: true },
+      { text: "Export to CSV/PDF", included: true },
+      { text: "Unlimited Bank Accounts", included: true },
+      { text: "AI-Powered Insights", included: true },
+      { text: "Priority Support", included: true },
+    ],
+    cta: "Start Free Trial",
+    ctaLink: "https://app.spentiva.com/signup?plan=pro",
+    popular: true,
+  },
+];
+
+const faqs = [
+  {
+    question: "Can I switch plans later?",
+    answer:
+      "Yes, you can upgrade or downgrade your plan at any time from your account settings.",
+  },
+  {
+    question: "Is there a free trial for the Pro plan?",
+    answer:
+      "Yes, we offer a 14-day free trial for the Pro plan. No credit card required to start.",
+  },
+  {
+    question: "What payment methods do you accept?",
+    answer:
+      "We accept all major credit cards (Visa, MasterCard, Amex) and PayPal.",
+  },
+  {
+    question: "Can I cancel my subscription?",
+    answer:
+      "Absolutely. You can cancel your subscription at any time without any cancellation fees.",
+  },
+];
+---
+
+<BaseLayout
+  title="Pricing - Spentiva by Exyconn"
+  description="Choose the perfect plan for your financial needs. Transparent pricing with no hidden fees."
+>
+  <Header />
+
+  <!-- Hero Section - Enhanced -->
+  <section
+    class="relative bg-gradient-to-br from-primary-50 via-white to-accent-50 pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden"
+    role="region"
+    aria-label="Pricing header"
+  >
+    {/* Decorative background elements */}
+    <div class="absolute top-20 right-10 w-96 h-96 bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+    <div class="absolute bottom-10 left-10 w-96 h-96 bg-accent-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+      <div class="max-w-4xl mx-auto text-center">
+        <span class="inline-block px-4 py-2 bg-white text-primary-600 rounded-full text-sm font-semibold mb-6 border border-primary-200 shadow-sm">
+          💰 Transparent Pricing
+        </span>
+        <h1
+          class="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-text-primary tracking-tight leading-tight"
+        >
+          Simple, <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-accent-500">Transparent</span> Pricing
+        </h1>
+        <p
+          class="text-xl md:text-2xl text-text-secondary max-w-3xl mx-auto leading-relaxed mb-12"
+        >
+          Choose the plan that fits your financial journey. No hidden fees,
+          cancel anytime. Start free forever.
+        </p>
+
+        <!-- Billing Toggle & Currency Selector - Enhanced -->
+        <div
+          class="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8"
+        >
+          <!-- Billing Period Toggle -->
+          <div
+            class="flex items-center gap-2 bg-white p-2 rounded-2xl shadow-lg border border-border-light"
+            role="group"
+            aria-label="Billing period selector"
+          >
+            <button
+              id="monthly-btn"
+              class="cursor-pointer px-6 py-3 rounded-xl font-semibold transition-all duration-300 bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-500/30"
+              aria-pressed="true"
+              aria-label="Select monthly billing"
+            >
+              Monthly
+            </button>
+            <button
+              id="yearly-btn"
+              class="cursor-pointer px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-text-secondary hover:bg-gray-50 relative"
+              aria-pressed="false"
+              aria-label="Select yearly billing"
+            >
+              Yearly
+              <span
+                class="absolute -top-2 -right-2 cursor-pointer text-xs bg-gradient-to-r from-green-500 to-green-600 text-white px-2 py-1 rounded-full font-bold shadow-md"
+                >-17%</span
+              >
+            </button>
+          </div>
+
+          <!-- Currency Selector -->
+          <div class="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-lg border border-border-light">
+            <i class="fas fa-globe text-primary-500"></i>
+            <label
+              for="currency-select"
+              class="text-sm font-semibold text-text-secondary">Currency:</label
+            >
+            <select
+              id="currency-select"
+              class="px-3 py-1 bg-gray-50 border border-border-light rounded-lg font-semibold text-text-primary cursor-pointer hover:border-primary-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-400"
+              aria-label="Select currency"
+            >
+              <option value="usd">USD ($)</option>
+              <option value="inr">INR (₹)</option>
+              <option value="eur">EUR (€)</option>
+            </select>
+          </div>
+        </div>
+        
+        {/* Trust Indicators */}
+        <div class="flex flex-wrap justify-center items-center gap-6 text-sm text-text-secondary">
+          <div class="flex items-center">
+            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+            <span>14-day free trial</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+            <span>No credit card required</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+            <span>Cancel anytime</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Cards - Enhanced -->
+  <section class="py-20 sm:py-24 bg-white -mt-16 relative z-20">
+    <div
+      class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl"
+      id="pricing-container"
+    >
+      <div class="grid md:grid-cols-2 gap-8 lg:gap-10">
+        {
+          plans.map((plan, index) => (
+            <div
+              class={`pricing-card relative bg-white rounded-3xl shadow-2xl border-2 ${
+                plan.popular
+                  ? "border-primary-500 ring-4 ring-primary-500/20 scale-105"
+                  : "border-border-light"
+              } p-10 hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 flex flex-col h-full group overflow-hidden`}
+              data-plan={plan.name.toLowerCase()}
+              data-monthly-usd={plan.priceMonthly.usd}
+              data-monthly-inr={plan.priceMonthly.inr}
+              data-monthly-eur={plan.priceMonthly.eur}
+              data-yearly-usd={plan.priceYearly.usd}
+              data-yearly-inr={plan.priceYearly.inr}
+              data-yearly-eur={plan.priceYearly.eur}
+              role="article"
+              aria-label={`${plan.name} plan`}
+              style={`animation: fadeInUp 0.6s ease-out ${index * 0.2}s backwards`}
+            >
+              {/* Background gradient effect */}
+              <div class="absolute inset-0 bg-gradient-to-br from-primary-50/0 to-accent-50/0 group-hover:from-primary-50/30 group-hover:to-accent-50/20 transition-all duration-500 rounded-3xl"></div>
+              
+              {plan.popular && (
+                <div class="absolute -top-5 left-1/2 transform -translate-x-1/2 z-20">
+                  <div class="bg-gradient-to-r from-primary-500 to-primary-600 text-white text-sm font-bold px-6 py-2 rounded-full uppercase tracking-wider shadow-lg">
+                    <i class="fas fa-star mr-2"></i>
+                    Most Popular
+                  </div>
+                </div>
+              )}
+              
+              <div class="relative z-10">
+                <div class="mb-8">
+                  {/* Icon */}
+                  <div class={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 ${
+                    plan.popular
+                      ? "bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg shadow-primary-500/30"
+                      : "bg-gradient-to-br from-gray-100 to-gray-200"
+                  } group-hover:scale-110 transition-transform duration-300`}>
+                    <i class={`fas ${plan.popular ? 'fa-crown' : 'fa-box'} text-2xl ${plan.popular ? 'text-white' : 'text-gray-600'}`}></i>
+                  </div>
+                  
+                  <h3 class="text-3xl font-bold text-text-primary mb-3">
+                    {plan.name}
+                  </h3>
+                  <p class="text-text-secondary text-base mb-8 leading-relaxed">
+                    {plan.description}
+                  </p>
+                  <div class="flex items-baseline mb-2">
+                    <span class="price-symbol text-3xl font-bold text-text-primary">
+                      $
+                    </span>
+                    <span class="price-amount text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-accent-500">
+                      {plan.priceMonthly.usd}
+                    </span>
+                    <span class="price-period text-text-secondary ml-2 text-lg font-medium">
+                      /month
+                    </span>
+                  </div>
+                  <p class="text-sm text-text-placeholder">Billed {plan.priceMonthly.usd === 0 ? 'free forever' : 'monthly or annually'}</p>
+                </div>
+
+                <ul class="space-y-4 mb-10 flex-grow" role="list">
+                  {plan.features.map((feature) => (
+                    <li class="flex items-start group/item">
+                      <div class={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mr-4 ${
+                        feature.included
+                          ? "bg-green-100 text-green-600"
+                          : "bg-gray-100 text-gray-400"
+                      }`}>
+                        <i
+                          class={`fas ${feature.included ? "fa-check" : "fa-times"} text-sm`}
+                          aria-hidden="true"
+                        />
+                      </div>
+                      <span
+                        class={`text-base leading-relaxed ${feature.included ? "text-text-primary font-medium" : "text-text-placeholder"}`}
+                      >
+                        {feature.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <a
+                  href={plan.ctaLink}
+                  class={`cursor-pointer w-full text-center inline-flex items-center justify-center px-8 py-4 font-bold rounded-2xl transform hover:-translate-y-1 transition-all duration-300 shadow-lg text-lg group/btn relative overflow-hidden ${
+                    plan.popular
+                      ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 shadow-primary-500/30 hover:shadow-primary-500/50"
+                      : "bg-gray-100 text-primary-600 hover:bg-primary-50 border-2 border-transparent hover:border-primary-200"
+                  }`}
+                  aria-label={`${plan.cta} for ${plan.name} plan`}
+                >
+                  <span class="relative z-10 flex items-center">
+                    {plan.cta}
+                    <i class="fas fa-arrow-right ml-2 group-hover/btn:translate-x-1 transition-transform"></i>
+                  </span>
+                  {/* Shimmer effect */}
+                  {plan.popular && (
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover/btn:translate-x-[200%] transition-transform duration-1000"></div>
+                  )}
+                </a>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      
+      {/* Feature Comparison Link */}
+      <div class="text-center mt-16">
+        <p class="text-text-secondary mb-4">Need help choosing?</p>
+        <a href="#faq" class="inline-flex items-center text-primary-600 font-semibold hover:text-primary-700 transition-colors">
+          <i class="fas fa-question-circle mr-2"></i>
+          View detailed feature comparison
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section - Enhanced -->
+  <section
+    id="faq"
+    class="py-20 sm:py-24 lg:py-32 bg-gradient-to-br from-gray-50 via-white to-primary-50 relative overflow-hidden"
+    role="region"
+    aria-label="Frequently asked questions"
+  >
+    {/* Background pattern */}
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, rgb(37, 168, 126) 1px, transparent 0); background-size: 40px 40px;"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+      <div class="text-center mb-20">
+        <span class="inline-block px-4 py-2 bg-white text-primary-600 rounded-full text-sm font-semibold mb-4 border border-primary-200 shadow-sm">
+          ❓ Got Questions?
+        </span>
+        <h2 class="text-4xl sm:text-5xl font-bold text-text-primary mb-6 tracking-tight">
+          Pricing <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-accent-500">FAQs</span>
+        </h2>
+        <p class="text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
+          Common questions about our pricing plans and features
+        </p>
+      </div>
+      <div class="max-w-4xl mx-auto space-y-6">
+        {
+          faqs.map((faq, index) => (
+            <div 
+              class="bg-white rounded-2xl border-2 border-border-light p-8 hover:border-primary-300 hover:shadow-xl transition-all duration-500 group"
+              style={`animation: fadeInUp 0.5s ease-out ${index * 0.1}s backwards`}
+            >
+              <div class="flex items-start">
+                <div class="flex-shrink-0 mr-5">
+                  <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                    <i
+                      class="fas fa-question text-white text-lg"
+                      aria-hidden="true"
+                    />
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <h3 class="text-xl font-bold text-text-primary mb-4 group-hover:text-primary-600 transition-colors leading-tight">
+                    {faq.question}
+                  </h3>
+                  <p class="text-text-secondary leading-relaxed text-base">{faq.answer}</p>
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      
+      {/* Additional help CTA */}
+      <div class="text-center mt-16">
+        <p class="text-text-secondary mb-6 text-lg">Still have questions about pricing?</p>
+        <a
+          href="/contact"
+          class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-primary-700 transform hover:-translate-y-1 transition-all shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/50"
+        >
+          <i class="fas fa-comments mr-2"></i>
+          Contact Sales Team
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section - Enhanced -->
+  <section
+    class="py-20 sm:py-24 lg:py-32 bg-gradient-to-br from-primary-500 via-primary-600 to-accent-600 relative overflow-hidden"
+    role="region"
+    aria-label="Call to action"
+  >
+    {/* Animated background elements */}
+    <div class="absolute inset-0">
+      <div class="absolute top-10 left-10 w-72 h-72 bg-white/10 rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
+      <div class="absolute bottom-10 right-10 w-72 h-72 bg-accent-300/20 rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-2000"></div>
+    </div>
+    
+    {/* Background pattern */}
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl text-center relative z-10">
+      <div class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-sm font-semibold mb-8 border border-white/30">
+        <i class="fas fa-rocket text-yellow-300 mr-2"></i>
+        Start Your Free Trial Today
+      </div>
+      
+      <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 text-white tracking-tight leading-tight">
+        Ready to Get Started?
+      </h2>
+      <p class="text-xl md:text-2xl mb-12 text-white/90 max-w-2xl mx-auto leading-relaxed font-medium">
+        Join thousands of users managing their expenses smarter with Spentiva.
+        Start your journey to financial freedom today.
+      </p>
+      <a
+        href="https://app.spentiva.com/signup"
+        class="group inline-flex items-center justify-center px-10 py-5 bg-white text-primary-600 font-bold rounded-2xl hover:bg-gray-50 transform hover:-translate-y-1 transition-all shadow-2xl hover:shadow-3xl text-lg relative overflow-hidden"
+        aria-label="Start your free trial"
+      >
+        <span class="relative z-10 flex items-center">
+          <i class="fas fa-rocket mr-3 text-xl"></i>
+          Start Your Free Trial
+          <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
+        </span>
+        {/* Shimmer effect */}
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+      </a>
+      
+      <p class="mt-8 text-white/80 text-sm">14-day free trial · No credit card required · Cancel anytime</p>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
+
+<script>
+  const monthlyBtn = document.getElementById("monthly-btn");
+  const yearlyBtn = document.getElementById("yearly-btn");
+  const currencySelect = document.getElementById(
+    "currency-select",
+  ) as HTMLSelectElement;
+  let billingPeriod = "monthly";
+  let currency = "usd";
+
+  const currencySymbols = {
+    usd: "$",
+    inr: "₹",
+    eur: "€",
+  };
+
+  function updatePrices() {
+    const cards = document.querySelectorAll(".pricing-card");
+
+    cards.forEach((card) => {
+      const monthlyPrice = parseFloat(
+        card.getAttribute(`data-monthly-${currency}`) || "0",
+      );
+      const yearlyPrice = parseFloat(
+        card.getAttribute(`data-yearly-${currency}`) || "0",
+      );
+
+      const price = billingPeriod === "monthly" ? monthlyPrice : yearlyPrice;
+      const period = billingPeriod === "monthly" ? "/month" : "/year";
+
+      const priceSymbol = card.querySelector(".price-symbol");
+      const priceAmount = card.querySelector(".price-amount");
+      const pricePeriod = card.querySelector(".price-period");
+
+      if (priceSymbol && priceAmount && pricePeriod) {
+        priceSymbol.textContent =
+          currencySymbols[currency as keyof typeof currencySymbols];
+        priceAmount.textContent = price.toLocaleString();
+        pricePeriod.textContent = period;
+      }
+    });
+  }
+
+  monthlyBtn?.addEventListener("click", () => {
+    billingPeriod = "monthly";
+    monthlyBtn.classList.add("bg-gradient-to-r", "from-primary-500", "to-primary-600", "text-white", "shadow-lg", "shadow-primary-500/30");
+    monthlyBtn.classList.remove("text-text-secondary", "hover:bg-gray-50");
+    yearlyBtn?.classList.remove("bg-gradient-to-r", "from-primary-500", "to-primary-600", "text-white", "shadow-lg", "shadow-primary-500/30");
+    yearlyBtn?.classList.add("text-text-secondary", "hover:bg-gray-50");
+    monthlyBtn.setAttribute("aria-pressed", "true");
+    yearlyBtn?.setAttribute("aria-pressed", "false");
+    updatePrices();
+  });
+
+  yearlyBtn?.addEventListener("click", () => {
+    billingPeriod = "yearly";
+    yearlyBtn.classList.add("bg-gradient-to-r", "from-primary-500", "to-primary-600", "text-white", "shadow-lg", "shadow-primary-500/30");
+    yearlyBtn.classList.remove("text-text-secondary", "hover:bg-gray-50");
+    monthlyBtn?.classList.remove("bg-gradient-to-r", "from-primary-500", "to-primary-600", "text-white", "shadow-lg", "shadow-primary-500/30");
+    monthlyBtn?.classList.add("text-text-secondary", "hover:bg-gray-50");
+    yearlyBtn.setAttribute("aria-pressed", "true");
+    monthlyBtn?.setAttribute("aria-pressed", "false");
+    updatePrices();
+  });
+
+  currencySelect?.addEventListener("change", (e) => {
+    currency = (e.target as HTMLSelectElement).value;
+    updatePrices();
+  });
+</script>

@@ -1,0 +1,190 @@
+---
+import "../styles/tailwind.css";
+import CookieConsent from "../components/ui/CookieConsent.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  keywords?: string;
+}
+
+const {
+  title,
+  description = "Spentiva by Exyconn - AI-powered expense tracking made simple. Track, analyze, and optimize your spending with intelligent insights. Free forever plan available.",
+  image = "/og-image.jpg",
+  keywords = "expense tracking, personal finance, budget management, AI insights, financial planning, expense manager, spending tracker",
+} = Astro.props;
+
+const canonicalURL = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site)
+  : Astro.url.href;
+
+const siteName = "Spentiva by Exyconn";
+const siteURL = Astro.site || "https://spentiva.com";
+
+// Structured Data (JSON-LD)
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Spentiva",
+  url: siteURL,
+  description: description,
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "Web, Any",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  author: {
+    "@type": "Organization",
+    name: "Exyconn",
+  },
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#37A87E" />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Primary Meta Tags -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="author" content="Exyconn" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content={siteName} />
+    <meta
+      property="og:image"
+      content={image.startsWith("http")
+        ? image
+        : new URL(image, Astro.url).href}
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta
+      property="twitter:image"
+      content={image.startsWith("http")
+        ? image
+        : new URL(image, Astro.url).href}
+    />
+
+    <!-- Structured Data -->
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(structuredData)}
+    />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- FontAwesome 7.0.1 -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    />
+  </head>
+  <body class="min-h-screen bg-gray-50 overflow-x-hidden">
+    <!-- Skip to main content for accessibility -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-primary-400 focus:text-white focus:rounded-lg focus:m-2 focus:outline-none focus:ring-2 focus:ring-primary-600"
+      aria-label="Skip to main content"
+    >
+      Skip to main content
+    </a>
+    <slot />
+
+    <!-- Cookie Consent Banner -->
+    <CookieConsent />
+
+    <script is:inline>
+      // Mobile menu toggle with aria-expanded
+      document.addEventListener("DOMContentLoaded", () => {
+        const mobileMenuButton = document.getElementById("mobile-menu-button");
+        const mobileMenu = document.getElementById("mobile-menu");
+
+        if (mobileMenuButton && mobileMenu) {
+          mobileMenuButton.addEventListener("click", () => {
+            const isExpanded = mobileMenu.classList.toggle("hidden");
+            mobileMenuButton.setAttribute("aria-expanded", !isExpanded);
+          });
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+          anchor.addEventListener("click", function (e) {
+            const href = this.getAttribute("href");
+            if (href === "#") return;
+
+            e.preventDefault();
+            const target = document.querySelector(href);
+            if (target) {
+              target.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }
+          });
+        });
+
+        // Smooth scroll observer
+        const observerOptions = {
+          threshold: 0.1,
+          rootMargin: "0px 0px -50px 0px",
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("opacity-100", "translate-y-0");
+              entry.target.classList.remove("opacity-0", "translate-y-4");
+              observer.unobserve(entry.target);
+            }
+          });
+        }, observerOptions);
+
+        document.querySelectorAll(".fade-in-up").forEach((el) => {
+          el.classList.add(
+            "opacity-0",
+            "translate-y-4",
+            "transition-all",
+            "duration-700",
+          );
+          observer.observe(el);
+        });
+      });
+    </script>
+  </body>
+</html>

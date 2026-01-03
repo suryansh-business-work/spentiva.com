@@ -1,0 +1,47 @@
+{
+  "name": "expense-tracker-client",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "format": "prettier --write .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.5",
+    "@mui/material": "^7.3.5",
+    "@tailwindcss/vite": "^4.1.17",
+    "@types/react-router-dom": "^5.3.3",
+    "@typescript-eslint/eslint-plugin": "^8.48.1",
+    "@typescript-eslint/parser": "^8.48.1",
+    "axios": "^1.6.2",
+    "chart.js": "^4.5.1",
+    "date-fns": "^4.1.0",
+    "formik": "^2.4.9",
+    "lottie-react": "^2.4.1",
+    "react": "^18.2.0",
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "^18.2.0",
+    "react-draggable": "^4.5.0",
+    "react-router-dom": "^7.9.6",
+    "tailwindcss": "^4.1.17",
+    "vite-plugin-pwa": "^1.1.0",
+    "workbox-window": "^7.3.0",
+    "yup": "^1.7.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^9.39.1",
+    "prettier": "^3.7.3",
+    "sass": "^1.69.5",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.8"
+  }
+}

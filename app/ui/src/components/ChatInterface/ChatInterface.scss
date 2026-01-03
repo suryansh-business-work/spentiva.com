@@ -1,0 +1,10 @@
+.chat-container-mui {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 150px);
+
+  .chat-messages {
+    flex: 1;
+    max-height: 500px;
+  }
+}

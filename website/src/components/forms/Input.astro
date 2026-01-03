@@ -1,0 +1,84 @@
+---
+interface Props {
+  type?: "text" | "email" | "tel" | "password" | "number" | "url";
+  name: string;
+  label?: string;
+  placeholder?: string;
+  value?: string;
+  required?: boolean;
+  disabled?: boolean;
+  error?: string;
+  helperText?: string;
+  autocomplete?: string;
+  ariaLabel?: string;
+  id?: string;
+}
+
+const {
+  type = "text",
+  name,
+  label,
+  placeholder,
+  value = "",
+  required = false,
+  disabled = false,
+  error,
+  helperText,
+  autocomplete,
+  ariaLabel,
+  id = name,
+} = Astro.props;
+
+const hasError = !!error;
+---
+
+<div class="w-full">
+  {
+    label && (
+      <label for={id} class="block text-sm font-medium text-text-primary mb-2">
+        {label}
+        {required && (
+          <span class="text-red-500 ml-1" aria-label="required">
+            *
+          </span>
+        )}
+      </label>
+    )
+  }
+
+  <input
+    type={type}
+    id={id}
+    name={name}
+    value={value}
+    placeholder={placeholder}
+    required={required}
+    disabled={disabled}
+    autocomplete={autocomplete}
+    aria-label={ariaLabel || label || name}
+    aria-invalid={hasError}
+    aria-describedby={helperText || error ? `${id}-description` : undefined}
+    class={`
+      w-full px-4 py-3 rounded-lg border transition-all duration-300
+      focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent
+      disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500
+      ${
+        hasError
+          ? "border-red-500 focus:ring-red-500"
+          : "border-border-default hover:border-primary-300"
+      }
+    `}
+  />
+
+  {
+    (helperText || error) && (
+      <p
+        id={`${id}-description`}
+        class={`mt-2 text-sm ${hasError ? "text-red-600" : "text-text-secondary"}`}
+        role={hasError ? "alert" : undefined}
+      >
+        {error || helperText}
+      </p>
+    )
+  }
+</div>

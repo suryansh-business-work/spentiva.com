@@ -1,0 +1,65 @@
+---
+interface Props {
+  name: string;
+  label: string;
+  checked?: boolean;
+  required?: boolean;
+  disabled?: boolean;
+  error?: string;
+  id?: string;
+}
+
+const {
+  name,
+  label,
+  checked = false,
+  required = false,
+  disabled = false,
+  error,
+  id = name,
+} = Astro.props;
+
+const hasError = !!error;
+---
+
+<div class="flex items-start">
+  <div class="flex items-center h-5">
+    <input
+      id={id}
+      name={name}
+      type="checkbox"
+      checked={checked}
+      required={required}
+      disabled={disabled}
+      aria-invalid={hasError}
+      class={`
+        w-5 h-5 rounded border-gray-300 text-primary-400 
+        focus:ring-primary-400 focus:ring-offset-0 transition-all duration-200 cursor-pointer
+        disabled:opacity-50 disabled:cursor-not-allowed
+        ${hasError ? "border-red-500" : "border-gray-300"}
+      `}
+    />
+  </div>
+  <div class="ml-3 text-sm">
+    <label
+      for={id}
+      class={`font-medium ${disabled ? "text-gray-400" : "text-text-secondary"} cursor-pointer`}
+    >
+      <slot>{label}</slot>
+      {
+        required && (
+          <span class="text-red-500 ml-1" aria-label="required">
+            *
+          </span>
+        )
+      }
+    </label>
+    {
+      error && (
+        <p class="text-red-600 mt-1" role="alert">
+          {error}
+        </p>
+      )
+    }
+  </div>
+</div>

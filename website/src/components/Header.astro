@@ -1,0 +1,108 @@
+---
+import MobileHeader from "./MobileHeader.astro";
+
+const currentPath = Astro.url.pathname;
+
+const navItems = [
+  { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
+  { name: "Use Cases", href: "/use-cases" },
+  { name: "Pricing", href: "/pricing" },
+  { name: "Contact", href: "/contact" },
+];
+---
+
+<!-- Desktop Header - Enhanced -->
+<header
+  class="hidden md:block fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-b border-gray-100 transition-all duration-300 shadow-sm"
+  role="banner"
+  id="desktop-header"
+>
+  <nav
+    class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl"
+    aria-label="Main navigation"
+  >
+    <div class="flex items-center justify-between h-20">
+      <!-- Logo - Enhanced -->
+      <a
+        href="/"
+        class="flex items-center space-x-3 group cursor-pointer"
+        aria-label="Spentiva Home"
+      >
+        <div
+          class="w-12 h-12 flex items-center justify-center transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-6"
+        >
+          <img
+            src="/logo.svg"
+            alt="Spentiva Logo"
+            class="w-full h-full drop-shadow-md"
+            width="48"
+            height="48"
+          />
+        </div>
+        <div class="flex flex-col">
+          <span
+            class="font-bold text-2xl text-gray-900 tracking-tight leading-none group-hover:text-primary-600 transition-colors"
+            >Spentiva</span
+          >
+          <span
+            class="text-[10px] tracking-widest text-gray-500 font-medium uppercase leading-none mt-1"
+            >By Exyconn</span
+          >
+        </div>
+      </a>
+
+      <!-- Desktop Navigation - Enhanced -->
+      <div class="flex items-center md:space-x-2 lg:space-x-6">
+        <div class="flex items-center md:space-x-1 lg:space-x-6">
+          {
+            navItems.map((item) => (
+              <a
+                href={item.href}
+                class={`cursor-pointer px-4 py-2 text-base font-semibold transition-all duration-300 relative group rounded-xl ${
+                  currentPath === item.href
+                    ? "text-primary-600 bg-primary-50"
+                    : "text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+                }`}
+                aria-label={item.name}
+                aria-current={currentPath === item.href ? "page" : undefined}
+              >
+                {item.name}
+                <span
+                  class={`absolute -bottom-0 left-4 right-4 h-0.5 bg-gradient-to-r from-primary-500 to-accent-500 transform origin-left transition-transform duration-300 ${currentPath === item.href ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"}`}
+                />
+              </a>
+            ))
+          }
+        </div>
+
+        <div class="flex items-center space-x-4 ml-6 border-l border-gray-200 pl-6">
+          <a
+            href="https://app.spentiva.com/login"
+            class="cursor-pointer px-5 py-2.5 text-base font-semibold text-gray-700 hover:text-primary-600 border-2 border-gray-200 hover:border-primary-200 rounded-xl transition-all duration-300 hover:bg-primary-50"
+            aria-label="Log in to your account"
+          >
+            Log in
+          </a>
+          <a
+            href="https://app.spentiva.com/signup"
+            class="cursor-pointer px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white text-base font-bold rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-300 shadow-lg shadow-primary-600/30 hover:shadow-primary-600/50 hover:-translate-y-0.5 relative group overflow-hidden"
+            aria-label="Sign up for free"
+          >
+            <span class="relative z-10">Sign up Free</span>
+            <!-- Shimmer effect -->
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- Mobile Header -->
+<div class="md:hidden">
+  <MobileHeader />
+</div>
+
+<!-- Spacer to prevent content from going under fixed header -->
+<div class="h-16 md:h-20"></div>

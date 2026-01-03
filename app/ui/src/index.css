@@ -1,0 +1,82 @@
+@import 'tailwindcss';
+
+/* Tailwind CSS v4 Custom Theme Configuration */
+@theme {
+  /* Brand Colors - Primary Green */
+  --color-primary-50: #e4f6f0;
+  --color-primary-100: #caf4e7;
+  --color-primary-200: #a8e5cf;
+  --color-primary-300: #55c1a7;
+  --color-primary-400: #37a87e;
+  --color-primary-500: #2b7d60;
+  --color-primary-600: #2b7d60;
+  --color-primary-700: #246852;
+  --color-primary-800: #1f5544;
+  --color-primary-900: #1a4436;
+
+  /* Brand Colors - Secondary Green */
+  --color-secondary-50: #d9f5dd;
+  --color-secondary-100: #d9f5dd;
+  --color-secondary-200: #a8e5cf;
+  --color-secondary-300: #75c27f;
+  --color-secondary-400: #75c27f;
+  --color-secondary-500: #539c59;
+  --color-secondary-600: #539c59;
+  --color-secondary-700: #3d7a42;
+  --color-secondary-800: #2f5d32;
+  --color-secondary-900: #234526;
+
+  /* Brand Colors - Accent */
+  --color-accent-50: #caf4e7;
+  --color-accent-100: #caf4e7;
+  --color-accent-200: #a8e5cf;
+  --color-accent-300: #55c1a7;
+  --color-accent-400: #55c1a7;
+  --color-accent-500: #3d8f7c;
+  --color-accent-600: #3d8f7c;
+  --color-accent-700: #2d6b5c;
+  --color-accent-800: #215248;
+  --color-accent-900: #183d36;
+
+  /* Background Colors */
+  --color-background-base: #f8fcfa;
+  --color-background-surface: #ffffff;
+  --color-background-surfaceAlt: #eef7f2;
+  --color-background-inverse: #1f2a24;
+
+  /* Text Colors */
+  --color-text-primary: #1f2a24;
+  --color-text-secondary: #57665f;
+  --color-text-placeholder: #98a6a0;
+  --color-text-inverse: #ffffff;
+  --color-text-link: #37a87e;
+  --color-text-linkHover: #2b7d60;
+
+  /* Status Colors */
+  --color-success: #37a87e;
+  --color-success-bg: #e4f6f0;
+  --color-warning: #f2c24f;
+  --color-warning-bg: #fff6e0;
+  --color-error: #e1645e;
+  --color-error-bg: #fcecea;
+  --color-info: #51a7f7;
+  --color-info-bg: #e9f4ff;
+
+  /* Border Colors */
+  --color-border-light: #e3ece7;
+  --color-border-default: #c9d9d2;
+  --color-border-dark: #98a6a0;
+
+  /* Custom Animations */
+  --animate-float: float 3s ease-in-out infinite;
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+}

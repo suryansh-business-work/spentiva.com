@@ -1,0 +1,85 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/spentiva-app-website:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/spentiva-app-website:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/spentiva-app-website:buildcache,mode=max
+
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          timeout: 30s
+          command_timeout: 30m
+          script: |
+            echo "� Starting deployment..."
+
+            # Pull latest image from Docker Hub
+            echo "� Pulling Docker image..."
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/spentiva-app-website:latest
+
+            # Stop and remove old container
+            echo "🛑 Stopping old container..."
+            docker stop spentiva-app-website || true
+            docker rm spentiva-app-website || true
+
+            # Run new container
+            echo "▶️ Starting new container..."
+            docker run -d \
+              -p 8000:8000 \
+              --name spentiva-app-website \
+              --restart unless-stopped \
+              ${{ secrets.DOCKERHUB_USERNAME }}/spentiva-app-website:latest
+
+            # Wait for container to start
+            sleep 3
+
+            # Check if container is running
+            if [ "$(docker ps -q -f name=spentiva-app-website)" ]; then
+              echo "✅ Deployment successful!"
+              docker ps -f name=spentiva-app-website
+              echo ""
+              echo "Container logs:"
+              docker logs --tail 20 spentiva-app-website
+            else
+              echo "❌ Deployment failed!"
+              docker logs spentiva-app-website
+              exit 1
+            fi
+
+            # Clean up old images
+            echo "🧹 Cleaning up old images..."
+            docker image prune -f
+
+            echo "🎉 Deployment complete!"

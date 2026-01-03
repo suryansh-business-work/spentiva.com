@@ -1,0 +1,202 @@
+<section
+  class="relative overflow-hidden min-h-[700px] md:min-h-[800px] flex items-center bg-gradient-to-br from-primary-600 via-primary-500 to-accent-600"
+  role="region"
+  aria-label="Hero banner"
+>
+  <!-- Enhanced Overlay with gradient -->
+  <div
+    class="absolute inset-0 bg-gradient-to-br from-primary-700/30 via-transparent to-accent-700/30"
+  >
+  </div>
+  
+  <!-- Animated background pattern -->
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+  </div>
+  
+  <!-- Animated blobs -->
+  <div class="absolute top-20 left-10 w-96 h-96 bg-white/10 rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
+  <div class="absolute bottom-20 right-10 w-96 h-96 bg-accent-300/20 rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-2000"></div>
+
+  <div
+    id="main-content"
+    class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl py-20 sm:py-24 lg:py-32 relative z-10"
+  >
+    <div class="grid lg:grid-cols-2 gap-16 items-center">
+      <div style="animation: fadeInUp 0.8s ease-out">
+        <!-- Badge -->
+        <div class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-sm font-semibold mb-8 border border-white/30">
+          <i class="fas fa-sparkles text-yellow-300 mr-2"></i>
+          AI-Powered Financial Intelligence
+        </div>
+        
+        <h1
+          class="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight text-white tracking-tight drop-shadow-2xl"
+        >
+          Smart Expense Tracking
+          <span class="block text-teal-100 mt-2">Powered by AI</span>
+        </h1>
+        <p
+          class="text-xl md:text-2xl mb-10 text-white/95 leading-relaxed max-w-xl drop-shadow-lg font-medium"
+        >
+          Track, analyze, and optimize your spending with intelligent insights.
+          Take control of your finances effortlessly.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-6">
+          <a
+            href="https://app.spentiva.com/signup"
+            class="group inline-flex items-center justify-center px-10 py-5 bg-white text-primary-600 font-bold rounded-2xl hover:bg-gray-50 hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-3xl text-lg relative overflow-hidden"
+            aria-label="Sign up for free account"
+          >
+            <span class="relative z-10 flex items-center">
+              <i class="fas fa-rocket mr-3 text-xl" aria-hidden="true"></i>
+              Get Started Free
+              <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
+            </span>
+            <!-- Shimmer effect -->
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+          </a>
+          <a
+            href="#features"
+            class="inline-flex items-center justify-center px-10 py-5 bg-white/10 backdrop-blur-md border-2 border-white/40 text-white font-bold rounded-2xl hover:bg-white/20 hover:border-white/60 hover:scale-105 transition-all duration-300 shadow-xl text-lg"
+            aria-label="Learn more about features"
+          >
+            <i class="fas fa-play-circle mr-3 text-xl" aria-hidden="true"></i>
+            Watch Demo
+          </a>
+        </div>
+        <div
+          class="mt-12 flex flex-wrap items-center gap-8 text-sm font-medium text-white/90"
+        >
+          <div class="flex items-center">
+            <i
+              class="fas fa-check-circle mr-3 text-teal-200 text-xl"
+              aria-hidden="true"></i>
+            <span class="text-base">No credit card required</span>
+          </div>
+          <div class="flex items-center">
+            <i
+              class="fas fa-check-circle mr-3 text-teal-200 text-xl"
+              aria-hidden="true"></i>
+            <span class="text-base">Free forever plan</span>
+          </div>
+          <div class="flex items-center">
+            <i
+              class="fas fa-check-circle mr-3 text-teal-200 text-xl"
+              aria-hidden="true"></i>
+            <span class="text-base">50K+ happy users</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hidden lg:block relative" style="animation: fadeInUp 0.8s ease-out 0.2s backwards">
+        <div class="relative group">
+          <!-- Enhanced decorative background -->
+          <div
+            class="absolute -inset-8 bg-white/15 rounded-3xl blur-3xl group-hover:bg-white/20 transition-all duration-500"
+          >
+          </div>
+
+          <div
+            class="relative bg-white/98 backdrop-blur-lg rounded-3xl shadow-2xl border-4 border-white/30 p-10 hover:scale-105 transition-all duration-500"
+          >
+            <div class="flex items-center justify-between mb-10">
+              <div>
+                <h3 class="text-2xl font-bold text-gray-800">
+                  Recent Transactions
+                </h3>
+                <p class="text-base text-gray-600">Today, 24 Oct</p>
+              </div>
+              <div
+                class="w-12 h-12 bg-teal-50 rounded-full flex items-center justify-center text-teal-600 hover:bg-teal-100 transition-colors cursor-pointer"
+              >
+                <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+              </div>
+            </div>
+
+            <div class="space-y-5">
+              <div
+                class="flex items-center justify-between p-5 bg-gradient-to-r from-gray-50 to-white rounded-2xl border border-gray-100 hover:border-teal-200 hover:shadow-lg transition-all duration-300 group/item cursor-pointer"
+                role="article"
+                aria-label="Grocery transaction"
+              >
+                <div class="flex items-center space-x-5">
+                  <div
+                    class="w-14 h-14 bg-gradient-to-br from-green-100 to-green-50 rounded-2xl flex items-center justify-center text-green-600 group-hover/item:scale-110 transition-transform shadow-sm"
+                  >
+                    <i class="fas fa-shopping-basket text-xl" aria-hidden="true"
+                    ></i>
+                  </div>
+                  <div>
+                    <p class="font-bold text-gray-900 text-lg">Grocery Shopping</p>
+                    <p class="text-sm text-gray-500">Food & Beverages</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="font-bold text-gray-900 text-xl">-$85.40</p>
+                  <p class="text-xs text-gray-500">2:30 PM</p>
+                </div>
+              </div>
+
+              <div
+                class="flex items-center justify-between p-5 bg-gradient-to-r from-gray-50 to-white rounded-2xl border border-gray-100 hover:border-teal-200 hover:shadow-lg transition-all duration-300 group/item cursor-pointer"
+                role="article"
+                aria-label="Transport transaction"
+              >
+                <div class="flex items-center space-x-5">
+                  <div
+                    class="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-50 rounded-2xl flex items-center justify-center text-blue-600 group-hover/item:scale-110 transition-transform shadow-sm"
+                  >
+                    <i class="fas fa-car text-xl" aria-hidden="true"></i>
+                  </div>
+                  <div>
+                    <p class="font-bold text-gray-900 text-lg">Uber Ride</p>
+                    <p class="text-sm text-gray-500">Transportation</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="font-bold text-gray-900 text-xl">-$15.20</p>
+                  <p class="text-xs text-gray-500">11:15 AM</p>
+                </div>
+              </div>
+
+              <div
+                class="flex items-center justify-between p-5 bg-gradient-to-r from-gray-50 to-white rounded-2xl border border-gray-100 hover:border-teal-200 hover:shadow-lg transition-all duration-300 group/item cursor-pointer"
+                role="article"
+                aria-label="Subscription transaction"
+              >
+                <div class="flex items-center space-x-5">
+                  <div
+                    class="w-14 h-14 bg-gradient-to-br from-purple-100 to-purple-50 rounded-2xl flex items-center justify-center text-purple-600 group-hover/item:scale-110 transition-transform shadow-sm"
+                  >
+                    <i class="fas fa-tv text-xl" aria-hidden="true"></i>
+                  </div>
+                  <div>
+                    <p class="font-bold text-gray-900 text-lg">Netflix</p>
+                    <p class="text-sm text-gray-500">Entertainment</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="font-bold text-gray-900 text-xl">-$12.99</p>
+                  <p class="text-xs text-gray-500">Yesterday</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="mt-8 pt-6 border-t-2 border-gray-100 grid grid-cols-2 gap-6">
+              <div class="text-center p-4 bg-gradient-to-br from-green-50 to-white rounded-xl">
+                <p class="text-sm text-gray-600 mb-1">This Month</p>
+                <p class="text-2xl font-bold text-green-600">$2,345</p>
+              </div>
+              <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-white rounded-xl">
+                <p class="text-sm text-gray-600 mb-1">Saved</p>
+                <p class="text-2xl font-bold text-blue-600">$450</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

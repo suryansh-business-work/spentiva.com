@@ -1,0 +1,236 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const lastUpdated = "October 25, 2023";
+
+const sections = [
+  {
+    id: "info-collect",
+    icon: "fas fa-database",
+    title: "Information We Collect",
+    content: `We collect information that you provide directly to us, such as when you create an account, update your profile, or communicate with us.`,
+    items: [
+      "Name and contact information (email address, phone number)",
+      "Account credentials (username, password)",
+      "Financial information (expense data, budget goals)",
+      "Communication preferences",
+      "Device information and usage analytics",
+    ],
+  },
+  {
+    id: "info-use",
+    icon: "fas fa-cogs",
+    title: "How We Use Your Information",
+    content: `We use the information we collect to provide, maintain, and improve our services.`,
+    items: [
+      "Processing your transactions and managing your account",
+      "Sending you technical notices, updates, and support messages",
+      "Responding to your comments, questions, and requests",
+      "Analyzing usage trends and preferences to improve user experience",
+      "Detecting and preventing fraudulent transactions and other illegal activities",
+    ],
+  },
+  {
+    id: "data-security",
+    icon: "fas fa-shield-alt",
+    title: "Data Security",
+    content: `We implement appropriate technical and organizational measures to protect the security of your personal information. This includes encryption, secure servers, and regular security audits. However, please be aware that no method of transmission over the Internet or method of electronic storage is 100% secure.`,
+    items: [],
+  },
+  {
+    id: "third-party",
+    icon: "fas fa-external-link-alt",
+    title: "Third-Party Services",
+    content: `Our services may contain links to third-party websites or services that are not owned or controlled by us. We are not responsible for the privacy practices or content of these third-party sites. We encourage you to review the privacy policies of any third-party sites you visit.`,
+    items: [],
+  },
+  {
+    id: "changes",
+    icon: "fas fa-sync-alt",
+    title: "Changes to This Policy",
+    content: `We may update this Privacy Policy from time to time. If we make material changes, we will notify you by email or through our services, or by posting a notice on our website prior to the change becoming effective.`,
+    items: [],
+  },
+  {
+    id: "contact",
+    icon: "fas fa-envelope",
+    title: "Contact Us",
+    content: `If you have any questions about this Privacy Policy, please contact us.`,
+    items: [],
+    contactEmail: "privacy@spentiva.com",
+  },
+];
+---
+
+<BaseLayout
+  title="Privacy Policy - Spentiva by Exyconn"
+  description="Read our Privacy Policy to understand how we collect, use, and protect your personal information."
+>
+  <Header />
+
+  <!-- Hero Section -->
+  <section
+    class="relative pt-32 pb-20 lg:pt-40 lg:pb-24 overflow-hidden"
+    style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);"
+  >
+    <!-- Background Elements -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-primary-400/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 -left-20 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+      <div class="max-w-4xl mx-auto text-center fade-in-up">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-400/20 border border-primary-400/30 mb-6">
+          <i class="fas fa-shield-alt text-primary-400"></i>
+          <span class="text-primary-400 text-sm font-semibold uppercase tracking-wider">Your Data is Safe</span>
+        </div>
+        
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white tracking-tight">
+          Privacy Policy
+        </h1>
+        <p class="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed mb-4">
+          Your privacy is important to us. Learn how we collect, use, and protect your personal information.
+        </p>
+        <p class="text-gray-400 text-sm">
+          <i class="fas fa-calendar-alt mr-2"></i>
+          Last Updated: {lastUpdated}
+        </p>
+      </div>
+    </div>
+    
+    <!-- Wave Divider -->
+    <div class="absolute bottom-0 left-0 right-0">
+      <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
+        <path d="M0 80L60 70C120 60 240 40 360 30C480 20 600 20 720 25C840 30 960 40 1080 45C1200 50 1320 50 1380 50L1440 50V80H1380C1320 80 1200 80 1080 80C960 80 840 80 720 80C600 80 480 80 360 80C240 80 120 80 60 80H0Z" fill="white"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Quick Navigation -->
+  <section class="py-8 bg-white border-b border-gray-100 sticky top-16 z-40 backdrop-blur-lg bg-white/95">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div class="flex flex-wrap justify-center gap-3">
+        {sections.map((section) => (
+          <a
+            href={`#${section.id}`}
+            class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary-500 hover:bg-primary-50 rounded-lg transition-colors"
+          >
+            <i class={`${section.icon} mr-2`}></i>
+            {section.title.split(' ').slice(0, 2).join(' ')}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <section class="py-16 lg:py-24 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+      <!-- Introduction -->
+      <div class="bg-gradient-to-r from-primary-50 to-emerald-50 rounded-2xl p-8 mb-12 border border-primary-100">
+        <p class="text-lg text-text-secondary leading-relaxed">
+          At <strong class="text-text-primary">Spentiva by Exyconn</strong> ("we," "our," or "us"), we are committed to
+          protecting your privacy. This Privacy Policy explains how we collect,
+          use, disclose, and safeguard your information when you visit our
+          website or use our services.
+        </p>
+      </div>
+
+      <!-- Sections -->
+      <div class="space-y-12">
+        {sections.map((section, index) => (
+          <div id={section.id} class="scroll-mt-32 fade-in-up" style={`animation-delay: ${index * 100}ms`}>
+            <div class="flex items-start gap-4 mb-6">
+              <div class="w-14 h-14 bg-gradient-to-br from-primary-400 to-emerald-400 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                <i class={`${section.icon} text-xl text-white`}></i>
+              </div>
+              <div>
+                <span class="text-sm font-semibold text-primary-400 uppercase tracking-wider">Section {index + 1}</span>
+                <h2 class="text-2xl md:text-3xl font-bold text-text-primary">{section.title}</h2>
+              </div>
+            </div>
+            
+            <div class="pl-0 md:pl-[4.5rem]">
+              <p class="text-text-secondary leading-relaxed mb-6">{section.content}</p>
+              
+              {section.items.length > 0 && (
+                <div class="bg-gray-50 rounded-xl p-6 border border-gray-100">
+                  <ul class="space-y-3">
+                    {section.items.map((item) => (
+                      <li class="flex items-start gap-3 text-text-primary">
+                        <div class="w-5 h-5 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <i class="fas fa-check text-xs text-primary-500"></i>
+                        </div>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              {section.contactEmail && (
+                <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl p-6 mt-6">
+                  <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-primary-400 rounded-xl flex items-center justify-center">
+                      <i class="fas fa-envelope text-white text-lg"></i>
+                    </div>
+                    <div>
+                      <p class="text-gray-400 text-sm">Email us at</p>
+                      <a
+                        href={`mailto:${section.contactEmail}`}
+                        class="text-xl font-bold text-white hover:text-primary-400 transition-colors"
+                      >
+                        {section.contactEmail}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Related Links -->
+  <section class="py-16 bg-gray-50 border-t border-gray-100">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div class="text-center mb-10">
+        <h2 class="text-2xl font-bold text-text-primary mb-2">Related Legal Documents</h2>
+        <p class="text-text-secondary">Review our other policies and terms</p>
+      </div>
+      
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <a href="/terms-and-conditions" class="group bg-white rounded-xl p-6 border border-gray-200 hover:border-primary-300 hover:shadow-lg transition-all">
+          <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <i class="fas fa-file-contract text-blue-500 text-xl"></i>
+          </div>
+          <h3 class="font-bold text-text-primary mb-2">Terms & Conditions</h3>
+          <p class="text-sm text-text-secondary">Read our terms of service</p>
+        </a>
+        
+        <a href="/data-policy" class="group bg-white rounded-xl p-6 border border-gray-200 hover:border-primary-300 hover:shadow-lg transition-all">
+          <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <i class="fas fa-database text-purple-500 text-xl"></i>
+          </div>
+          <h3 class="font-bold text-text-primary mb-2">Data Policy</h3>
+          <p class="text-sm text-text-secondary">How we handle your data</p>
+        </a>
+        
+        <a href="/cookie-policy" class="group bg-white rounded-xl p-6 border border-gray-200 hover:border-primary-300 hover:shadow-lg transition-all">
+          <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <i class="fas fa-cookie-bite text-orange-500 text-xl"></i>
+          </div>
+          <h3 class="font-bold text-text-primary mb-2">Cookie Policy</h3>
+          <p class="text-sm text-text-secondary">Learn about cookies we use</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

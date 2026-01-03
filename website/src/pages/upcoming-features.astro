@@ -1,0 +1,672 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+type PriorityType = "high" | "medium" | "low";
+type ColorType = "green" | "blue" | "purple" | "orange" | "pink" | "cyan" | "indigo" | "rose";
+
+interface Feature {
+  title: string;
+  icon: string;
+  status: string;
+  description: string;
+  benefits: string[];
+  priority: PriorityType;
+  color: ColorType;
+}
+
+const upcomingFeatures: Feature[] = [
+  {
+    title: "WhatsApp Integration",
+    icon: "fab fa-whatsapp",
+    status: "Coming Q1 2026",
+    description:
+      "Track expenses effortlessly via WhatsApp messages. No app installation needed - just send a message and let AI do the rest.",
+    benefits: [
+      "Log expenses via text, photo, or voice note",
+      "Instant expense confirmation and categorization",
+      "Works on any device with WhatsApp",
+      "Perfect for on-the-go expense tracking",
+    ],
+    priority: "high",
+    color: "green",
+  },
+  {
+    title: "Bank Statement Analysis",
+    icon: "fas fa-file-invoice-dollar",
+    status: "Coming Q1 2026",
+    description:
+      "Upload your bank statements and let AI automatically categorize and analyze all your transactions in seconds.",
+    benefits: [
+      "Auto-import transactions from PDF statements",
+      "AI-powered categorization of all expenses",
+      "Detect recurring charges and subscriptions",
+      "Comprehensive spending analysis reports",
+    ],
+    priority: "high",
+    color: "blue",
+  },
+  {
+    title: "Smart Bill Splitting",
+    icon: "fas fa-receipt",
+    status: "Coming Q2 2026",
+    description:
+      "Split bills instantly with friends, roommates, or colleagues. Perfect for dinners, trips, and shared expenses.",
+    benefits: [
+      "Split by percentage, equal share, or custom amounts",
+      "Scan receipts to auto-split items",
+      "Track who paid what and who owes whom",
+      "Instant settlement via UPI/Bank transfer links",
+    ],
+    priority: "high",
+    color: "purple",
+  },
+  {
+    title: "Receipt Scanner",
+    icon: "fas fa-camera",
+    status: "Coming Q2 2026",
+    description:
+      "Snap a photo of your receipt and let AI extract all the details automatically.",
+    benefits: [
+      "Auto-extract vendor, amount, and date",
+      "Store receipt images for records",
+      "Works with any receipt format",
+      "Reduce manual data entry",
+    ],
+    priority: "medium",
+    color: "orange",
+  },
+  {
+    title: "Budget Alerts & Notifications",
+    icon: "fas fa-bell",
+    status: "Coming Q3 2026",
+    description:
+      "Get real-time notifications when you're approaching or exceeding your budget limits.",
+    benefits: [
+      "Custom alerts for different categories",
+      "Weekly and monthly spending summaries",
+      "Unusual spending pattern detection",
+      "Multi-channel notifications (Email, SMS, Push)",
+    ],
+    priority: "high",
+    color: "pink",
+  },
+  {
+    title: "Investment Tracking",
+    icon: "fas fa-chart-line",
+    status: "Coming Q3 2026",
+    description:
+      "Track your investment portfolio alongside your expenses for a complete financial picture.",
+    benefits: [
+      "Real-time stock and crypto tracking",
+      "Portfolio performance analytics",
+      "Net worth calculator",
+      "Investment vs. spending insights",
+    ],
+    priority: "medium",
+    color: "cyan",
+  },
+  {
+    title: "Smart Recommendations",
+    icon: "fas fa-lightbulb",
+    status: "Coming Q4 2026",
+    description:
+      "Get AI-powered suggestions to optimize your spending and increase savings.",
+    benefits: [
+      "Find cheaper alternatives for subscriptions",
+      "Identify wasteful spending patterns",
+      "Personalized savings challenges",
+      "Money-saving tips based on your habits",
+    ],
+    priority: "medium",
+    color: "indigo",
+  },
+  {
+    title: "Group Expense Manager",
+    icon: "fas fa-users",
+    status: "Coming Q4 2026",
+    description:
+      "Create groups for trips, households, or projects and manage shared expenses effortlessly.",
+    benefits: [
+      "Create unlimited expense groups",
+      "Real-time balance tracking for all members",
+      "Automatic expense categorization by group",
+      "Export group expense reports",
+    ],
+    priority: "low",
+    color: "rose",
+  },
+];
+
+const colorClasses: Record<ColorType, { bg: string; text: string; light: string; border: string }> = {
+  green: { bg: "bg-emerald-500", text: "text-emerald-500", light: "bg-emerald-50", border: "border-emerald-200" },
+  blue: { bg: "bg-blue-500", text: "text-blue-500", light: "bg-blue-50", border: "border-blue-200" },
+  purple: { bg: "bg-purple-500", text: "text-purple-500", light: "bg-purple-50", border: "border-purple-200" },
+  orange: { bg: "bg-orange-500", text: "text-orange-500", light: "bg-orange-50", border: "border-orange-200" },
+  pink: { bg: "bg-pink-500", text: "text-pink-500", light: "bg-pink-50", border: "border-pink-200" },
+  cyan: { bg: "bg-cyan-500", text: "text-cyan-500", light: "bg-cyan-50", border: "border-cyan-200" },
+  indigo: { bg: "bg-indigo-500", text: "text-indigo-500", light: "bg-indigo-50", border: "border-indigo-200" },
+  rose: { bg: "bg-rose-500", text: "text-rose-500", light: "bg-rose-50", border: "border-rose-200" },
+};
+
+const priorityLabels: Record<PriorityType, { label: string; class: string }> = {
+  high: { label: "High Priority", class: "bg-red-100 text-red-600" },
+  medium: { label: "In Development", class: "bg-amber-100 text-amber-600" },
+  low: { label: "Planned", class: "bg-slate-100 text-slate-600" },
+};
+---
+
+<BaseLayout
+  title="Upcoming Features - Spentiva by Exyconn"
+  description="See what's coming next to Spentiva. Get early access to new features like WhatsApp integration, bank statement analysis, bill splitting, and more."
+>
+  <Header />
+
+  <!-- Hero Section with Premium Gradient -->
+  <section
+    class="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden"
+    style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);"
+  >
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-96 h-96 bg-primary-400/20 rounded-full blur-3xl animate-blob"></div>
+      <div class="absolute top-1/2 -left-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+      <div class="absolute bottom-0 right-1/3 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
+      
+      <!-- Grid Pattern -->
+      <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;0.3&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+      <div class="max-w-4xl mx-auto text-center fade-in-up">
+        <!-- Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary-400/20 to-emerald-400/20 border border-primary-400/30 mb-8">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-400"></span>
+          </span>
+          <span class="text-primary-400 text-sm font-semibold uppercase tracking-wider">Product Roadmap 2026</span>
+        </div>
+        
+        <h1 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 text-white tracking-tight leading-tight">
+          The Future of
+          <span class="bg-gradient-to-r from-primary-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent"> Smart Finance</span>
+        </h1>
+        <p class="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-10">
+          We're building the next generation of expense tracking. Get a sneak peek at the innovative features coming to Spentiva.
+        </p>
+        
+        <!-- Stats Row -->
+        <div class="flex flex-wrap justify-center gap-8 pt-8 border-t border-white/10">
+          <div class="text-center">
+            <div class="text-3xl md:text-4xl font-bold text-white mb-1">8+</div>
+            <div class="text-gray-400 text-sm">New Features</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl md:text-4xl font-bold text-white mb-1">2026</div>
+            <div class="text-gray-400 text-sm">Launch Timeline</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl md:text-4xl font-bold text-white mb-1">AI</div>
+            <div class="text-gray-400 text-sm">Powered</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Wave Divider -->
+    <div class="absolute bottom-0 left-0 right-0">
+      <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
+        <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Feature Highlights - Top 3 -->
+  <section class="py-16 sm:py-20 lg:py-24 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div class="text-center mb-16">
+        <span class="inline-block text-primary-400 text-sm font-bold uppercase tracking-wider mb-4">Most Anticipated</span>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-text-primary mb-4 tracking-tight">
+          Top 3 Features Coming Soon
+        </h2>
+        <p class="text-lg text-text-secondary max-w-2xl mx-auto">
+          These highly-requested features are currently in active development
+        </p>
+      </div>
+      
+      <div class="grid lg:grid-cols-3 gap-8">
+        {upcomingFeatures.slice(0, 3).map((feature, index) => (
+          <div 
+            class={`relative group p-8 rounded-3xl border-2 ${colorClasses[feature.color].border} ${colorClasses[feature.color].light} hover:shadow-2xl transition-all duration-500 fade-in-up`}
+            style={`animation-delay: ${index * 150}ms`}
+          >
+            <!-- Priority Badge -->
+            <div class="absolute -top-3 right-6">
+              <span class={`${priorityLabels[feature.priority].class} text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide`}>
+                {priorityLabels[feature.priority].label}
+              </span>
+            </div>
+            
+            <!-- Icon -->
+            <div class={`w-20 h-20 ${colorClasses[feature.color].bg} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+              <i class={`${feature.icon} text-4xl text-white`}></i>
+            </div>
+            
+            <!-- Content -->
+            <div class="flex items-center gap-2 mb-3">
+              <span class={`${colorClasses[feature.color].text} text-sm font-semibold`}>{feature.status}</span>
+            </div>
+            <h3 class="text-2xl font-bold text-text-primary mb-4">{feature.title}</h3>
+            <p class="text-text-secondary mb-6 leading-relaxed">{feature.description}</p>
+            
+            <!-- Benefits -->
+            <ul class="space-y-3">
+              {feature.benefits.map((benefit) => (
+                <li class="flex items-start text-sm">
+                  <div class={`w-5 h-5 ${colorClasses[feature.color].light} rounded-full flex items-center justify-center flex-shrink-0 mr-3 mt-0.5`}>
+                    <i class={`fas fa-check text-xs ${colorClasses[feature.color].text}`}></i>
+                  </div>
+                  <span class="text-text-primary">{benefit}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- All Features Grid -->
+  <section class="py-16 sm:py-20 lg:py-24 bg-gray-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div class="text-center mb-16">
+        <span class="inline-block text-primary-400 text-sm font-bold uppercase tracking-wider mb-4">Complete Roadmap</span>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-text-primary mb-4 tracking-tight">
+          All Upcoming Features
+        </h2>
+        <p class="text-lg text-text-secondary max-w-2xl mx-auto">
+          Everything we're building to make Spentiva your ultimate financial companion
+        </p>
+      </div>
+      
+      <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+        {upcomingFeatures.slice(3).map((feature, index) => (
+          <div 
+            class="bg-white rounded-2xl border border-border-light p-6 hover:shadow-xl hover:border-primary-200 transition-all duration-300 group fade-in-up"
+            style={`animation-delay: ${index * 100}ms`}
+          >
+            <div class={`w-14 h-14 ${colorClasses[feature.color].light} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+              <i class={`${feature.icon} text-2xl ${colorClasses[feature.color].text}`}></i>
+            </div>
+            <span class={`text-xs font-semibold ${colorClasses[feature.color].text} mb-2 block`}>{feature.status}</span>
+            <h3 class="text-lg font-bold text-text-primary mb-2">{feature.title}</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">{feature.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Showcase: Bank Statement Analysis -->
+  <section class="py-20 lg:py-28 bg-white overflow-hidden">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <div class="order-2 lg:order-1">
+          <!-- Statement Analysis Mockup -->
+          <div class="relative">
+            <div class="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-3xl blur-2xl"></div>
+            <div class="relative bg-white rounded-3xl shadow-2xl border border-gray-100 p-8 max-w-lg mx-auto">
+              <!-- Header -->
+              <div class="flex items-center justify-between mb-8 pb-6 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-file-invoice-dollar text-white text-xl"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-gray-900">Statement Analysis</h4>
+                    <p class="text-xs text-gray-500">June 2024 • HDFC Bank</p>
+                  </div>
+                </div>
+                <span class="bg-green-100 text-green-600 text-xs font-bold px-3 py-1 rounded-full">Analyzed</span>
+              </div>
+              
+              <!-- Categories Breakdown -->
+              <div class="space-y-4 mb-6">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                      <i class="fas fa-utensils text-orange-500 text-sm"></i>
+                    </div>
+                    <span class="font-medium text-gray-700">Food & Dining</span>
+                  </div>
+                  <span class="font-bold text-gray-900">₹12,450</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <i class="fas fa-shopping-bag text-purple-500 text-sm"></i>
+                    </div>
+                    <span class="font-medium text-gray-700">Shopping</span>
+                  </div>
+                  <span class="font-bold text-gray-900">₹8,320</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <i class="fas fa-tv text-blue-500 text-sm"></i>
+                    </div>
+                    <span class="font-medium text-gray-700">Subscriptions</span>
+                  </div>
+                  <span class="font-bold text-gray-900">₹2,199</span>
+                </div>
+              </div>
+              
+              <!-- Alert -->
+              <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+                <i class="fas fa-exclamation-triangle text-amber-500 mt-0.5"></i>
+                <div>
+                  <p class="text-sm font-medium text-amber-800">3 Duplicate Charges Detected</p>
+                  <p class="text-xs text-amber-600 mt-0.5">Netflix charged twice this month</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="order-1 lg:order-2">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-600 text-sm font-bold uppercase tracking-wider mb-6">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <span>Coming Q1 2026</span>
+          </div>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-text-primary mb-6 tracking-tight">
+            Bank Statement Analysis
+          </h2>
+          <p class="text-lg text-text-secondary mb-8 leading-relaxed">
+            Upload your bank statements and let AI do the heavy lifting. Automatically categorize transactions, detect patterns, and get insights you never knew you needed.
+          </p>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div class="flex items-start gap-3 p-4 bg-gray-50 rounded-xl">
+              <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-magic text-blue-500"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-text-primary mb-1">Auto-Categorize</h4>
+                <p class="text-sm text-text-secondary">AI categorizes every transaction</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3 p-4 bg-gray-50 rounded-xl">
+              <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-sync-alt text-blue-500"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-text-primary mb-1">Recurring Detection</h4>
+                <p class="text-sm text-text-secondary">Find all subscriptions instantly</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3 p-4 bg-gray-50 rounded-xl">
+              <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-shield-alt text-blue-500"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-text-primary mb-1">Fraud Alerts</h4>
+                <p class="text-sm text-text-secondary">Spot suspicious transactions</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3 p-4 bg-gray-50 rounded-xl">
+              <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-chart-pie text-blue-500"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-text-primary mb-1">Visual Reports</h4>
+                <p class="text-sm text-text-secondary">Beautiful spending breakdowns</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Showcase: Smart Bill Splitting -->
+  <section class="py-20 lg:py-28 bg-gradient-to-br from-purple-50 via-white to-pink-50 overflow-hidden">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100 text-purple-600 text-sm font-bold uppercase tracking-wider mb-6">
+            <i class="fas fa-receipt"></i>
+            <span>Coming Q2 2026</span>
+          </div>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-text-primary mb-6 tracking-tight">
+            Smart Bill Splitting
+          </h2>
+          <p class="text-lg text-text-secondary mb-8 leading-relaxed">
+            No more awkward "who owes what" conversations. Split bills instantly with friends, track balances automatically, and settle up with a single tap.
+          </p>
+          <div class="space-y-4">
+            <div class="flex items-start gap-4 p-4 bg-white rounded-xl border border-purple-100 shadow-sm">
+              <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-qrcode text-white text-lg"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-text-primary mb-1">Scan & Split</h4>
+                <p class="text-sm text-text-secondary">Scan the receipt and let AI split items by who ordered what</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4 p-4 bg-white rounded-xl border border-purple-100 shadow-sm">
+              <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-users text-white text-lg"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-text-primary mb-1">Group Balances</h4>
+                <p class="text-sm text-text-secondary">Track who owes whom across multiple expenses in a group</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4 p-4 bg-white rounded-xl border border-purple-100 shadow-sm">
+              <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-money-bill-wave text-white text-lg"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-text-primary mb-1">Instant Settlement</h4>
+                <p class="text-sm text-text-secondary">Generate UPI payment links and settle debts with one click</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Bill Split Mockup -->
+        <div class="relative">
+          <div class="absolute -inset-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-3xl blur-2xl"></div>
+          <div class="relative bg-white rounded-3xl shadow-2xl border border-gray-100 p-8 max-w-lg mx-auto">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-6 pb-6 border-b border-gray-100">
+              <div>
+                <h4 class="font-bold text-gray-900 text-lg">Dinner at Bombay Brasserie</h4>
+                <p class="text-sm text-gray-500">Total: ₹4,800 • 4 people</p>
+              </div>
+              <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                <i class="fas fa-receipt text-white"></i>
+              </div>
+            </div>
+            
+            <!-- People -->
+            <div class="space-y-3 mb-6">
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">R</div>
+                  <div>
+                    <p class="font-medium text-gray-900">Rahul (You)</p>
+                    <p class="text-xs text-gray-500">Paid the bill</p>
+                  </div>
+                </div>
+                <span class="text-green-600 font-bold">+₹3,600</span>
+              </div>
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm">P</div>
+                  <p class="font-medium text-gray-900">Priya</p>
+                </div>
+                <span class="text-red-500 font-bold">-₹1,200</span>
+              </div>
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-bold text-sm">A</div>
+                  <p class="font-medium text-gray-900">Amit</p>
+                </div>
+                <span class="text-red-500 font-bold">-₹1,200</span>
+              </div>
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-sm">S</div>
+                  <p class="font-medium text-gray-900">Sneha</p>
+                </div>
+                <span class="text-red-500 font-bold">-₹1,200</span>
+              </div>
+            </div>
+            
+            <!-- Action Button -->
+            <button class="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl hover:shadow-lg transition-shadow cursor-pointer">
+              <i class="fas fa-paper-plane mr-2"></i>
+              Send Payment Reminders
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured: WhatsApp Integration -->
+  <section class="py-20 lg:py-28 bg-white overflow-hidden">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 text-emerald-600 text-sm font-bold uppercase tracking-wider mb-6">
+            <i class="fab fa-whatsapp"></i>
+            <span>Coming Q1 2026</span>
+          </div>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-text-primary mb-6 tracking-tight">
+            WhatsApp Integration
+          </h2>
+          <p class="text-lg text-text-secondary mb-8 leading-relaxed">
+            The most requested feature is on its way! Track your expenses without opening an app. Just send a WhatsApp message and let AI handle the rest.
+          </p>
+          <div class="space-y-4">
+            <div class="flex items-start gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+              <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-comment text-white text-lg"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-text-primary mb-1">Text Logging</h4>
+                <p class="text-sm text-text-secondary">Send "Coffee ₹150" and it's automatically logged and categorized</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+              <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-image text-white text-lg"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-text-primary mb-1">Photo Upload</h4>
+                <p class="text-sm text-text-secondary">Snap a picture of your receipt and AI extracts all details</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+              <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-microphone text-white text-lg"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-text-primary mb-1">Voice Notes</h4>
+                <p class="text-sm text-text-secondary">Speak your expense and AI converts it to text automatically</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- WhatsApp Mockup -->
+        <div class="relative">
+          <div class="absolute -inset-4 bg-gradient-to-r from-emerald-500/20 to-green-500/20 rounded-3xl blur-2xl"></div>
+          <div class="relative bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 max-w-md mx-auto">
+            <div class="flex items-center space-x-3 mb-6 pb-4 border-b border-gray-100">
+              <div class="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center">
+                <i class="fab fa-whatsapp text-white text-3xl"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-gray-900 text-lg">Spentiva Bot</h4>
+                <p class="text-sm text-emerald-600 flex items-center">
+                  <span class="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></span>
+                  Online
+                </p>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div class="flex justify-end">
+                <div class="bg-emerald-500 text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-xs shadow-sm">
+                  <p class="text-sm">Lunch at Punjabi Dhaba ₹350</p>
+                </div>
+              </div>
+              <div class="flex justify-start">
+                <div class="bg-gray-100 text-gray-900 rounded-2xl rounded-tl-sm px-4 py-3 max-w-xs">
+                  <p class="text-sm">✅ Got it! Logged <strong>₹350</strong> for <strong>Lunch</strong></p>
+                  <p class="text-xs text-gray-500 mt-2">Category: Food & Dining • Today 1:32 PM</p>
+                </div>
+              </div>
+              <div class="flex justify-end">
+                <div class="bg-emerald-500 text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-xs shadow-sm">
+                  <p class="text-sm">📊 Show this month's spending</p>
+                </div>
+              </div>
+              <div class="flex justify-start">
+                <div class="bg-gray-100 text-gray-900 rounded-2xl rounded-tl-sm px-4 py-3 max-w-xs">
+                  <p class="text-sm mb-2">📈 <strong>June 2024 Summary</strong></p>
+                  <p class="text-xs text-gray-600">Total: ₹45,230</p>
+                  <p class="text-xs text-gray-600">Food: ₹12,400 (27%)</p>
+                  <p class="text-xs text-gray-600">Transport: ₹8,500 (19%)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Early Access CTA -->
+  <section
+    class="relative py-20 lg:py-28 overflow-hidden"
+    style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);"
+  >
+    <!-- Background Effects -->
+    <div class="absolute inset-0">
+      <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary-400/20 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10 text-center">
+      <span class="inline-block text-primary-400 text-sm font-bold uppercase tracking-wider mb-4">Be the First to Know</span>
+      <h2 class="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-6 text-white tracking-tight">
+        Want Early Access?
+      </h2>
+      <p class="text-xl mb-10 text-gray-300 max-w-2xl mx-auto leading-relaxed">
+        Sign up for Spentiva today and be the first to know when new features launch. Pro users get priority access!
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a
+          href="https://app.spentiva.com/signup"
+          class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-primary-400 to-emerald-400 text-white font-semibold rounded-xl hover:shadow-xl hover:shadow-primary-400/30 transform hover:-translate-y-1 transition-all text-base"
+        >
+          <i class="fas fa-rocket mr-2"></i>
+          Get Started Free
+        </a>
+        <a
+          href="/pricing"
+          class="inline-flex items-center justify-center px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 transform hover:-translate-y-1 transition-all text-base"
+        >
+          <i class="fas fa-crown mr-2"></i>
+          View Pro Plans
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

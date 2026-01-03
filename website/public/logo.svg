@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Wallet Base -->
+  <defs>
+    <linearGradient id="walletGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#37A87E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2B7D60;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="receiptGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E4F6F0;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Wallet Body -->
+  <rect x="40" y="80" width="120" height="90" rx="12" fill="url(#walletGradient)"/>
+  
+  <!-- Wallet Flap -->
+  <path d="M 45 80 L 45 70 Q 45 60 55 60 L 145 60 Q 155 60 155 70 L 155 80 Z" fill="#2B7D60"/>
+  
+  <!-- Wallet Button/Snap -->
+  <circle cx="100" y="75" r="4" fill="#E4F6F0" opacity="0.8"/>
+  
+  <!-- Receipt coming out -->
+  <g transform="translate(70, 30)">
+    <!-- Receipt paper -->
+    <path d="M 0 0 L 0 55 L 5 50 L 10 55 L 15 50 L 20 55 L 25 50 L 30 55 L 30 0 Z" 
+          fill="url(#receiptGradient)" 
+          stroke="#C9D9D2" 
+          stroke-width="1.5"/>
+    
+    <!-- Receipt lines (expense items) -->
+    <line x1="6" y1="10" x2="24" y2="10" stroke="#37A87E" stroke-width="2" stroke-linecap="round"/>
+    <line x1="6" y1="18" x2="20" y2="18" stroke="#37A87E" stroke-width="2" stroke-linecap="round"/>
+    <line x1="6" y1="26" x2="22" y2="26" stroke="#37A87E" stroke-width="2" stroke-linecap="round"/>
+    
+    <!-- Dollar sign on receipt -->
+    <text x="15" y="42" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#37A87E" text-anchor="middle">$</text>
+  </g>
+  
+  <!-- Wallet accent line -->
+  <line x1="50" y1="120" x2="150" y2="120" stroke="#246852" stroke-width="2" opacity="0.3"/>
+  
+  <!-- Card slot indicator -->
+  <rect x="120" y="100" width="30" height="20" rx="3" fill="#1F5544" opacity="0.6"/>
+  <circle cx="145" y="110" r="2" fill="#E4F6F0"/>
+</svg>

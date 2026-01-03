@@ -1,0 +1,102 @@
+---
+interface Props {
+  name: string;
+  label?: string;
+  rows?: number;
+  placeholder?: string;
+  value?: string;
+  required?: boolean;
+  disabled?: boolean;
+  error?: string;
+  helperText?: string;
+  maxLength?: number;
+  ariaLabel?: string;
+  id?: string;
+}
+
+const {
+  name,
+  label,
+  rows = 4,
+  placeholder,
+  value = '',
+  required = false,
+  disabled = false,
+  error,
+  helperText,
+  maxLength,
+  ariaLabel,
+  id = name,
+} = Astro.props;
+
+const hasError = !!error;
+---
+
+<div class="w-full">
+  {label && (
+    <label
+      for={id}
+      class="block text-sm font-medium text-text-primary mb-2"
+    >
+      {label}
+      {required && <span class="text-red-500 ml-1" aria-label="required">*</span>}
+    </label>
+  )}
+  
+  <textarea
+    id={id}
+    name={name}
+    rows={rows}
+    placeholder={placeholder}
+    required={required}
+    disabled={disabled}
+    maxlength={maxLength}
+    aria-label={ariaLabel || label || name}
+    aria-invalid={hasError}
+    aria-describedby={helperText || error ? `${id}-description` : undefined}
+    class={`
+      w-full px-4 py-3 rounded-lg border transition-all duration-300
+      focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent
+      disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500
+      resize-y
+      ${hasError 
+        ? 'border-red-500 focus:ring-red-500' 
+        : 'border-border-default hover:border-primary-300'
+      }
+    `}
+  >{value}</textarea>
+  
+  <div class="flex justify-between items-center mt-2">
+    {(helperText || error) && (
+      <p
+        id={`${id}-description`}
+        class={`text-sm ${hasError ? 'text-red-600' : 'text-text-secondary'}`}
+        role={hasError ? 'alert' : undefined}
+      >
+        {error || helperText}
+      </p>
+    )}
+    
+    {maxLength && (
+      <span class="text-sm text-text-secondary ml-auto" aria-live="polite">
+        <span id={`${id}-char-count`}>0</span>/{maxLength}
+      </span>
+    )}
+  </div>
+</div>
+
+{maxLength && (
+  <script define:vars={{ id, maxLength }}>
+    const textarea = document.getElementById(id);
+    const charCount = document.getElementById(`${id}-char-count`);
+    
+    if (textarea && charCount) {
+      const updateCount = () => {
+        charCount.textContent = textarea.value.length.toString();
+      };
+      
+      textarea.addEventListener('input', updateCount);
+      updateCount(); // Initialize
+    }
+  </script>
+)}
