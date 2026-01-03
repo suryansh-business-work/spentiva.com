@@ -1,0 +1,80 @@
+# =============================================================================
+# Spentiva Platform - Centralized Docker Compose
+# All services on shared network with health checks and auto-restart
+# =============================================================================
+# Port Mapping:
+#   - Website:         5000 -> spentiva.com
+#   - App UI:          5001 -> app.spentiva.com
+#   - App Server:      5002 -> server.spentiva.com
+#   - Auth (shared):   4001 -> auth.spentiva.com (uses exyconn-auth)
+# =============================================================================
+
+services:
+  # ===========================================================================
+  # Spentiva Website - Port 5000
+  # ===========================================================================
+  spentiva-website:
+    image: ${DOCKERHUB_USERNAME:-suryanshwork}/spentiva-website:latest
+    container_name: spentiva-website
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+    networks:
+      - spentiva-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ===========================================================================
+  # App UI - Port 5001
+  # ===========================================================================
+  spentiva-app-ui:
+    image: ${DOCKERHUB_USERNAME:-suryanshwork}/spentiva-app-ui:latest
+    container_name: spentiva-app-ui
+    restart: unless-stopped
+    ports:
+      - "5001:80"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - spentiva-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ===========================================================================
+  # App Server - Port 5002
+  # ===========================================================================
+  spentiva-app-server:
+    image: ${DOCKERHUB_USERNAME:-suryanshwork}/spentiva-app-server:latest
+    container_name: spentiva-app-server
+    restart: unless-stopped
+    ports:
+      - "5002:5002"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=5002
+    networks:
+      - spentiva-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# =============================================================================
+# Shared Network
+# =============================================================================
+networks:
+  spentiva-network:
+    driver: bridge
+    name: spentiva-network
