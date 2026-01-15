@@ -8,7 +8,7 @@ name: ⚙️ Deploy Spentiva App Server
 on:
   push:
     branches: [main]
-    paths: ['app/server/**', '.github/workflows/deploy-app-server.yml']
+    paths: ["app/server/**", ".github/workflows/deploy-app-server.yml"]
   workflow_dispatch:
 
 jobs:
@@ -54,23 +54,22 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            
+
             docker network create spentiva-network 2>/dev/null || true
-            
+
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/spentiva-app-server:latest
             docker stop spentiva-app-server 2>/dev/null || true
             docker rm -f spentiva-app-server 2>/dev/null || true
-            
+
             docker run -d \
               --name spentiva-app-server \
               --restart unless-stopped \
               --network spentiva-network \
               -p 5002:5002 \
-              --env-file /opt/spentiva/.env \
               -e NODE_ENV=production \
               -e PORT=5002 \
               ${{ secrets.DOCKERHUB_USERNAME }}/spentiva-app-server:latest
-            
+
             sleep 10
             docker ps --filter "name=spentiva-app-server"
             curl -sf http://localhost:5002/api/health || echo "Service starting..."
