@@ -17,6 +17,7 @@ export const AUTH_CONFIG = {
   // External auth UI URLs
   authUrl: isLocalhost ? 'http://localhost:4001' : 'https://auth.spentiva.com',
   profileUrl: isLocalhost ? 'http://localhost:4001/profile' : 'https://auth.spentiva.com/profile',
+  logoutUrl: isLocalhost ? 'http://localhost:4001/logout' : 'https://auth.spentiva.com/logout',
 
   // API Endpoints (on auth server)
   endpoints: {

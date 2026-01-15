@@ -47,8 +47,8 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, onClose }) =>
 
   const handleLogout = () => {
     logout();
-    // Redirect to external auth
-    window.location.href = AUTH_CONFIG.authUrl;
+    // Redirect to external auth logout
+    window.location.href = AUTH_CONFIG.logoutUrl;
   };
 
   return (

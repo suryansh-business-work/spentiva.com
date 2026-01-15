@@ -4,7 +4,7 @@ export const getApiUrl = () => {
   if (import.meta.env.MODE === 'development') {
     return 'http://localhost:8002/v1/api';
   }
-  return 'https://api.spentiva.com/v1/api';
+  return 'https://server.spentiva.com/v1/api';
 };
 
 // All endpoint URLs organized by domain
