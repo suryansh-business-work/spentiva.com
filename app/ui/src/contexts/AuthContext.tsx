@@ -2,8 +2,8 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { getRequest } from '../utils/http';
 import { endpoints } from '../config/api';
 import { getAuthHeaders } from '../config/auth-config';
+import { getAuthToken, setAuthToken, removeAuthToken } from '../utils/cookies';
 import { User } from '../types';
-
 
 interface AuthContextType {
   user: User | null;
@@ -40,8 +40,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const urlToken = params.get('token');
 
     if (urlToken) {
-      // Save token and clean URL
-      localStorage.setItem('authToken', urlToken);
+      // Save token to cookie and clean URL
+      setAuthToken(urlToken);
       window.history.replaceState({}, document.title, window.location.pathname);
       setToken(urlToken);
       fetchCurrentUser(urlToken).then(() => {
@@ -49,8 +49,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         window.location.href = '/trackers';
       });
     } else {
-      // Load token from localStorage
-      const savedToken = localStorage.getItem('authToken');
+      // Load token from cookies
+      const savedToken = getAuthToken();
       if (savedToken) {
         setToken(savedToken);
         fetchCurrentUser(savedToken);
@@ -101,14 +101,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = (newToken: string, newUser: User) => {
     setToken(newToken);
     setUser(newUser);
-    localStorage.setItem('authToken', newToken);
+    setAuthToken(newToken);
     // Token will be automatically added by apiClient interceptor
   };
 
   const logout = () => {
     setToken(null);
     setUser(null);
-    localStorage.removeItem('authToken');
+    removeAuthToken();
     // Token will be automatically removed by apiClient interceptor
   };
 

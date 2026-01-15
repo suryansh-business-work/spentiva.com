@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { getAuthToken } from './cookies';
 
 const postRequest = async (url: string, data: any = {}, authToken: string | null = null) => {
-  const localToken = localStorage.getItem('authToken') || authToken;
+  const localToken = getAuthToken() || authToken;
   if (localToken) {
     const headers: any = {
       Authorization: `Bearer ${localToken}`,
@@ -16,7 +17,7 @@ const postRequest = async (url: string, data: any = {}, authToken: string | null
 };
 
 const patchRequest = async (url: string, data: any = {}, authToken: string | null = null) => {
-  const localToken = localStorage.getItem('authToken') || authToken;
+  const localToken = getAuthToken() || authToken;
   if (localToken) {
     const headers: any = {
       Authorization: `Bearer ${localToken}`,
@@ -31,7 +32,7 @@ const patchRequest = async (url: string, data: any = {}, authToken: string | nul
 };
 
 const putRequest = async (url: string, data: any = {}) => {
-  const localToken = localStorage.getItem('authToken');
+  const localToken = getAuthToken();
   if (localToken) {
     const headers: any = {
       Authorization: `Bearer ${localToken}`,
@@ -46,7 +47,7 @@ const putRequest = async (url: string, data: any = {}) => {
 };
 
 const getRequest = async (url: string, data: any = {}, authToken: string | null = null, extraHeaders: any = {}) => {
-  const localToken = localStorage.getItem('authToken') || authToken;
+  const localToken = getAuthToken() || authToken;
   const headers: any = {
     ...extraHeaders,
     'Content-Type': 'application/json',
@@ -60,7 +61,7 @@ const getRequest = async (url: string, data: any = {}, authToken: string | null 
 };
 
 const deleteRequest = async (url: string, data: any = {}) => {
-  const localToken = localStorage.getItem('authToken');
+  const localToken = getAuthToken();
   if (localToken) {
     const headers: any = {
       Authorization: `Bearer ${localToken}`,
