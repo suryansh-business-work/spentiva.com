@@ -132,7 +132,7 @@ const Header: React.FC = () => {
                 fontSize: '0.8rem',
               }}
             >
-              {user?.name?.charAt(0).toUpperCase()}
+              {user?.firstName?.charAt(0).toUpperCase()}
             </Avatar>
           </IconButton>
         </Toolbar>

@@ -14,11 +14,23 @@ export const authenticateMiddleware = (req: any, res: any, next: any) => {
     return errorResponse(res, null, 'Access token required');
   }
 
-  jwt.verify(token, config.JWT_SECRET, (err: any, user: any) => {
+  // Hardcoded secret as per user request
+  const JWT_SECRET = 'eee13e58-8471-4356-9eef-6e7fba646fd2';
+
+  jwt.verify(token, JWT_SECRET, (err: any, decoded: any) => {
     if (err) {
-      return errorResponse(res, null, 'Invalid or expired token');
+      return errorResponse(res, err, 'Invalid or expired token');
     }
-    req.user = user;
+
+    // Map decoded payload to req.user
+    // Payload format: { userId, userName, email, ... }
+    req.user = {
+      ...decoded,
+      id: decoded.userId, // Map userId to id for compatibility
+      name: decoded.userName, // Map userName to name
+      // email is already present
+    };
+
     next();
   });
 };

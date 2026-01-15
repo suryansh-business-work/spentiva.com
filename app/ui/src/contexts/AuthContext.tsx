@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { getRequest } from '../utils/http';
 import { endpoints } from '../config/api';
+import { getAuthHeaders } from '../config/auth-config';
 import { User } from '../types';
-import { parseResponseData, extractNestedData } from '../utils/response-parser';
+
 
 interface AuthContextType {
   user: User | null;
@@ -34,26 +35,58 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load token from localStorage
-    const savedToken = localStorage.getItem('authToken');
-    if (savedToken) {
-      setToken(savedToken);
-      fetchCurrentUser(savedToken);
+    // Check for token in URL
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get('token');
+
+    if (urlToken) {
+      // Save token and clean URL
+      localStorage.setItem('authToken', urlToken);
+      window.history.replaceState({}, document.title, window.location.pathname);
+      setToken(urlToken);
+      fetchCurrentUser(urlToken).then(() => {
+        // Redirect to portal only after successful fetch
+        window.location.href = '/trackers';
+      });
     } else {
-      setLoading(false);
+      // Load token from localStorage
+      const savedToken = localStorage.getItem('authToken');
+      if (savedToken) {
+        setToken(savedToken);
+        fetchCurrentUser(savedToken);
+      } else {
+        setLoading(false);
+      }
     }
   }, []);
 
   const fetchCurrentUser = async (authToken: string) => {
     try {
-      const response = await getRequest(endpoints.auth.me, {}, authToken);
-      // Try to extract user from response.data.data.user or response.data.user
-      const user =
-        extractNestedData<User>(response, 'data.user', null) ||
-        parseResponseData<any>(response, null)?.user;
+      const headers = getAuthHeaders();
 
-      if (user) {
-        setUser(user);
+      // Fetch user info
+      const response = await getRequest(endpoints.auth.me, {}, authToken, headers);
+      const data = response?.data || response;
+      const userData = data?.data?.user;
+      const orgData = data?.data?.organization;
+
+      if (userData) {
+        // Fetch role info
+        try {
+          const roleResponse = await getRequest(endpoints.auth.role, {}, authToken, headers);
+          const roleData = roleResponse?.data?.data;
+          if (roleData?.roleDetails?.slug) {
+            userData.roleSlug = roleData.roleDetails.slug;
+          }
+        } catch (roleError) {
+          console.error('Error fetching role:', roleError);
+        }
+
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+        if (orgData) {
+          localStorage.setItem('organization', JSON.stringify(orgData));
+        }
       } else {
         logout();
       }
@@ -91,7 +124,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         login,
         logout,
         updateUser,
-        isAuthenticated: !!token && !!user,
+        isAuthenticated: !!token,
         loading,
       }}
     >

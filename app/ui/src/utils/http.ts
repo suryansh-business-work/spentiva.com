@@ -45,18 +45,18 @@ const putRequest = async (url: string, data: any = {}) => {
   }
 };
 
-const getRequest = async (url: string, data: any = {}, authToken: string | null = null) => {
+const getRequest = async (url: string, data: any = {}, authToken: string | null = null, extraHeaders: any = {}) => {
   const localToken = localStorage.getItem('authToken') || authToken;
+  const headers: any = {
+    ...extraHeaders,
+    'Content-Type': 'application/json',
+  };
+
   if (localToken) {
-    const headers: any = {
-      Authorization: `Bearer ${localToken}`,
-      'Content-Type': 'application/json',
-    };
-    // axios.get second argument is config, params go in config.params
-    return axios.get(url, { params: data, headers });
-  } else {
-    return axios.get(url, { params: data });
+    headers.Authorization = `Bearer ${localToken}`;
   }
+
+  return axios.get(url, { params: data, headers });
 };
 
 const deleteRequest = async (url: string, data: any = {}) => {

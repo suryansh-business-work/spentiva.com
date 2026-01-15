@@ -35,7 +35,7 @@ const GreetingHeader: React.FC = () => {
       const userStr = localStorage.getItem('user');
       if (userStr) {
         const user = JSON.parse(userStr);
-        setUserName(user.name || user.email?.split('@')[0] || 'User');
+        setUserName(user.firstName || user.name || user.email?.split('@')[0] || 'User');
       }
     } catch (error) {
       console.error('Error reading user from localStorage:', error);

@@ -31,12 +31,16 @@ export interface ParsedExpense {
 }
 export interface User {
   id: string;
-  name: string;
   email: string;
-  profilePhoto?: string;
+  firstName: string;
+  lastName: string;
+  profilePicture?: string;
+  isVerified: boolean;
+  mfaEnabled: boolean;
+  provider: string;
   role?: string;
-  accountType?: string;
-  emailVerified?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+  roleSlug?: string; // Role slug from external auth (e.g., 'admin', 'user')
+  createdAt: string;
+  lastLoginAt?: string;
+  lastLoginIp?: string;
 }

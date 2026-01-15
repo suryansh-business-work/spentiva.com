@@ -17,7 +17,7 @@ import { requestLogger } from './middleware/request-logger';
 import { apiLimiter, authLimiter, otpLimiter, aiLimiter } from './middleware/rate-limit';
 
 // Modular API Routes
-import authRoutes from './apis/auth/auth.routes';
+// Auth is now handled by external server (auth.spentiva.com)
 import trackerRoutes from './apis/tracker/tracker.routes';
 import categoryRoutes from './apis/category/category.routes';
 import expenseRoutes from './apis/expense/expense.routes';
@@ -27,7 +27,7 @@ import imagekitUploadRoutes from './apis/file-upload/imagekit-file-upload/imagek
 import uploadRoutes from './apis/file-upload/local-upload/upload.routes';
 import supportRoutes from './apis/support/support.routes';
 import analyticsRoutes from './apis/analytics/analytics.routes';
-import adminRoutes from './apis/admin/admin.routes';
+// Admin module removed - user management is now handled by external auth server
 import healthRoutes from './apis/health/health.routes';
 import paymentRoutes from './apis/payment/payment.routes';
 import refundRoutes from './apis/refund/refund.routes';
@@ -51,10 +51,12 @@ app.use(
 const allowedOrigins = [
   'https://app.spentiva.com',
   'http://localhost:8001',
+  'http://localhost:5173',
+  'http://localhost:3000',
   'http://localhost:8082',
+  'http://localhost:5001',
   'http://10.0.2.2',
   '10.0.2.2',
-  '*'
 ];
 
 app.use(
@@ -63,7 +65,8 @@ app.use(
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
 
-      if (allowedOrigins.indexOf(origin) !== -1) {
+      // If allowedOrigins contains * or the origin itself, allow it
+      if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
         callback(null, true);
       } else {
         logger.warn('CORS blocked origin', { origin });
@@ -72,7 +75,7 @@ app.use(
     },
     credentials: true, // Allow cookies and authorization headers
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'x-api-key'],
     exposedHeaders: ['Content-Range', 'X-Content-Range'],
     maxAge: 86400, // 24 hours
   })
@@ -117,12 +120,8 @@ app.get('/', (req, res) => {
   );
 });
 
-// Authentication (with strict rate limiting)
-app.use('/v1/api/auth/send-otp', otpLimiter);
-app.use('/v1/api/auth/send-email-otp', otpLimiter);
-app.use('/v1/api/auth/verify-otp', authLimiter);
-app.use('/v1/api/auth/verify-email-otp', authLimiter);
-app.use('/v1/api/auth', authRoutes);
+// Auth is now handled by external server (auth.spentiva.com)
+// All authentication routes have been removed
 
 // AI Endpoints (with moderate rate limiting)
 app.use('/v1/api/expense/parse', aiLimiter);
@@ -141,8 +140,8 @@ app.use('/v1/api', uploadRoutes);
 // Analytics
 app.use('/v1/api/analytics', analyticsRoutes);
 
-// Admin Panel
-app.use('/v1/api/admin', adminRoutes);
+// Admin Panel - Removed (user management is now handled by external auth server)
+// app.use('/v1/api/admin', adminRoutes);
 
 // Support Tickets
 app.use('/v1/api/support', supportRoutes);

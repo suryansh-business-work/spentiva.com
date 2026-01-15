@@ -17,8 +17,8 @@ import ShowChartIcon from '@mui/icons-material/ShowChart';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import ShieldIcon from '@mui/icons-material/Shield';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { useAuth } from '../../contexts/AuthContext';
+import { AUTH_CONFIG } from '../../config/auth-config';
 
 interface NavigationDrawerProps {
   open: boolean;
@@ -38,14 +38,7 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, onClose }) =>
     { text: 'Privacy & Policy', icon: <ShieldIcon />, path: '/policy' },
   ];
 
-  // Add admin panel for admin users
-  if (user?.role === 'admin') {
-    drawerItems.unshift({
-      text: 'Admin Panel',
-      icon: <AdminPanelSettingsIcon />,
-      path: '/admin',
-    });
-  }
+  // Admin panel removed - user management is now handled by external auth server
 
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -54,8 +47,8 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, onClose }) =>
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
-    onClose();
+    // Redirect to external auth
+    window.location.href = AUTH_CONFIG.authUrl;
   };
 
   return (
@@ -74,8 +67,8 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, onClose }) =>
         {/* Profile Section */}
         <Box
           onClick={() => {
-            navigate('/profile');
-            onClose();
+            // Redirect to external profile
+            window.location.href = AUTH_CONFIG.profileUrl;
           }}
           sx={{
             p: 2,
@@ -100,7 +93,7 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, onClose }) =>
               border: `2px solid ${theme.palette.divider}`,
             }}
           >
-            {user?.name?.charAt(0).toUpperCase()}
+            {user?.firstName?.charAt(0).toUpperCase()}
           </Avatar>
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography
@@ -113,7 +106,7 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, onClose }) =>
                 whiteSpace: 'nowrap',
               }}
             >
-              {user?.name}
+              {user?.firstName} {user?.lastName}
             </Typography>
             <Typography
               variant="body2"

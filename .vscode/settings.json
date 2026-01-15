@@ -3,5 +3,8 @@
     "activityBar.background": "#153407",
     "titleBar.activeBackground": "#1D490A",
     "titleBar.activeForeground": "#F3FDEE"
-  }
+  },
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+  "editor.tabSize": 2,
+  "workbench.colorTheme": "Default Dark Modern"
 }

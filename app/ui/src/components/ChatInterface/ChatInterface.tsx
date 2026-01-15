@@ -38,10 +38,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
    * Get user profile photo URL
    */
   const getUserPhotoUrl = (): string => {
-    if (user?.profilePhoto) {
-      return user.profilePhoto.startsWith('http')
-        ? user.profilePhoto
-        : `https://api.spentiva.com${user.profilePhoto}`;
+    if (user?.profilePicture) {
+      return user.profilePicture.startsWith('http')
+        ? user.profilePicture
+        : `https://api.spentiva.com${user.profilePicture}`;
     }
     return '';
   };
@@ -178,7 +178,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
             key={message.id}
             message={message}
             userPhotoUrl={getUserPhotoUrl()}
-            userName={user?.name}
+            userName={user?.firstName}
           />
         ))}
 

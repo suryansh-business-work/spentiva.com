@@ -1,3 +1,5 @@
+import { getAuthEndpoint } from './auth-config';
+
 export const getApiUrl = () => {
   if (import.meta.env.MODE === 'development') {
     return 'http://localhost:8002/v1/api';
@@ -8,28 +10,9 @@ export const getApiUrl = () => {
 // All endpoint URLs organized by domain
 export const endpoints = {
   auth: {
-    // OTP-based authentication (existing)
-    sendOtp: `${getApiUrl()}/auth/send-otp`,
-    verifyOtp: `${getApiUrl()}/auth/verify-otp`,
-
-    // Email/Password authentication (from Swagger)
-    login: `${getApiUrl()}/auth/login`,
-    signup: `${getApiUrl()}/auth/signup`,
-
-    // User profile
-    me: `${getApiUrl()}/auth/me`,
-    profile: `${getApiUrl()}/auth/profile`,
-    profilePhoto: `${getApiUrl()}/auth/profile-photo`,
-
-    // Email verification
-    sendEmailOtp: `${getApiUrl()}/auth/send-email-otp`,
-    verifyEmailOtp: `${getApiUrl()}/auth/verify-email-otp`,
-    sendVerificationOtp: `${getApiUrl()}/auth/send-verification-otp`,
-    verifyEmail: `${getApiUrl()}/auth/verify-email`,
-
-    // Password management
-    forgotPassword: `${getApiUrl()}/auth/forgot-password`,
-    resetPassword: `${getApiUrl()}/auth/reset-password`,
+    // External auth server endpoints (from auth-config)
+    me: getAuthEndpoint('me'),
+    role: getAuthEndpoint('role'),
   },
   trackers: {
     getAll: `${getApiUrl()}/tracker/all`,
