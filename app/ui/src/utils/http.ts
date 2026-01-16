@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getAuthToken } from './cookies';
+import { getAuthToken } from './localStorage';
 
 const postRequest = async (url: string, data: any = {}, authToken: string | null = null) => {
   const localToken = getAuthToken() || authToken;

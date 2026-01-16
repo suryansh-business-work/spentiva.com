@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { getRequest } from '../utils/http';
 import { endpoints } from '../config/api';
 import { getAuthHeaders } from '../config/auth-config';
-import { getAuthToken, setAuthToken, removeAuthToken } from '../utils/cookies';
+import { getAuthToken, setAuthToken, removeAuthToken } from '../utils/localStorage';
 import { User } from '../types';
 
 interface AuthContextType {
@@ -38,18 +38,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Check for token in URL
     const params = new URLSearchParams(window.location.search);
     const urlToken = params.get('token');
-
     if (urlToken) {
-      // Save token to cookie and clean URL
       setAuthToken(urlToken);
       window.history.replaceState({}, document.title, window.location.pathname);
       setToken(urlToken);
       fetchCurrentUser(urlToken).then(() => {
-        // Redirect to portal only after successful fetch
         window.location.href = '/trackers';
       });
     } else {
-      // Load token from cookies
       const savedToken = getAuthToken();
       if (savedToken) {
         setToken(savedToken);
