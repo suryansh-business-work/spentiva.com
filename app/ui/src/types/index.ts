@@ -44,3 +44,50 @@ export interface User {
   lastLoginAt?: string;
   lastLoginIp?: string;
 }
+
+export interface Permission {
+  resource: string;
+  action: string;
+  allowed: boolean;
+}
+
+export interface RoleDetails {
+  name: string;
+  slug: string;
+  description: string;
+  permissions: Permission[];
+  isDefault: boolean;
+  isSystem: boolean;
+}
+
+export interface Role {
+  role: string;
+  roleDetails: RoleDetails;
+}
+
+export interface PasswordPolicy {
+  minLength: number;
+  requireUppercase: boolean;
+  requireLowercase: boolean;
+  requireNumbers: boolean;
+  requireSpecialChars: boolean;
+  expiryDays: number;
+}
+
+export interface OrgOptions {
+  mfaEnabled: boolean;
+  lastLoginDetails: boolean;
+  showRoleInProfile: boolean;
+  passwordPolicy: PasswordPolicy;
+  sessionTimeout: number;
+  allowedDomains: string[];
+}
+
+export interface Organization {
+  id: string;
+  name: string;
+  email: string;
+  logo?: string;
+  website?: string;
+  orgOptions: OrgOptions;
+}

@@ -125,6 +125,7 @@ const Header: React.FC = () => {
             }}
           >
             <Avatar
+              src={user?.profilePicture}
               sx={{
                 width: 28,
                 height: 28,
