@@ -10,7 +10,7 @@ export default {
   DBURL: process.env.DBURL || 'mongodb+srv://suryanshbusinesswork:education54@sibera-box.ofemtir.mongodb.net/spentiva?retryWrites=true&w=majority',
   
   // JWT
-  JWT_SECRET: process.env.JWT_SECRET || 'spentiva-jwt-secret-key-production-2024',
+  JWT_SECRET: process.env.JWT_SECRET || 'spentiva-jwt-secret-key-production-2026',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
   
   // CORS
