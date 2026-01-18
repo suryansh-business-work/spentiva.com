@@ -4,7 +4,12 @@ import { ParsedExpense } from '../types';
 import config from '../config/env';
 import { logger } from '../utils/logger';
 
-const openai = config.OPENAI_API_KEY ? new OpenAI({ apiKey: config.OPENAI_API_KEY }) : null;
+// Prefer the configured key from `config`, but fall back to process.env
+const OPENAI_KEY = config.OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+if (!OPENAI_KEY) {
+  logger.warn('OpenAI API key is not set in config or process.env. OpenAI features will be disabled.');
+}
+const openai = OPENAI_KEY ? new OpenAI({ apiKey: OPENAI_KEY }) : null;
 
 export class ExpenseParser {
   private static buildSystemPrompt(categories: any[]): string {
