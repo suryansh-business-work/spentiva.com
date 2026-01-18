@@ -68,6 +68,7 @@ jobs:
               -p 5002:5002 \
               -e NODE_ENV=production \
               -e PORT=5002 \
+              -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
               ${{ secrets.DOCKERHUB_USERNAME }}/spentiva-app-server:latest
 
             sleep 10
