@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { getRequest } from '../utils/http';
 import { endpoints } from '../config/api';
-import { getAuthHeaders } from '../config/auth-config';
+import { getAuthHeaders, AUTH_CONFIG } from '../config/auth-config';
 import { getAuthToken, setAuthToken, removeAuthToken } from '../utils/localStorage';
 import { User, Organization, Role } from '../types';
 
@@ -10,7 +10,6 @@ interface AuthContextType {
   organization: Organization | null;
   role: Role | null;
   token: string | null;
-  login: (token: string, user: User) => void;
   logout: () => void;
   updateUser: (user: User) => void;
   isAuthenticated: boolean;
@@ -40,7 +39,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for token in URL
+    // Check for token in URL (when redirected back from auth.spentiva.com)
     const params = new URLSearchParams(window.location.search);
     const urlToken = params.get('token');
     if (urlToken) {
@@ -102,7 +101,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const headers = getAuthHeaders();
 
-      // Fetch user info
+      // Fetch user info from auth server
       const response = await getRequest(endpoints.auth.me, {}, authToken, headers);
       const data = response?.data || response;
       const userData = data?.data?.user;
@@ -149,14 +148,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const login = (newToken: string, newUser: User) => {
-    setToken(newToken);
-    setUser(newUser);
-    setAuthToken(newToken);
-    // Token will be automatically added by apiClient interceptor
-  };
-
   const logout = () => {
+    // Clear local state
     setToken(null);
     setUser(null);
     setOrganization(null);
@@ -165,7 +158,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('user');
     localStorage.removeItem('organization');
     localStorage.removeItem('role');
-    // Token will be automatically removed by apiClient interceptor
+
+    // Redirect to external auth logout
+    window.location.href = AUTH_CONFIG.logoutUrl;
   };
 
   const updateUser = (updatedUser: User) => {
@@ -188,7 +183,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         organization,
         role,
         token,
-        login,
         logout,
         updateUser,
         isAuthenticated: !!token,

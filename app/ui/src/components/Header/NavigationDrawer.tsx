@@ -46,9 +46,8 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, onClose }) =>
   };
 
   const handleLogout = () => {
+    // Logout function now handles both clearing state and redirecting to auth.spentiva.com/logout
     logout();
-    // Redirect to external auth logout
-    window.location.href = AUTH_CONFIG.logoutUrl;
   };
 
   return (
