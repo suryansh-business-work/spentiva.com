@@ -14,7 +14,7 @@ export default {
   ALLOWED_ORIGINS: (process.env.ALLOWED_ORIGINS || 'http://localhost:5001,https://app.spentiva.com,https://spentiva.com').split(','),
   
   // OpenAI
-  OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
+  OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   
   // SMTP / Email Services
   SERVICES: {
