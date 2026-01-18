@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import 'reflect-metadata';
 import dotenv from 'dotenv';
 
