@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Expense } from '../../../types';
 import { endpoints } from '../../../config/api';
-import { getRequest, putRequest, deleteRequest } from '../../../utils/http';
+import { getRequest, putRequest, deleteRequest, postRequest } from '../../../utils/http';
 import { parseResponseData } from '../../../utils/response-parser';
 
 interface UseTransactionsDataProps {
@@ -20,6 +20,7 @@ interface UseTransactionsDataReturn {
   loadMoreExpenses: () => void;
   handleSaveEdit: (id: string, updatedExpense: Partial<Expense>) => Promise<void>;
   handleConfirmDelete: (expenseId: string) => Promise<void>;
+  handleBulkDelete: (ids: string[]) => Promise<void>;
   setSnackbar: (snackbar: {
     open: boolean;
     message: string;
@@ -117,6 +118,22 @@ export const useTransactionsData = ({
     }
   };
 
+  const handleBulkDelete = async (ids: string[]) => {
+    try {
+      await postRequest(endpoints.expenses.bulkDelete, { ids });
+      await loadExpenses();
+      setSnackbar({
+        open: true,
+        message: `${ids.length} transaction(s) deleted successfully`,
+        severity: 'success',
+      });
+      window.dispatchEvent(new Event('expenseUpdated'));
+    } catch (error) {
+      console.error('Error bulk deleting expenses:', error);
+      setSnackbar({ open: true, message: 'Failed to delete transactions', severity: 'error' });
+    }
+  };
+
   useEffect(() => {
     loadExpenses();
     if (trackerId) {
@@ -152,6 +169,7 @@ export const useTransactionsData = ({
     loadMoreExpenses,
     handleSaveEdit,
     handleConfirmDelete,
+    handleBulkDelete,
     setSnackbar,
   };
 };

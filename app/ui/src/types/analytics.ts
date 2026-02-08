@@ -1,4 +1,6 @@
 // Analytics Types
+export type TransactionTypeFilter = 'expense' | 'income' | 'all';
+
 export interface AnalyticsFilter {
   filter:
     | 'today'
@@ -14,24 +16,33 @@ export interface AnalyticsFilter {
   trackerId?: string;
   categoryId?: string;
   year?: number;
+  type?: TransactionTypeFilter;
 }
 
 export interface AnalyticsSummary {
-  total: number;
-  average: number;
-  count: number;
+  totalExpenses: number;
+  totalIncome: number;
+  netBalance: number;
+  transactionCount: number;
+  expenseCount: number;
+  incomeCount: number;
+  averageExpense: number;
+  averageIncome: number;
 }
 
 export interface CategoryExpense {
   category: string;
   total: number;
   count: number;
+  type?: string;
 }
 
 export interface MonthlyExpense {
   month: number;
   total: number;
   count: number;
+  expenses?: number;
+  income?: number;
 }
 
 export interface PaymentMethodExpense {
@@ -66,5 +77,7 @@ export interface AnalyticsTotalResponse {
   success: boolean;
   data: {
     total: number;
+    totalExpenses: number;
+    totalIncome: number;
   };
 }

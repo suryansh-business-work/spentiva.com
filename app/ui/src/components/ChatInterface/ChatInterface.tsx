@@ -32,7 +32,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
   const { messages, addUserMessage, addAssistantMessage, trackMessageUsage, checkUsageLimit } =
     useChatMessages(trackerId);
 
-  const { parseExpense, createExpense } = useExpenseActions(trackerId);
+  const { parseExpense, createExpense, addCategory } = useExpenseActions(trackerId);
 
   /**
    * Get user profile photo URL
@@ -112,7 +112,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
       }
     } catch (error: any) {
       console.error('Error processing expense:', error);
-      addAssistantMessage(error.message || 'Sorry, I encountered an error. Please try again.');
+      if (error.missingCategories && error.missingCategories.length > 0) {
+        // Show message with missing categories info
+        addAssistantMessage(
+          error.message || 'Category not found',
+          undefined,
+          error.missingCategories
+        );
+      } else {
+        addAssistantMessage(error.message || 'Sorry, I encountered an error. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -130,6 +139,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
   ]);
 
   /**
+   * Handle adding a missing category from chat
+   */
+  const handleAddCategory = useCallback(async (categoryName: string) => {
+    try {
+      await addCategory(categoryName, 'expense');
+      addAssistantMessage(`✅ Category "${categoryName}" added successfully! You can now try your message again.`);
+    } catch {
+      addAssistantMessage(`❌ Failed to add category "${categoryName}". Please try again or add it from Settings.`);
+    }
+  }, [addCategory, addAssistantMessage]);
+
+  /**
    * Auto-scroll when messages update
    */
   useEffect(() => {
@@ -141,7 +162,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        height: 'calc(100vh - 175px)',
+        height: { xs: 'calc(100dvh - 175px)', sm: 'calc(100vh - 175px)' },
         position: 'relative',
         bgcolor: theme.palette.mode === 'dark' ? 'background.default' : '#eee',
       }}
@@ -153,10 +174,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
           flexGrow: 1,
           overflowY: 'auto',
           overflowX: 'hidden',
-          px: 2,
-          pt: 2,
-          pb: '60px',
-          height: 'calc(100vh - 175px)',
+          px: { xs: 1.5, sm: 2 },
+          pt: { xs: 1.5, sm: 2 },
+          pb: { xs: '80px', sm: '70px' },
           '&::-webkit-scrollbar': {
             width: '6px',
           },
@@ -179,6 +199,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
             message={message}
             userPhotoUrl={getUserPhotoUrl()}
             userName={user?.firstName}
+            onAddCategory={handleAddCategory}
           />
         ))}
 

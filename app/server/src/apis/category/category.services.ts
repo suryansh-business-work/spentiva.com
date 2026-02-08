@@ -1,4 +1,5 @@
 import CategoryModel from './category.models';
+import { CategoryType } from './category.models';
 
 /**
  * Category Service - Business logic for categories
@@ -6,9 +7,12 @@ import CategoryModel from './category.models';
 export class CategoryService {
   /**
    * Get all categories with their subcategories
+   * Optionally filter by type (expense, income, debit_mode, credit_mode)
    */
-  static async getAllCategories(_userId?: string) {
-    const query = _userId ? { trackerId: _userId } : {}; // Assuming _userId is intended to replace trackerId
+  static async getAllCategories(trackerId?: string, type?: CategoryType) {
+    const query: Record<string, unknown> = {};
+    if (trackerId) query.trackerId = trackerId;
+    if (type) query.type = type;
     const categories = await CategoryModel.find(query).sort({ createdAt: -1 });
     return categories;
   }
@@ -27,10 +31,16 @@ export class CategoryService {
   /**
    * Create a new category
    */
-  static async createCategory(trackerId: string, name: string, subcategories: any[]) {
+  static async createCategory(
+    trackerId: string,
+    name: string,
+    subcategories: Array<{ id: string; name: string }>,
+    type: CategoryType = 'expense'
+  ) {
     const category = await CategoryModel.create({
       trackerId,
       name,
+      type,
       subcategories,
     });
     return category;
@@ -41,7 +51,7 @@ export class CategoryService {
    */
   static async updateCategory(
     categoryId: string,
-    updates: { name?: string; subcategories?: any[] }
+    updates: { name?: string; type?: CategoryType; subcategories?: Array<{ id: string; name: string }> }
   ) {
     const category = await CategoryModel.findByIdAndUpdate(categoryId, updates, {
       new: true,

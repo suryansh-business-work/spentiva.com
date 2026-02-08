@@ -37,6 +37,31 @@ export const useExpenseActions = (trackerId?: string) => {
   }, [trackerId]);
 
   /**
+   * Add a missing category to the tracker
+   */
+  const addCategory = useCallback(
+    async (categoryName: string, type: string = 'expense') => {
+      if (!trackerId) return;
+
+      try {
+        await postRequest(endpoints.categories.create, {
+          trackerId,
+          name: categoryName,
+          type,
+          subcategories: [{ id: `${Date.now()}`, name: categoryName }],
+        });
+        // Reload categories and notify other components
+        await loadCategories();
+        window.dispatchEvent(new Event('categoriesUpdated'));
+      } catch (error) {
+        console.error('Error adding category:', error);
+        throw error;
+      }
+    },
+    [trackerId, loadCategories]
+  );
+
+  /**
    * Parse expense from natural language input
    */
   const parseExpense = useCallback(
@@ -60,12 +85,13 @@ export const useExpenseActions = (trackerId?: string) => {
           error.response?.data?.message ||
           error.message ||
           'Failed to parse expense';
-        const missingCategories = apiData.missingCategories || [];
+        const missingCategories: string[] = apiData.missingCategories || [];
 
-        // If missing categories, add "click here" link to the API message
+        // If missing categories, return a special error with missingCategories info
         if (missingCategories.length > 0) {
-          const errorWithLink = `CATEGORY_ERROR:: ${apiMessage} <a href="/tracker/${trackerId}/settings" style="color: #14B8A6; text-decoration: underline; cursor: pointer;">Click here</a> to add categories.`;
-          throw new Error(errorWithLink);
+          const err = new Error(apiMessage) as any;
+          err.missingCategories = missingCategories;
+          throw err;
         }
 
         // For all other errors, just show the API message as-is
@@ -131,6 +157,7 @@ export const useExpenseActions = (trackerId?: string) => {
     categories,
     parseExpense,
     createExpense,
+    addCategory,
     loadCategories,
   };
 };

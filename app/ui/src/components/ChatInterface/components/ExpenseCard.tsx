@@ -2,6 +2,14 @@ import React from 'react';
 import { Box, Card, CardContent, Typography, useTheme, Chip, Divider } from '@mui/material';
 import { Expense } from '../../../types/expense';
 
+/** Currency symbol lookup */
+const CURRENCY_SYMBOL: Record<string, string> = {
+  INR: '₹',
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
+};
+
 /**
  * Props for ExpenseCard component
  */
@@ -11,12 +19,21 @@ interface ExpenseCardProps {
 
 /**
  * ExpenseCard Component
- * Displays single or multiple expenses in a compact card format (max-width: 300px)
+ * Displays single or multiple transactions (expense / income / transfer) in a compact card
  */
 const ExpenseCard: React.FC<ExpenseCardProps> = ({ expenses }) => {
   const theme = useTheme();
-  const expenseCount = expenses.length;
+  const count = expenses.length;
   const totalAmount = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+  const hasIncome = expenses.some(e => e.type === 'income');
+  const hasExpense = expenses.some(e => !e.type || e.type === 'expense');
+  const isMixed = hasIncome && hasExpense;
+
+  const badgeLabel = isMixed
+    ? `${count} Transactions`
+    : hasIncome
+      ? `${count} Income`
+      : `${count} Expenses`;
 
   return (
     <Card
@@ -34,12 +51,12 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({ expenses }) => {
     >
       <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
         {/* Header - Count Badge and Total */}
-        {expenseCount > 1 && (
+        {count > 1 && (
           <Box
             sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}
           >
             <Chip
-              label={`${expenseCount} Expenses`}
+              label={badgeLabel}
               size="small"
               sx={{
                 height: '20px',
@@ -58,55 +75,120 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({ expenses }) => {
           </Box>
         )}
 
-        {/* Expense Items */}
-        {expenses.map((expense, index) => (
-          <React.Fragment key={expense.id || index}>
-            {index > 0 && <Divider sx={{ my: 1 }} />}
+        {/* Transaction Items */}
+        {expenses.map((expense, index) => {
+          const isIncome = expense.type === 'income';
+          const isTransfer = expense.type === 'transfer';
+          const currSym = CURRENCY_SYMBOL[expense.currency || 'INR'] || '₹';
+          const amountColor = isIncome
+            ? 'success.main'
+            : isTransfer
+              ? 'info.main'
+              : 'error.main';
+          const amountPrefix = isIncome ? '+' : isTransfer ? '' : '-';
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.6 }}>
-              {/* Amount and Category */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="body2" fontWeight="600" sx={{ fontSize: '0.85rem' }}>
-                  {expense.subcategory}
-                </Typography>
-                <Typography variant="body2" fontWeight="700" sx={{ fontSize: '0.9rem' }}>
-                  ₹{expense.amount}
-                </Typography>
-              </Box>
-
-              {/* Payment Method (if provided) */}
-              {expense.paymentMethod && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                    via
-                  </Typography>
-                  <Chip
-                    label={expense.paymentMethod}
-                    size="small"
-                    variant="outlined"
-                    sx={{
-                      height: '18px',
-                      fontSize: '0.65rem',
-                      borderColor:
-                        theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
-                    }}
-                  />
-                </Box>
-              )}
-
-              {/* Description (if available) */}
-              {expense.description && (
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ fontSize: '0.72rem', lineHeight: 1.3, fontStyle: 'italic' }}
+          return (
+            <React.Fragment key={expense.id || index}>
+              {index > 0 && <Divider sx={{ my: 1 }} />}
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.6 }}>
+                {/* Amount, Category, and Type Badge */}
+                <Box
+                  sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 >
-                  "{expense.description}"
-                </Typography>
-              )}
-            </Box>
-          </React.Fragment>
-        ))}
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography variant="body2" fontWeight="600" sx={{ fontSize: '0.85rem' }}>
+                      {expense.subcategory}
+                    </Typography>
+                    {(isIncome || isTransfer) && (
+                      <Chip
+                        label={isIncome ? 'Income' : 'Transfer'}
+                        size="small"
+                        sx={{
+                          height: '16px',
+                          fontSize: '0.6rem',
+                          fontWeight: 700,
+                          bgcolor: isIncome ? 'rgba(16,185,129,0.15)' : 'rgba(33,150,243,0.15)',
+                          color: isIncome ? 'success.main' : 'info.main',
+                        }}
+                      />
+                    )}
+                  </Box>
+                  <Typography
+                    variant="body2"
+                    fontWeight="700"
+                    color={amountColor}
+                    sx={{ fontSize: '0.9rem' }}
+                  >
+                    {amountPrefix}
+                    {currSym}
+                    {expense.amount}
+                  </Typography>
+                </Box>
+
+                {/* Payment Method (for expenses) */}
+                {!isIncome &&
+                  expense.paymentMethod &&
+                  expense.paymentMethod !== 'User not provided payment method' && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ fontSize: '0.7rem' }}
+                      >
+                        via
+                      </Typography>
+                      <Chip
+                        label={expense.paymentMethod}
+                        size="small"
+                        variant="outlined"
+                        sx={{
+                          height: '18px',
+                          fontSize: '0.65rem',
+                          borderColor:
+                            theme.palette.mode === 'dark'
+                              ? 'rgba(255,255,255,0.2)'
+                              : 'rgba(0,0,0,0.2)',
+                        }}
+                      />
+                    </Box>
+                  )}
+
+                {/* Credit From (for income) */}
+                {isIncome &&
+                  expense.creditFrom &&
+                  expense.creditFrom !== 'User not provided credit source' && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ fontSize: '0.7rem' }}
+                      >
+                        from
+                      </Typography>
+                      <Chip
+                        label={expense.creditFrom}
+                        size="small"
+                        variant="outlined"
+                        color="success"
+                        sx={{ height: '18px', fontSize: '0.65rem' }}
+                      />
+                    </Box>
+                  )}
+
+                {/* Description (if available) */}
+                {expense.description && (
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ fontSize: '0.72rem', lineHeight: 1.3, fontStyle: 'italic' }}
+                  >
+                    &quot;{expense.description}&quot;
+                  </Typography>
+                )}
+              </Box>
+            </React.Fragment>
+          );
+        })}
       </CardContent>
     </Card>
   );

@@ -10,12 +10,14 @@ interface UseTransactionsFiltersReturn {
   searchTerm: string;
   categoryFilter: string;
   paymentFilter: string;
+  typeFilter: string;
   sortBy: string;
   filterCategories: string[];
   filterPaymentMethods: string[];
   setSearchTerm: (value: string) => void;
   setCategoryFilter: (value: string) => void;
   setPaymentFilter: (value: string) => void;
+  setTypeFilter: (value: string) => void;
   setSortBy: (value: string) => void;
 }
 
@@ -29,6 +31,7 @@ export const useTransactionsFilters = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [paymentFilter, setPaymentFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
   const [sortBy, setSortBy] = useState('date-desc');
 
   // Ensure expenses is always an array and stable reference
@@ -45,6 +48,11 @@ export const useTransactionsFilters = ({
           expense.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           expense.category.toLowerCase().includes(searchTerm.toLowerCase())
       );
+    }
+
+    // Type filter
+    if (typeFilter !== 'all') {
+      filtered = filtered.filter(expense => (expense.type || 'expense') === typeFilter);
     }
 
     // Category filter
@@ -78,7 +86,7 @@ export const useTransactionsFilters = ({
 
   useEffect(() => {
     filterAndSortExpenses();
-  }, [safeExpenses, searchTerm, categoryFilter, paymentFilter, sortBy]);
+  }, [safeExpenses, searchTerm, categoryFilter, paymentFilter, typeFilter, sortBy]);
 
   const filterCategories = Array.from(new Set(safeExpenses.map(e => e.category)));
   const filterPaymentMethods = Array.from(
@@ -90,12 +98,14 @@ export const useTransactionsFilters = ({
     searchTerm,
     categoryFilter,
     paymentFilter,
+    typeFilter,
     sortBy,
     filterCategories,
     filterPaymentMethods,
     setSearchTerm,
     setCategoryFilter,
     setPaymentFilter,
+    setTypeFilter,
     setSortBy,
   };
 };

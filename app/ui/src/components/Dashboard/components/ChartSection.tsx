@@ -17,25 +17,42 @@ const ChartSection: React.FC<ChartSectionProps> = ({
 }) => {
   const theme = useTheme();
 
+  // Separate expense and income category data
+  const expenseCats = categoryData.filter(
+    (item: { type?: string }) => !item.type || item.type === 'expense'
+  );
+  const incomeCats = categoryData.filter((item: { type?: string }) => item.type === 'income');
+
   const categoryBarData = {
-    labels: categoryData.map((item: any) => item.category),
+    labels: expenseCats.map((item: { category: string }) => item.category),
     datasets: [
       {
-        label: 'Total Expenses',
-        data: categoryData.map((item: any) => item.total),
-        backgroundColor: theme.palette.primary.main,
-        borderColor: theme.palette.primary.main,
+        label: 'Expenses',
+        data: expenseCats.map((item: { total: number }) => item.total),
+        backgroundColor: theme.palette.error.main,
+        borderColor: theme.palette.error.main,
         borderWidth: 1,
       },
+      ...(incomeCats.length > 0
+        ? [
+            {
+              label: 'Income',
+              data: incomeCats.map((item: { total: number }) => item.total),
+              backgroundColor: theme.palette.success.main,
+              borderColor: theme.palette.success.main,
+              borderWidth: 1,
+            },
+          ]
+        : []),
     ],
   };
 
   const categoryChartData = {
-    labels: categoryData.map((item: any) => item.category),
+    labels: categoryData.map((item: { category: string }) => item.category),
     datasets: [
       {
-        label: 'Total Expenses',
-        data: categoryData.map((item: any) => item.total),
+        label: 'Amount',
+        data: categoryData.map((item: { total: number }) => item.total),
         backgroundColor: [
           theme.palette.primary.main,
           theme.palette.secondary.main,
@@ -49,14 +66,45 @@ const ChartSection: React.FC<ChartSectionProps> = ({
     ],
   };
 
+  // Build monthly data arrays with income/expense split
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  const monthMap = new Map<number, { expenses: number; income: number }>();
+  monthlyData.forEach((item: { month: number; expenses?: number; income?: number; total: number }) => {
+    monthMap.set(item.month, {
+      expenses: item.expenses ?? item.total ?? 0,
+      income: item.income ?? 0,
+    });
+  });
+
   const monthlyChartData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    labels: months,
     datasets: [
       {
         label: `Expenses ${selectedYear}`,
-        data: monthlyData.map((item: any) => item.total),
-        borderColor: theme.palette.primary.main,
-        backgroundColor: `${theme.palette.primary.main}33`,
+        data: months.map((_, i) => monthMap.get(i + 1)?.expenses ?? 0),
+        borderColor: theme.palette.error.main,
+        backgroundColor: `${theme.palette.error.main}33`,
+        tension: 0.4,
+        fill: true,
+      },
+      {
+        label: `Income ${selectedYear}`,
+        data: months.map((_, i) => monthMap.get(i + 1)?.income ?? 0),
+        borderColor: theme.palette.success.main,
+        backgroundColor: `${theme.palette.success.main}33`,
         tension: 0.4,
         fill: true,
       },
@@ -145,7 +193,7 @@ const ChartSection: React.FC<ChartSectionProps> = ({
             variant="h6"
             sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' }, color: theme.palette.text.primary }}
           >
-            Monthly Expenses Trend
+            Monthly Income vs Expenses Trend
           </Typography>
           <FormControl size="small" sx={{ minWidth: 120 }}>
             <Select value={selectedYear} onChange={e => onYearChange(Number(e.target.value))}>

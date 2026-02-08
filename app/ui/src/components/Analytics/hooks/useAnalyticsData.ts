@@ -28,7 +28,16 @@ interface UseAnalyticsDataReturn {
  * Custom hook to fetch and manage analytics data
  */
 export const useAnalyticsData = ({ trackerId }: UseAnalyticsDataProps): UseAnalyticsDataReturn => {
-  const [summary, setSummary] = useState<AnalyticsSummary>({ total: 0, average: 0, count: 0 });
+  const [summary, setSummary] = useState<AnalyticsSummary>({
+    totalExpenses: 0,
+    totalIncome: 0,
+    netBalance: 0,
+    transactionCount: 0,
+    expenseCount: 0,
+    incomeCount: 0,
+    averageExpense: 0,
+    averageIncome: 0,
+  });
   const [categoryData, setCategoryData] = useState<CategoryExpense[]>([]);
   const [monthlyData, setMonthlyData] = useState<MonthlyExpense[]>([]);
   const [paymentMethodData, setPaymentMethodData] = useState<PaymentMethodExpense[]>([]);
@@ -64,10 +73,15 @@ export const useAnalyticsData = ({ trackerId }: UseAnalyticsDataProps): UseAnaly
         // Summary API returns: data.data.stats with totalExpenses, transactionCount, averageExpense
         const summaryData = parseResponseData<any>(summaryRes, {});
         const summaryStats = summaryData?.stats || {};
-        const summary = {
-          total: summaryStats.totalExpenses || 0,
-          average: summaryStats.averageExpense || 0,
-          count: summaryStats.transactionCount || 0,
+        const summary: AnalyticsSummary = {
+          totalExpenses: summaryStats.totalExpenses || 0,
+          totalIncome: summaryStats.totalIncome || 0,
+          netBalance: summaryStats.netBalance || 0,
+          transactionCount: summaryStats.transactionCount || 0,
+          expenseCount: summaryStats.expenseCount || 0,
+          incomeCount: summaryStats.incomeCount || 0,
+          averageExpense: summaryStats.averageExpense || 0,
+          averageIncome: summaryStats.averageIncome || 0,
         };
 
         // Category, Monthly, and Payment APIs return: data.data.data (double nested)

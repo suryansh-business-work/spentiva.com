@@ -26,6 +26,7 @@ interface TransactionsFiltersProps {
   searchTerm: string;
   categoryFilter: string;
   paymentFilter: string;
+  typeFilter: string;
   sortBy: string;
   filteredExpensesCount: number;
   filterCategories: string[];
@@ -33,6 +34,7 @@ interface TransactionsFiltersProps {
   onSearchChange: (value: string) => void;
   onCategoryChange: (value: string) => void;
   onPaymentChange: (value: string) => void;
+  onTypeChange: (value: string) => void;
   onSortChange: (value: string) => void;
 }
 
@@ -45,6 +47,7 @@ const TransactionsFilters: React.FC<TransactionsFiltersProps> = ({
   searchTerm,
   categoryFilter,
   paymentFilter,
+  typeFilter,
   sortBy,
   filteredExpensesCount,
   filterCategories,
@@ -52,6 +55,7 @@ const TransactionsFilters: React.FC<TransactionsFiltersProps> = ({
   onSearchChange,
   onCategoryChange,
   onPaymentChange,
+  onTypeChange,
   onSortChange,
 }) => {
   // State for Filter Popover
@@ -86,10 +90,14 @@ const TransactionsFilters: React.FC<TransactionsFiltersProps> = ({
   const clearAllFilters = () => {
     onCategoryChange('all');
     onPaymentChange('all');
+    onTypeChange('all');
     onSearchChange('');
   };
 
-  const activeFiltersCount = (categoryFilter !== 'all' ? 1 : 0) + (paymentFilter !== 'all' ? 1 : 0);
+  const activeFiltersCount =
+    (categoryFilter !== 'all' ? 1 : 0) +
+    (paymentFilter !== 'all' ? 1 : 0) +
+    (typeFilter !== 'all' ? 1 : 0);
 
   const getSortLabel = (value: string) => {
     switch (value) {
@@ -198,12 +206,42 @@ const TransactionsFilters: React.FC<TransactionsFiltersProps> = ({
         </Stack>
       </Box>
 
+      {/* Type Quick-Filter Chips */}
+      <Box sx={{ display: 'flex', gap: 1, mt: 1.5, flexWrap: 'wrap' }}>
+        {[
+          { value: 'all', label: 'All' },
+          { value: 'expense', label: 'Expenses' },
+          { value: 'income', label: 'Income' },
+          { value: 'transfer', label: 'Transfers' },
+        ].map(opt => (
+          <Chip
+            key={opt.value}
+            label={opt.label}
+            color={typeFilter === opt.value ? 'primary' : 'default'}
+            variant={typeFilter === opt.value ? 'filled' : 'outlined'}
+            onClick={() => onTypeChange(opt.value)}
+            size="small"
+            sx={{ fontWeight: typeFilter === opt.value ? 700 : 400 }}
+          />
+        ))}
+      </Box>
+
       {/* Active Filters Chips */}
-      {(categoryFilter !== 'all' || paymentFilter !== 'all' || searchTerm) && (
+      {(categoryFilter !== 'all' || paymentFilter !== 'all' || typeFilter !== 'all' || searchTerm) && (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2, alignItems: 'center' }}>
           <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>
             Active Filters:
           </Typography>
+
+          {typeFilter !== 'all' && (
+            <Chip
+              label={`Type: ${typeFilter}`}
+              onDelete={() => onTypeChange('all')}
+              color="info"
+              variant="outlined"
+              size="small"
+            />
+          )}
 
           {categoryFilter !== 'all' && (
             <Chip
@@ -272,6 +310,20 @@ const TransactionsFilters: React.FC<TransactionsFiltersProps> = ({
         <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>
           Filter Transactions
         </Typography>
+
+        <FormControl fullWidth size="small" sx={{ mb: 2 }}>
+          <InputLabel>Type</InputLabel>
+          <Select
+            value={typeFilter}
+            onChange={e => onTypeChange(e.target.value)}
+            label="Type"
+          >
+            <MenuItem value="all">All Types</MenuItem>
+            <MenuItem value="expense">Expense</MenuItem>
+            <MenuItem value="income">Income</MenuItem>
+            <MenuItem value="transfer">Transfer</MenuItem>
+          </Select>
+        </FormControl>
 
         <FormControl fullWidth size="small" sx={{ mb: 2 }}>
           <InputLabel>Category</InputLabel>

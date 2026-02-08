@@ -61,7 +61,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
               fontSize: { xs: '1.75rem', sm: '2.25rem', md: '3rem' },
             }}
           >
-            ₹{summary.total.toLocaleString('en-IN')}
+            ₹{summary.totalExpenses.toLocaleString('en-IN')}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, opacity: 0.9 }}>
             <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>
@@ -112,7 +112,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
               fontSize: { xs: '1.75rem', sm: '2.25rem', md: '3rem' },
             }}
           >
-            ₹{Math.round(summary.average).toLocaleString('en-IN')}
+            ₹{Math.round(summary.averageExpense).toLocaleString('en-IN')}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, opacity: 0.9 }}>
             <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>
@@ -162,7 +162,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
               fontSize: { xs: '1.75rem', sm: '2.25rem', md: '3rem' },
             }}
           >
-            {summary.count}
+            {summary.transactionCount}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, opacity: 0.9 }}>
             <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>

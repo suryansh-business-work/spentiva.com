@@ -3,6 +3,9 @@ import AnalyticsService from './analytics.services';
 import { successResponse, errorResponse } from '../../utils/response-object';
 import { AnalyticsQueryDto, DateFilter } from './analytics.validators';
 import { plainToInstance } from 'class-transformer';
+import { sendEmail } from '../../services/emailService';
+import { generateReportEmail } from '../../templates/reportEmail';
+import { logger } from '../../utils/logger';
 
 /**
  * Analytics Controllers - Request handlers using response-object.ts
@@ -100,5 +103,67 @@ export const getTotalController = async (req: any, res: Response) => {
   } catch (error: any) {
     console.error('Error fetching total:', error);
     return errorResponse(res, error, 'Internal server error');
+  }
+};
+
+/**
+ * Send email report
+ */
+export const emailReportController = async (req: any, res: Response) => {
+  try {
+    const { filter, startDate, endDate, trackerId } = req.body;
+    const userEmail = req.user?.email;
+    const userName = req.user?.name || req.user?.email || 'User';
+
+    if (!userEmail) {
+      return errorResponse(res, new Error('User email not found'), 'User email is required');
+    }
+
+    const queryDto = plainToInstance(AnalyticsQueryDto, {
+      filter: filter || 'thisMonth',
+      customStart: startDate,
+      customEnd: endDate,
+      trackerId,
+    });
+
+    const [stats, categoryData, monthlyData] = await Promise.all([
+      AnalyticsService.getSummaryStats(queryDto),
+      AnalyticsService.getExpensesByCategory(queryDto),
+      AnalyticsService.getExpensesByMonth(queryDto),
+    ]);
+
+    const filterLabels: Record<string, string> = {
+      today: 'Today',
+      yesterday: 'Yesterday',
+      last7days: 'Last 7 Days',
+      thisMonth: 'This Month',
+      lastMonth: 'Last Month',
+      thisYear: 'This Year',
+      custom: startDate && endDate ? `${startDate} to ${endDate}` : 'Custom',
+    };
+
+    const html = generateReportEmail({
+      userName,
+      dateRange: filterLabels[filter] || 'This Month',
+      totalExpenses: stats.totalExpenses,
+      totalIncome: stats.totalIncome,
+      netBalance: stats.netBalance,
+      averageExpense: stats.averageExpense,
+      transactionCount: stats.transactionCount,
+      categoryData,
+      monthlyData,
+    });
+
+    await sendEmail({
+      to: userEmail,
+      subject: `Spentiva Finance Report - ${filterLabels[filter] || 'This Month'}`,
+      html,
+    });
+
+    logger.info('Email report sent', { to: userEmail, filter });
+    return successResponse(res, null, 'Report sent successfully to your email');
+  } catch (error: any) {
+    logger.error('Error sending email report', { error: error.message });
+    return errorResponse(res, error, 'Failed to send email report');
   }
 };

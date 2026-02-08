@@ -25,6 +25,7 @@ export const parseExpenseController = async (req: any, res: Response) => {
 
     // Get tracker information for snapshot
     let trackerSnapshot = null;
+    let trackerCurrency = 'INR';
     if (req.user?.userId && trackerId) {
       try {
         const tracker = await TrackerModel.findOne({
@@ -33,6 +34,7 @@ export const parseExpenseController = async (req: any, res: Response) => {
         });
 
         if (tracker) {
+          trackerCurrency = tracker.currency || 'INR';
           const { createTrackerSnapshot } = await import('../usage-log/usage-log.services');
           trackerSnapshot = createTrackerSnapshot(tracker);
         } else {
@@ -59,7 +61,7 @@ export const parseExpenseController = async (req: any, res: Response) => {
       }
     }
 
-    const parsed = await ExpenseService.parseExpense(input, trackerId);
+    const parsed = await ExpenseService.parseExpense(input, trackerId, trackerCurrency);
 
     // Check for errors
     if ('error' in parsed) {
@@ -153,11 +155,14 @@ export const createExpenseController = async (req: any, res: Response) => {
 
     const formattedExpenses = createdExpenses.map(expense => ({
       id: expense._id.toString(),
+      type: expense.type || 'expense',
       amount: expense.amount,
       category: expense.category,
       subcategory: expense.subcategory,
       categoryId: expense.categoryId,
       paymentMethod: expense.paymentMethod,
+      creditFrom: expense.creditFrom,
+      currency: expense.currency || 'INR',
       description: expense.description,
       timestamp: expense.timestamp,
       trackerId: expense.trackerId,
@@ -201,11 +206,14 @@ export const getAllExpensesController = async (req: any, res: Response) => {
 
     const formattedExpenses = expenses.map(expense => ({
       id: expense._id.toString(),
+      type: expense.type || 'expense',
       amount: expense.amount,
       category: expense.category,
       subcategory: expense.subcategory,
       categoryId: expense.categoryId,
       paymentMethod: expense.paymentMethod,
+      creditFrom: expense.creditFrom,
+      currency: expense.currency || 'INR',
       description: expense.description,
       timestamp: expense.timestamp,
       trackerId: expense.trackerId || 'default',
@@ -232,11 +240,14 @@ export const getExpenseByIdController = async (req: any, res: Response) => {
 
     const formattedExpense = {
       id: expense._id.toString(),
+      type: expense.type || 'expense',
       amount: expense.amount,
       category: expense.category,
       subcategory: expense.subcategory,
       categoryId: expense.categoryId,
       paymentMethod: expense.paymentMethod,
+      creditFrom: expense.creditFrom,
+      currency: expense.currency || 'INR',
       description: expense.description,
       timestamp: expense.timestamp,
       trackerId: expense.trackerId,
@@ -260,23 +271,26 @@ export const getExpenseByIdController = async (req: any, res: Response) => {
 export const updateExpenseController = async (req: any, res: Response) => {
   try {
     const { id } = req.params;
-    const { amount, category, subcategory, categoryId, paymentMethod, description, timestamp } =
+    const { amount, category, subcategory, categoryId, paymentMethod, creditFrom, currency, description, timestamp, type } =
       req.body;
     const userId = req.user?.userId;
 
     const expense = await ExpenseService.updateExpense(
       id,
-      { amount, category, subcategory, categoryId, paymentMethod, description, timestamp },
+      { type, amount, category, subcategory, categoryId, paymentMethod, creditFrom, currency, description, timestamp },
       userId
     );
 
     const formattedExpense = {
       id: expense._id.toString(),
+      type: expense.type || 'expense',
       amount: expense.amount,
       category: expense.category,
       subcategory: expense.subcategory,
       categoryId: expense.categoryId,
       paymentMethod: expense.paymentMethod,
+      creditFrom: expense.creditFrom,
+      currency: expense.currency || 'INR',
       description: expense.description,
       timestamp: expense.timestamp,
       createdAt: expense.createdAt,
@@ -309,6 +323,28 @@ export const deleteExpenseController = async (req: any, res: Response) => {
     if (error.message === 'Expense not found') {
       return badRequestResponse(res, null, error.message);
     }
+    return errorResponse(res, error, 'Internal server error');
+  }
+};
+
+/**
+ * Bulk delete expenses
+ */
+export const bulkDeleteExpenseController = async (req: any, res: Response) => {
+  try {
+    const { ids } = req.body;
+    const userId = req.user?.userId;
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return badRequestResponse(res, null, 'ids must be a non-empty array');
+    }
+
+    const result = await ExpenseService.bulkDeleteExpenses(ids, userId);
+
+    // Trigger update event
+    return successResponse(res, result, result.message);
+  } catch (error: any) {
+    console.error('Error bulk deleting expenses:', error);
     return errorResponse(res, error, 'Internal server error');
   }
 };

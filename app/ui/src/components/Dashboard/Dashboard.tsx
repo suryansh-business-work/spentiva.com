@@ -13,7 +13,7 @@ import {
   Legend,
 } from 'chart.js';
 import { endpoints } from '../../config/api';
-import { getRequest } from '../../utils/http';
+import { getRequest, postRequest } from '../../utils/http';
 import { parseResponseData } from '../../utils/response-parser';
 import FilterBar from './components/FilterBar';
 import StatCards from './components/StatCards';
@@ -41,7 +41,16 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
   const [filter, setFilter] = useState('thisMonth');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
-  const [summary, setSummary] = useState({ total: 0, average: 0, count: 0 });
+  const [summary, setSummary] = useState({
+    totalExpenses: 0,
+    totalIncome: 0,
+    netBalance: 0,
+    transactionCount: 0,
+    expenseCount: 0,
+    incomeCount: 0,
+    averageExpense: 0,
+    averageIncome: 0,
+  });
   const [categoryData, setCategoryData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -72,7 +81,17 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
       const categoryDataRes = parseResponseData<any>(categoryRes, []);
       const monthlyDataRes = parseResponseData<any>(monthlyRes, []);
 
-      setSummary(summaryData?.stats || { total: 0, average: 0, count: 0 });
+      const defaultSummary = {
+        totalExpenses: 0,
+        totalIncome: 0,
+        netBalance: 0,
+        transactionCount: 0,
+        expenseCount: 0,
+        incomeCount: 0,
+        averageExpense: 0,
+        averageIncome: 0,
+      };
+      setSummary(summaryData?.stats || defaultSummary);
       setCategoryData(categoryDataRes || []);
       setMonthlyData(monthlyDataRes || []);
     } catch (error) {
@@ -97,25 +116,25 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
 
   const handleDownloadReport = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const params = new URLSearchParams({
-        filter,
-        ...(customStartDate && { startDate: customStartDate }),
-        ...(customEndDate && { endDate: customEndDate }),
-        ...(trackerId && { trackerId }),
-      });
-
-      const response = await fetch(`https://api.spentiva.com/api/reports/download?${params}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!response.ok) throw new Error('Failed to download report');
-
-      const blob = await response.blob();
+      // Build CSV from current summary data client-side
+      const csvRows = [
+        ['Spentiva Finance Report'],
+        [`Period: ${filter}`],
+        [],
+        ['Metric', 'Value'],
+        ['Total Expenses', summary.totalExpenses],
+        ['Total Income', summary.totalIncome],
+        ['Net Balance', summary.netBalance],
+        ['Transaction Count', summary.transactionCount],
+        ['Average Expense', Math.round(summary.averageExpense)],
+        ['Average Income', Math.round(summary.averageIncome)],
+      ];
+      const csvContent = csvRows.map(row => row.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `expense-report-${filter}-${Date.now()}.csv`;
+      a.download = `spentiva-report-${filter}-${Date.now()}.csv`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -129,24 +148,13 @@ const Dashboard: React.FC<DashboardProps> = ({ trackerId }) => {
   const handleEmailReport = async () => {
     try {
       setEmailLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await fetch('https://api.spentiva.com/api/reports/email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          filter,
-          ...(customStartDate && { startDate: customStartDate }),
-          ...(customEndDate && { endDate: customEndDate }),
-          ...(trackerId && { trackerId }),
-        }),
+      await postRequest(endpoints.analytics.emailReport, {
+        filter,
+        ...(customStartDate && { startDate: customStartDate }),
+        ...(customEndDate && { endDate: customEndDate }),
+        ...(trackerId && { trackerId }),
       });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Failed to send email');
-      alert(data.message || 'Report sent successfully to your email');
+      alert('Report sent successfully to your email!');
     } catch (error) {
       console.error('Error sending email report:', error);
       alert((error as Error).message || 'Failed to send email report');

@@ -6,6 +6,7 @@ import {
   getExpenseByIdController,
   updateExpenseController,
   deleteExpenseController,
+  bulkDeleteExpenseController,
   chatController,
 } from './expense.controllers';
 import { authenticateMiddleware } from '../../middleware/auth.middleware';
@@ -24,6 +25,9 @@ router.post('/chat', authenticateMiddleware, chatController);
 
 // POST /api/expense - Create a new expense
 router.post('/create', createExpenseController);
+
+// POST /api/expense/bulk-delete - Bulk delete expenses
+router.post('/bulk-delete', authenticateMiddleware, bulkDeleteExpenseController);
 
 // GET /api/expense - Get all expenses with optional filtering
 router.get('/all', getAllExpensesController);

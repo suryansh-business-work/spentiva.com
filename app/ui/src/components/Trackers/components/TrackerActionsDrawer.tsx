@@ -174,7 +174,7 @@ const TrackerActionsDrawer: React.FC<TrackerActionsDrawerProps> = ({
                   <SettingsIcon sx={{ color: theme.palette.primary.main }} />
                 </ListItemIcon>
                 <ListItemText
-                  primary="Category Settings"
+                  primary="Settings"
                   primaryTypographyProps={{
                     color: theme.palette.text.primary,
                     fontWeight: 500,
@@ -276,7 +276,7 @@ const TrackerActionsDrawer: React.FC<TrackerActionsDrawerProps> = ({
         <ListItemIcon>
           <SettingsIcon fontSize="small" sx={{ color: theme.palette.primary.main }} />
         </ListItemIcon>
-        <ListItemText sx={{ color: theme.palette.text.primary }}>Category Settings</ListItemText>
+        <ListItemText sx={{ color: theme.palette.text.primary }}>Settings</ListItemText>
       </MenuItem>
       <MenuItem
         onClick={() => {

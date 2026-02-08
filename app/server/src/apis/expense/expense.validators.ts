@@ -8,6 +8,7 @@ import {
   IsArray,
   ValidateNested,
   ArrayMinSize,
+  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -28,6 +29,10 @@ export class ParseExpenseDto {
  * Create Expense DTO
  */
 export class CreateExpenseDto {
+  @IsEnum(['expense', 'income', 'transfer'])
+  @IsOptional()
+  type?: string;
+
   @IsNumber()
   @Min(0)
   amount!: number;
@@ -47,6 +52,14 @@ export class CreateExpenseDto {
   @IsString()
   @IsOptional()
   paymentMethod?: string;
+
+  @IsString()
+  @IsOptional()
+  creditFrom?: string;
+
+  @IsString()
+  @IsOptional()
+  currency?: string;
 
   @IsString()
   @IsOptional()
@@ -80,6 +93,10 @@ export class CreateBulkExpensesDto {
  * Update Expense DTO
  */
 export class UpdateExpenseDto {
+  @IsEnum(['expense', 'income', 'transfer'])
+  @IsOptional()
+  type?: string;
+
   @IsNumber()
   @Min(0)
   @IsOptional()
@@ -100,6 +117,14 @@ export class UpdateExpenseDto {
   @IsString()
   @IsOptional()
   paymentMethod?: string;
+
+  @IsString()
+  @IsOptional()
+  creditFrom?: string;
+
+  @IsString()
+  @IsOptional()
+  currency?: string;
 
   @IsString()
   @IsOptional()

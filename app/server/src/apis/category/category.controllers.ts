@@ -38,7 +38,7 @@ export const getCategoriesController = async (req: any, res: Response) => {
 export const getAllCategoriesController = async (req: any, res: Response) => {
   try {
     const queryDto: GetAllCategoriesQueryDto = req.query;
-    const categories = await CategoryService.getAllCategories(queryDto.trackerId);
+    const categories = await CategoryService.getAllCategories(queryDto.trackerId, queryDto.type);
 
     return successResponse(res, { categories }, 'Custom categories retrieved successfully');
   } catch (error: any) {
@@ -61,7 +61,8 @@ export const createCategoryController = async (req: any, res: Response) => {
     const category = await CategoryService.createCategory(
       createDto.trackerId,
       createDto.name,
-      createDto.subcategories || []
+      createDto.subcategories || [],
+      createDto.type || 'expense'
     );
 
     const responseDto = new CategoryResponseDto(category);

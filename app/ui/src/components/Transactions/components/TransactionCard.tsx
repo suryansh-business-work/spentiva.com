@@ -4,6 +4,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Expense } from '../../../types';
 
+/** Currency symbol lookup */
+const CURRENCY_SYM: Record<string, string> = {
+  INR: '₹',
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
+};
+
 interface TransactionCardProps {
   expense: Expense;
   onEdit: (expense: Expense) => void;
@@ -12,9 +20,16 @@ interface TransactionCardProps {
 
 /**
  * TransactionCard Component
- * Displays a single expense transaction card
+ * Displays a single transaction card with income/expense/transfer type styling
  */
 const TransactionCard: React.FC<TransactionCardProps> = ({ expense, onEdit, onDelete }) => {
+  const isIncome = expense.type === 'income';
+  const isTransfer = expense.type === 'transfer';
+  const currSym = CURRENCY_SYM[expense.currency || 'INR'] || '₹';
+
+  const amountChipColor = isIncome ? 'success' : isTransfer ? 'info' : 'error';
+  const amountPrefix = isIncome ? '+' : isTransfer ? '' : '-';
+
   const formatDate = (date: string | Date) => {
     return new Date(date).toLocaleDateString('en-IN', {
       day: 'numeric',
@@ -31,12 +46,14 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ expense, onEdit, onDe
       sx={{
         transition: 'all 0.2s',
         borderColor: '#ddd',
+        borderLeft: `3px solid`,
+        borderLeftColor: isIncome ? 'success.main' : isTransfer ? 'info.main' : 'error.main',
       }}
     >
       <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 2, border: 0 }}>
         <Chip
-          label={`₹${expense.amount.toLocaleString('en-IN')}`}
-          color="primary"
+          label={`${amountPrefix}${currSym}${expense.amount.toLocaleString('en-IN')}`}
+          color={amountChipColor}
           sx={{
             fontWeight: 'bold',
             fontSize: '1.1em',
@@ -46,9 +63,19 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ expense, onEdit, onDe
         />
 
         <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h6" fontWeight="600">
-            {expense.subcategory}
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="h6" fontWeight="600">
+              {expense.subcategory}
+            </Typography>
+            {(isIncome || isTransfer) && (
+              <Chip
+                label={isIncome ? 'Income' : 'Transfer'}
+                size="small"
+                color={isIncome ? 'success' : 'info'}
+                sx={{ height: 20, fontSize: '0.65rem', fontWeight: 700 }}
+              />
+            )}
+          </Box>
           <Box
             sx={{
               display: 'flex',
@@ -59,7 +86,17 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ expense, onEdit, onDe
             }}
           >
             <Chip label={expense.category} size="small" variant="outlined" color="secondary" />
-            <Chip label={expense.paymentMethod} size="small" variant="outlined" />
+            {!isIncome && expense.paymentMethod && (
+              <Chip label={expense.paymentMethod} size="small" variant="outlined" />
+            )}
+            {isIncome && expense.creditFrom && (
+              <Chip
+                label={`from: ${expense.creditFrom}`}
+                size="small"
+                variant="outlined"
+                color="success"
+              />
+            )}
             {expense.description && (
               <Typography variant="caption" color="text.secondary">
                 {expense.description}

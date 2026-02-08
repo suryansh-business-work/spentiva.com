@@ -1,10 +1,15 @@
+export type TransactionType = 'expense' | 'income' | 'transfer';
+
 export interface Expense {
   id: string;
+  type: TransactionType;
   amount: number;
   category: string;
   subcategory: string;
   categoryId: string;
   paymentMethod?: string;
+  creditFrom?: string;
+  currency: string;
   description?: string;
   timestamp: string;
   createdAt?: string;
@@ -17,15 +22,19 @@ export interface Message {
   content: string;
   expense?: Expense; // Legacy support
   expenses?: Expense[]; // New array support
+  missingCategories?: string[]; // Categories that need to be added
   timestamp: Date;
 }
 
 export interface ParsedExpense {
+  type: TransactionType;
   amount: number;
   category: string;
   subcategory: string;
   categoryId: string;
   paymentMethod?: string;
+  creditFrom?: string;
+  currency: string;
   description?: string;
   timestamp?: string;
 }

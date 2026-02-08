@@ -31,7 +31,9 @@ interface TransactionsProps {
 const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
+  const [selected, setSelected] = useState<string[]>([]);
 
   const paymentMethods = [
     'Cash',
@@ -53,6 +55,7 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
     loadMoreExpenses,
     handleSaveEdit,
     handleConfirmDelete,
+    handleBulkDelete,
     setSnackbar,
   } = useTransactionsData({ trackerId });
 
@@ -62,12 +65,14 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
     searchTerm,
     categoryFilter,
     paymentFilter,
+    typeFilter,
     sortBy,
     filterCategories,
     filterPaymentMethods,
     setSearchTerm,
     setCategoryFilter,
     setPaymentFilter,
+    setTypeFilter,
     setSortBy,
   } = useTransactionsFilters({ expenses });
 
@@ -92,8 +97,36 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
     setDeleteDialogOpen(false);
   };
 
+  const handleBulkDeleteConfirm = async () => {
+    await handleBulkDelete(selected);
+    setSelected([]);
+    setBulkDeleteDialogOpen(false);
+  };
+
+  const handleToggleSelect = (id: string) => {
+    setSelected(prev => (prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]));
+  };
+
+  const handleToggleSelectAll = () => {
+    if (selected.length === filteredExpenses.length) {
+      setSelected([]);
+    } else {
+      setSelected(filteredExpenses.map(e => e.id));
+    }
+  };
+
+  // Compute totals
+  const totals = filteredExpenses.reduce(
+    (acc, exp) => {
+      if (exp.type === 'income') acc.income += exp.amount;
+      else if (exp.type !== 'transfer') acc.expense += exp.amount;
+      return acc;
+    },
+    { income: 0, expense: 0 }
+  );
+
   return (
-    <Container maxWidth="xl" sx={{ py: 3 }}>
+    <Container maxWidth="xl" sx={{ py: { xs: 1.5, sm: 3 }, px: { xs: 1, sm: 3 } }}>
       <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
         <Typography variant="h5" sx={{ fontWeight: 700, color: '#10b981', mb: 2 }}>
           Transaction Logs
@@ -103,6 +136,7 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
           searchTerm={searchTerm}
           categoryFilter={categoryFilter}
           paymentFilter={paymentFilter}
+          typeFilter={typeFilter}
           sortBy={sortBy}
           filteredExpensesCount={filteredExpenses.length}
           filterCategories={filterCategories}
@@ -110,6 +144,7 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
           onSearchChange={setSearchTerm}
           onCategoryChange={setCategoryFilter}
           onPaymentChange={setPaymentFilter}
+          onTypeChange={setTypeFilter}
           onSortChange={setSortBy}
         />
       </Paper>
@@ -119,15 +154,34 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
         loadingMore={loadingMore}
         hasMore={hasMore}
         expenses={filteredExpenses}
+        selected={selected}
+        onToggleSelect={handleToggleSelect}
+        onToggleSelectAll={handleToggleSelectAll}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onBulkDelete={() => setBulkDeleteDialogOpen(true)}
         onLoadMore={loadMoreExpenses}
       />
 
-      <Paper elevation={3} sx={{ p: 2, mt: 3, textAlign: 'center' }}>
+      <Paper
+        elevation={3}
+        sx={{
+          p: 2,
+          mt: 3,
+          display: 'flex',
+          justifyContent: 'space-around',
+          flexWrap: 'wrap',
+          gap: 2,
+        }}
+      >
+        <Typography variant="body1" fontWeight="bold" color="error.main">
+          Total Debit: ₹{totals.expense.toLocaleString('en-IN')}
+        </Typography>
+        <Typography variant="body1" fontWeight="bold" color="success.main">
+          Total Credit: ₹{totals.income.toLocaleString('en-IN')}
+        </Typography>
         <Typography variant="h6" color="primary" fontWeight="bold">
-          Total Amount: ₹
-          {filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0).toLocaleString('en-IN')}
+          Net: ₹{(totals.income - totals.expense).toLocaleString('en-IN')}
         </Typography>
       </Paper>
 
@@ -141,10 +195,10 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
       />
 
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-        <DialogTitle>Delete Expense</DialogTitle>
+        <DialogTitle>Delete Transaction</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this expense of ₹
+            Are you sure you want to delete this {selectedExpense?.type || 'expense'} of ₹
             {selectedExpense?.amount.toLocaleString('en-IN')}? This action cannot be undone.
           </DialogContentText>
         </DialogContent>
@@ -152,6 +206,22 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
           <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
           <Button onClick={handleDeleteConfirm} color="error" variant="contained">
             Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={bulkDeleteDialogOpen} onClose={() => setBulkDeleteDialogOpen(false)}>
+        <DialogTitle>Delete {selected.length} Transactions</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete {selected.length} selected transaction(s)? This action
+            cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setBulkDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleBulkDeleteConfirm} color="error" variant="contained">
+            Delete All
           </Button>
         </DialogActions>
       </Dialog>

@@ -3,15 +3,20 @@
  * Based on the backend API response structure
  */
 
+import type { TransactionType } from './index';
+
 /**
  * Single expense item (base structure)
  */
 export interface ExpenseItem {
+  type: TransactionType;
   amount: number;
   category: string;
   subcategory: string;
   categoryId: string;
   paymentMethod?: string;
+  creditFrom?: string;
+  currency: string;
   description?: string;
 }
 
@@ -20,11 +25,14 @@ export interface ExpenseItem {
  */
 export interface Expense {
   id: string;
+  type: TransactionType;
   amount: number;
   category: string;
   subcategory: string;
   categoryId: string;
   paymentMethod?: string;
+  creditFrom?: string;
+  currency: string;
   description?: string;
   timestamp: string;
   trackerId?: string;

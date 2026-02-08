@@ -1,8 +1,9 @@
 import React from 'react';
-import { Box, Avatar, Paper, Typography, useTheme } from '@mui/material';
+import { Box, Avatar, Paper, Typography, useTheme, Chip } from '@mui/material';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import PersonIcon from '@mui/icons-material/Person';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Message } from '../../../types';
 import ExpenseCard from './ExpenseCard';
 
@@ -13,13 +14,14 @@ interface ChatMessageProps {
   message: Message;
   userPhotoUrl?: string;
   userName?: string;
+  onAddCategory?: (categoryName: string) => void;
 }
 
 /**
  * ChatMessage Component
  * Displays a single chat message with avatar and content (WhatsApp-style)
  */
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userName }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userName, onAddCategory }) => {
   const isUser = message.role === 'user';
   const theme = useTheme();
 
@@ -140,6 +142,33 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userNa
             <ExpenseCard
               expenses={message.expenses || (message.expense ? [message.expense] : [])}
             />
+          )}
+
+          {/* Missing categories - quick add chips */}
+          {message.missingCategories && message.missingCategories.length > 0 && onAddCategory && (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, mt: 1 }}>
+              {message.missingCategories.map(cat => (
+                <Chip
+                  key={cat}
+                  icon={<AddCircleOutlineIcon sx={{ fontSize: 16 }} />}
+                  label={`Add "${cat}"`}
+                  size="small"
+                  color="primary"
+                  variant="outlined"
+                  onClick={() => onAddCategory(cat)}
+                  sx={{
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    '&:hover': {
+                      bgcolor: theme.palette.primary.main,
+                      color: '#fff',
+                      '& .MuiChip-icon': { color: '#fff' },
+                    },
+                  }}
+                />
+              ))}
+            </Box>
           )}
 
           {/* Double-tick indicator for user messages */}

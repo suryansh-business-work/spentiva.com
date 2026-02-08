@@ -1,7 +1,28 @@
 import React, { useState } from 'react';
-import { Container, Box, Button, Fab, Snackbar, Alert } from '@mui/material';
+import {
+  Container,
+  Box,
+  Button,
+  Fab,
+  Snackbar,
+  Alert,
+  useMediaQuery,
+  useTheme,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  IconButton,
+  Typography,
+  Chip,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
+import BusinessIcon from '@mui/icons-material/Business';
+import PersonIcon from '@mui/icons-material/Person';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Tracker, TrackerFormData } from './types/tracker.types';
 import { useTrackers } from './hooks/useTrackers';
 import GreetingHeader from './components/GreetingHeader';
@@ -14,6 +35,8 @@ import DeleteDialog from './components/DeleteDialog';
 
 const Trackers: React.FC = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const {
     trackers,
     loading,
@@ -119,6 +142,69 @@ const Trackers: React.FC = () => {
         <LoadingState />
       ) : trackers.length === 0 ? (
         <EmptyState onCreateClick={() => handleOpenDialog()} />
+      ) : isMobile ? (
+        /* Compact list view for mobile */
+        <List disablePadding sx={{ mx: -1 }}>
+          {trackers.map(tracker => (
+            <ListItem
+              key={tracker.id}
+              disablePadding
+              secondaryAction={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Chip
+                    label={getCurrencySymbol(tracker.currency)}
+                    size="small"
+                    sx={{ height: 22, fontSize: '0.75rem', fontWeight: 700 }}
+                  />
+                  <IconButton
+                    edge="end"
+                    size="small"
+                    onClick={e => handleMenuOpen(e, tracker)}
+                    aria-label={`Actions for ${tracker.name}`}
+                  >
+                    <MoreVertIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              }
+              sx={{
+                borderBottom: `1px solid ${theme.palette.divider}`,
+              }}
+            >
+              <ListItemButton
+                onClick={() => navigate(`/tracker/${tracker.id}`)}
+                sx={{ py: 1.25, px: 1.5, pr: 10 }}
+              >
+                <ListItemIcon sx={{ minWidth: 40 }}>
+                  {tracker.type === 'business' ? (
+                    <BusinessIcon color="primary" fontSize="small" />
+                  ) : (
+                    <PersonIcon color="success" fontSize="small" />
+                  )}
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography variant="body1" fontWeight={600} noWrap sx={{ fontSize: '0.9rem' }}>
+                      {tracker.name}
+                    </Typography>
+                  }
+                  secondary={
+                    <Typography variant="caption" color="text.secondary" noWrap>
+                      {tracker.type} &middot;{' '}
+                      {new Date(tracker.createdAt).toLocaleDateString('en-IN', {
+                        day: 'numeric',
+                        month: 'short',
+                      })}
+                    </Typography>
+                  }
+                />
+                <ChevronRightIcon
+                  fontSize="small"
+                  sx={{ color: 'text.secondary', ml: 0.5, flexShrink: 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
       ) : (
         <Box
           sx={{

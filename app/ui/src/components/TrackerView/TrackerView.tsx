@@ -159,6 +159,8 @@ const TrackerView: React.FC = () => {
           borderBottom: `1px solid ${theme.palette.divider}`,
           zIndex: 10,
           flexShrink: 0,
+          position: 'sticky',
+          top: { xs: 0 },
         }}
       >
         {/* Tracker Info Row */}

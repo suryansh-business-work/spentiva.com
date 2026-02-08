@@ -8,8 +8,8 @@ export class ExpenseService {
   /**
    * Parse expense from natural language
    */
-  static async parseExpense(message: string, trackerId?: string) {
-    const parsed = await ExpenseParser.parseExpense(message, trackerId);
+  static async parseExpense(message: string, trackerId?: string, trackerCurrency?: string) {
+    const parsed = await ExpenseParser.parseExpense(message, trackerId, trackerCurrency);
     return parsed;
   }
 
@@ -46,22 +46,28 @@ export class ExpenseService {
    * Create a new expense
    */
   static async createExpense(data: {
+    type?: string;
     amount: number;
     category: string;
     subcategory: string;
     categoryId: string;
     paymentMethod?: string;
+    creditFrom?: string;
+    currency?: string;
     description?: string;
     timestamp?: Date;
     trackerId?: string;
     userId?: string;
   }) {
     const {
+      type,
       amount,
       category,
       subcategory,
       categoryId,
       paymentMethod,
+      creditFrom,
+      currency,
       description,
       timestamp,
       trackerId,
@@ -73,11 +79,14 @@ export class ExpenseService {
     }
 
     const expense = await ExpenseModel.create({
+      type: type || 'expense',
       amount,
       category,
       subcategory,
       categoryId,
       paymentMethod,
+      creditFrom,
+      currency: currency || 'INR',
       description,
       timestamp: timestamp || new Date(),
       trackerId: trackerId || 'default',
@@ -92,11 +101,14 @@ export class ExpenseService {
    */
   static async createBulkExpenses(
     expensesData: Array<{
+      type?: string;
       amount: number;
       category: string;
       subcategory: string;
       categoryId: string;
       paymentMethod?: string;
+      creditFrom?: string;
+      currency?: string;
       description?: string;
       timestamp?: Date;
     }>,
@@ -115,11 +127,14 @@ export class ExpenseService {
       }
 
       return {
+        type: expense.type || 'expense',
         amount,
         category,
         subcategory,
         categoryId,
         paymentMethod: expense.paymentMethod,
+        creditFrom: expense.creditFrom,
+        currency: expense.currency || 'INR',
         description: expense.description,
         timestamp: expense.timestamp || new Date(),
         trackerId: trackerId || 'default',
@@ -147,11 +162,14 @@ export class ExpenseService {
   static async updateExpense(
     expenseId: string,
     updates: {
+      type?: string;
       amount?: number;
       category?: string;
       subcategory?: string;
       categoryId?: string;
       paymentMethod?: string;
+      creditFrom?: string;
+      currency?: string;
       description?: string;
       timestamp?: Date;
     },
@@ -186,6 +204,21 @@ export class ExpenseService {
     }
 
     return { message: 'Expense deleted successfully' };
+  }
+
+  /**
+   * Bulk delete expenses by IDs
+   */
+  static async bulkDeleteExpenses(expenseIds: string[], userId?: string) {
+    const query: any = { _id: { $in: expenseIds } };
+    if (userId) query.userId = userId;
+
+    const result = await ExpenseModel.deleteMany(query);
+
+    return {
+      deletedCount: result.deletedCount,
+      message: `${result.deletedCount} expense(s) deleted successfully`,
+    };
   }
 }
 

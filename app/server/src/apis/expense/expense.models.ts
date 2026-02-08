@@ -1,12 +1,17 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+export type TransactionType = 'expense' | 'income' | 'transfer';
+
 export interface IExpense extends Document {
   _id: mongoose.Types.ObjectId;
+  type: TransactionType;
   amount: number;
   category: string;
   subcategory: string;
   categoryId: string;
   paymentMethod?: string;
+  creditFrom?: string;
+  currency?: string;
   description?: string;
   timestamp: Date;
   userId?: string;
@@ -17,6 +22,12 @@ export interface IExpense extends Document {
 
 const ExpenseSchema: Schema = new Schema(
   {
+    type: {
+      type: String,
+      required: true,
+      enum: ['expense', 'income', 'transfer'],
+      default: 'expense',
+    },
     amount: {
       type: Number,
       required: true,
@@ -41,6 +52,17 @@ const ExpenseSchema: Schema = new Schema(
       type: String,
       required: false,
       trim: true,
+    },
+    creditFrom: {
+      type: String,
+      required: false,
+      trim: true,
+    },
+    currency: {
+      type: String,
+      required: false,
+      trim: true,
+      default: 'INR',
     },
     description: {
       type: String,
@@ -72,5 +94,7 @@ ExpenseSchema.index({ category: 1 });
 ExpenseSchema.index({ categoryId: 1 });
 ExpenseSchema.index({ trackerId: 1 });
 ExpenseSchema.index({ userId: 1 });
+ExpenseSchema.index({ type: 1 });
+ExpenseSchema.index({ trackerId: 1, type: 1 });
 
 export default mongoose.model<IExpense>('Expense', ExpenseSchema);

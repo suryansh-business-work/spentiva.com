@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Paper,
@@ -12,6 +12,8 @@ import {
   CircularProgress,
   useTheme,
   Stack,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CategoryItem from './CategoryItem';
@@ -30,8 +32,34 @@ interface Category {
   _id: string;
   trackerId: string;
   name: string;
+  type: string;
   subcategories: SubCategory[];
 }
+
+type CategoryTabType = 'expense' | 'income' | 'debit_mode' | 'credit_mode';
+
+const TAB_CONFIG: { value: CategoryTabType; label: string; description: string }[] = [
+  {
+    value: 'expense',
+    label: 'Expense',
+    description: 'Manage expense categories. These help organize your spending.',
+  },
+  {
+    value: 'income',
+    label: 'Income',
+    description: 'Manage income categories. These help organize your earnings.',
+  },
+  {
+    value: 'debit_mode',
+    label: 'Debit From',
+    description: 'Manage payment modes (how you pay). E.g. Credit Card, UPI, Cash.',
+  },
+  {
+    value: 'credit_mode',
+    label: 'Credit From',
+    description: 'Manage income sources (how you receive). E.g. Bank Transfer, Cash.',
+  },
+];
 
 interface CategorySettingsProps {
   trackerId: string;
@@ -39,6 +67,7 @@ interface CategorySettingsProps {
 
 const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
   const theme = useTheme();
+  const [activeTab, setActiveTab] = useState<CategoryTabType>('expense');
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
@@ -55,23 +84,22 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
     severity: 'success' as 'success' | 'error',
   });
 
-  useEffect(() => {
-    loadCategories();
-  }, [trackerId]);
-
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await getRequest(endpoints.categories.getAll(trackerId));
-      const data = parseResponseData<any>(response, {});
-      const categories = data?.categories || [];
-      setCategories(categories);
-    } catch (error) {
+      const response = await getRequest(endpoints.categories.getAll(trackerId, activeTab));
+      const data = parseResponseData<{ categories: Category[] }>(response, { categories: [] });
+      setCategories(data?.categories || []);
+    } catch {
       setSnackbar({ open: true, message: 'Failed to load categories', severity: 'error' });
     } finally {
       setLoading(false);
     }
-  };
+  }, [trackerId, activeTab]);
+
+  useEffect(() => {
+    loadCategories();
+  }, [loadCategories]);
 
   const toggleCategory = (categoryId: string) => {
     const newExpanded = new Set(expandedCategories);
@@ -101,7 +129,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
         await deleteRequest(endpoints.categories.delete(category._id));
         setSnackbar({ open: true, message: 'Category deleted', severity: 'success' });
         loadCategories();
-      } catch (error) {
+      } catch {
         setSnackbar({ open: true, message: 'Failed to delete', severity: 'error' });
       }
     }
@@ -137,7 +165,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
         });
         setSnackbar({ open: true, message: 'Subcategory deleted', severity: 'success' });
         loadCategories();
-      } catch (error) {
+      } catch {
         setSnackbar({ open: true, message: 'Failed to delete', severity: 'error' });
       }
     }
@@ -153,7 +181,12 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
     try {
       if (dialogType === 'category') {
         if (dialogMode === 'add') {
-          await postRequest(endpoints.categories.create, { trackerId, name, subcategories: [] });
+          await postRequest(endpoints.categories.create, {
+            trackerId,
+            name,
+            type: activeTab,
+            subcategories: [],
+          });
         } else if (selectedCategory) {
           await putRequest(endpoints.categories.update(selectedCategory._id), {
             name,
@@ -176,7 +209,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
       }
       setSnackbar({ open: true, message: 'Saved successfully', severity: 'success' });
       loadCategories();
-    } catch (error) {
+    } catch {
       setSnackbar({ open: true, message: 'Failed to save', severity: 'error' });
     }
 
@@ -184,6 +217,8 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
     setCategoryName('');
     setSubcategoryName('');
   };
+
+  const activeConfig = TAB_CONFIG.find(t => t.value === activeTab)!;
 
   return (
     <Box>
@@ -216,12 +251,40 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
             color="success"
             sx={{ width: { xs: '100%', sm: 'auto' } }}
           >
-            Add Category
+            Add {activeConfig.label}
           </Button>
         </Stack>
-        <Typography variant="body2" color="text.secondary">
-          Manage expense categories and subcategories. Categories help organize your spending.
+        <Typography variant="body2" color="text.secondary" mb={2}>
+          {activeConfig.description}
         </Typography>
+        <Tabs
+          value={activeTab}
+          onChange={(_, v) => {
+            setActiveTab(v);
+            setExpandedCategories(new Set());
+          }}
+          variant="scrollable"
+          scrollButtons="auto"
+          textColor="inherit"
+          sx={{
+            '& .MuiTab-root': {
+              textTransform: 'none',
+              fontWeight: 600,
+              minWidth: 'auto',
+              px: 2,
+            },
+            '& .Mui-selected': {
+              color: 'success.main',
+            },
+            '& .MuiTabs-indicator': {
+              backgroundColor: theme.palette.success.main,
+            },
+          }}
+        >
+          {TAB_CONFIG.map(tab => (
+            <Tab key={tab.value} value={tab.value} label={tab.label} />
+          ))}
+        </Tabs>
       </Paper>
 
       <Paper
@@ -241,7 +304,8 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ trackerId }) => {
           </Box>
         ) : categories.length === 0 ? (
           <Alert severity="info">
-            No categories found. Add your first category to get started.
+            No {activeConfig.label.toLowerCase()} categories found. Add your first one to get
+            started.
           </Alert>
         ) : (
           <List>

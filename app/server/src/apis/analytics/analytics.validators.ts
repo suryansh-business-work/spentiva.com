@@ -12,6 +12,12 @@ export enum DateFilter {
   ALL = 'all',
 }
 
+export enum TransactionTypeFilter {
+  EXPENSE = 'expense',
+  INCOME = 'income',
+  ALL = 'all',
+}
+
 export class AnalyticsQueryDto {
   @IsEnum(DateFilter)
   @IsOptional()
@@ -37,24 +43,34 @@ export class AnalyticsQueryDto {
   @IsOptional()
   @Type(() => Number)
   year?: number;
+
+  @IsEnum(TransactionTypeFilter)
+  @IsOptional()
+  type?: TransactionTypeFilter;
 }
 
 export class SummaryStatsDto {
   totalExpenses!: number;
+  totalIncome!: number;
+  netBalance!: number;
   transactionCount!: number;
   averageExpense!: number;
+  averageIncome!: number;
 }
 
 export class CategoryAnalyticsDto {
   category!: string;
   total!: number;
   count!: number;
+  type?: string;
 }
 
 export class MonthlyAnalyticsDto {
   month!: number;
   total!: number;
   count!: number;
+  expenses?: number;
+  income?: number;
 }
 
 export class SourceAnalyticsDto {

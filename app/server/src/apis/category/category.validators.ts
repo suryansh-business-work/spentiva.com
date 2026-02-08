@@ -1,5 +1,6 @@
-import { IsString, IsArray, IsOptional, IsNotEmpty, ValidateNested } from 'class-validator';
+import { IsString, IsArray, IsOptional, IsNotEmpty, ValidateNested, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
+import { CategoryType } from './category.models';
 
 /**
  * SubCategory DTO
@@ -26,6 +27,10 @@ export class CreateCategoryDto {
   @IsNotEmpty()
   name!: string;
 
+  @IsEnum(['expense', 'income', 'debit_mode', 'credit_mode'])
+  @IsOptional()
+  type?: CategoryType;
+
   @IsArray()
   @IsOptional()
   @ValidateNested({ each: true })
@@ -41,6 +46,10 @@ export class UpdateCategoryDto {
   @IsOptional()
   name?: string;
 
+  @IsEnum(['expense', 'income', 'debit_mode', 'credit_mode'])
+  @IsOptional()
+  type?: CategoryType;
+
   @IsArray()
   @IsOptional()
   @ValidateNested({ each: true })
@@ -55,6 +64,10 @@ export class GetAllCategoriesQueryDto {
   @IsString()
   @IsOptional()
   trackerId?: string;
+
+  @IsEnum(['expense', 'income', 'debit_mode', 'credit_mode'])
+  @IsOptional()
+  type?: CategoryType;
 }
 
 /**
@@ -63,12 +76,14 @@ export class GetAllCategoriesQueryDto {
 export class CategoryResponseDto {
   id: string;
   name: string;
+  type: CategoryType;
   subcategories: SubCategoryDto[];
   trackerId: string;
 
   constructor(data: any) {
     this.id = data._id || data.id;
     this.name = data.name;
+    this.type = data.type || 'expense';
     this.subcategories = data.subcategories || [];
     this.trackerId = data.trackerId;
   }

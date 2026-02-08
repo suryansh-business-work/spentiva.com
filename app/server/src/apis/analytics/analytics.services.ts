@@ -1,5 +1,6 @@
 import ExpenseModel from '../expense/expense.models';
-import { AnalyticsQueryDto, DateFilter } from './analytics.validators';
+import { AnalyticsQueryDto, DateFilter, TransactionTypeFilter } from './analytics.validators';
+import { logger } from '../../utils/logger';
 
 export class AnalyticsService {
   /**
@@ -46,9 +47,6 @@ export class AnalyticsService {
         }
         break;
       default:
-        // Default to all time (or a reasonable default like this month if preferred, but 'all' usually implies no start limit)
-        // However, for performance, let's default to this month if no filter is provided, or handle 'all' explicitly.
-        // Based on previous code, default was this month.
         startDate = new Date(now.getFullYear(), now.getMonth(), 1);
     }
 
@@ -62,39 +60,69 @@ export class AnalyticsService {
     queryDto: AnalyticsQueryDto,
     dateRange: { startDate: Date; endDate: Date }
   ) {
-    const matchQuery: any = {
+    const matchQuery: Record<string, unknown> = {
       timestamp: { $gte: dateRange.startDate, $lte: dateRange.endDate },
     };
 
     if (queryDto.trackerId) {
       matchQuery.trackerId = queryDto.trackerId;
-    } else {
-      console.log('[Analytics] No trackerId provided, returning all trackers');
     }
 
     if (queryDto.categoryId) {
       matchQuery.categoryId = queryDto.categoryId;
     }
 
-    console.log('[Analytics] Final match query:', matchQuery);
+    // Filter by transaction type
+    if (queryDto.type && queryDto.type !== TransactionTypeFilter.ALL) {
+      matchQuery.type = queryDto.type;
+    }
+
+    logger.info('[Analytics] Match query built', { matchQuery });
     return matchQuery;
   }
 
   /**
-   * Get summary statistics
+   * Get summary statistics with income/expense breakdown
    */
   static async getSummaryStats(queryDto: AnalyticsQueryDto) {
     const dateRange = this.getDateRange(queryDto);
-    const matchQuery = this.buildMatchQuery(queryDto, dateRange);
+    const baseMatch: Record<string, unknown> = {
+      timestamp: { $gte: dateRange.startDate, $lte: dateRange.endDate },
+    };
+
+    if (queryDto.trackerId) {
+      baseMatch.trackerId = queryDto.trackerId;
+    }
+    if (queryDto.categoryId) {
+      baseMatch.categoryId = queryDto.categoryId;
+    }
 
     const stats = await ExpenseModel.aggregate([
-      { $match: matchQuery },
+      { $match: baseMatch },
       {
         $group: {
           _id: null,
-          totalExpenses: { $sum: '$amount' },
+          totalExpenses: {
+            $sum: {
+              $cond: [{ $eq: [{ $ifNull: ['$type', 'expense'] }, 'expense'] }, '$amount', 0],
+            },
+          },
+          totalIncome: {
+            $sum: {
+              $cond: [{ $eq: ['$type', 'income'] }, '$amount', 0],
+            },
+          },
+          expenseCount: {
+            $sum: {
+              $cond: [{ $eq: [{ $ifNull: ['$type', 'expense'] }, 'expense'] }, 1, 0],
+            },
+          },
+          incomeCount: {
+            $sum: {
+              $cond: [{ $eq: ['$type', 'income'] }, 1, 0],
+            },
+          },
           transactionCount: { $sum: 1 },
-          averageExpense: { $avg: '$amount' },
         },
       },
     ]);
@@ -102,16 +130,31 @@ export class AnalyticsService {
     if (stats.length === 0) {
       return {
         totalExpenses: 0,
+        totalIncome: 0,
+        netBalance: 0,
         transactionCount: 0,
+        expenseCount: 0,
+        incomeCount: 0,
         averageExpense: 0,
+        averageIncome: 0,
       };
     }
 
-    return stats[0];
+    const s = stats[0];
+    return {
+      totalExpenses: s.totalExpenses,
+      totalIncome: s.totalIncome,
+      netBalance: s.totalIncome - s.totalExpenses,
+      transactionCount: s.transactionCount,
+      expenseCount: s.expenseCount,
+      incomeCount: s.incomeCount,
+      averageExpense: s.expenseCount > 0 ? s.totalExpenses / s.expenseCount : 0,
+      averageIncome: s.incomeCount > 0 ? s.totalIncome / s.incomeCount : 0,
+    };
   }
 
   /**
-   * Get expenses grouped by category
+   * Get transactions grouped by category
    */
   static async getExpensesByCategory(queryDto: AnalyticsQueryDto) {
     const dateRange = this.getDateRange(queryDto);
@@ -121,7 +164,7 @@ export class AnalyticsService {
       { $match: matchQuery },
       {
         $group: {
-          _id: '$category',
+          _id: { category: '$category', type: { $ifNull: ['$type', 'expense'] } },
           total: { $sum: '$amount' },
           count: { $sum: 1 },
         },
@@ -129,7 +172,8 @@ export class AnalyticsService {
       {
         $project: {
           _id: 0,
-          category: '$_id',
+          category: '$_id.category',
+          type: '$_id.type',
           total: 1,
           count: 1,
         },
@@ -141,14 +185,14 @@ export class AnalyticsService {
   }
 
   /**
-   * Get expenses grouped by month
+   * Get transactions grouped by month with income/expense split
    */
   static async getExpensesByMonth(queryDto: AnalyticsQueryDto) {
     const targetYear = queryDto.year || new Date().getFullYear();
     const startDate = new Date(targetYear, 0, 1);
     const endDate = new Date(targetYear, 11, 31, 23, 59, 59);
 
-    const matchQuery: any = {
+    const matchQuery: Record<string, unknown> = {
       timestamp: { $gte: startDate, $lte: endDate },
     };
 
@@ -163,6 +207,16 @@ export class AnalyticsService {
           _id: { $month: '$timestamp' },
           total: { $sum: '$amount' },
           count: { $sum: 1 },
+          expenses: {
+            $sum: {
+              $cond: [{ $eq: [{ $ifNull: ['$type', 'expense'] }, 'expense'] }, '$amount', 0],
+            },
+          },
+          income: {
+            $sum: {
+              $cond: [{ $eq: ['$type', 'income'] }, '$amount', 0],
+            },
+          },
         },
       },
       {
@@ -171,6 +225,8 @@ export class AnalyticsService {
           month: '$_id',
           total: 1,
           count: 1,
+          expenses: 1,
+          income: 1,
         },
       },
       { $sort: { month: 1 } },
@@ -185,6 +241,9 @@ export class AnalyticsService {
   static async getExpensesBySource(queryDto: AnalyticsQueryDto) {
     const dateRange = this.getDateRange(queryDto);
     const matchQuery = this.buildMatchQuery(queryDto, dateRange);
+
+    // For source/payment method analysis, only look at expenses
+    matchQuery.type = { $in: ['expense', null] } as unknown;
 
     const sourceData = await ExpenseModel.aggregate([
       { $match: matchQuery },
@@ -210,19 +269,9 @@ export class AnalyticsService {
   }
 
   /**
-   * Get total expenses for a period
+   * Get total expenses (and optionally income) for a period
    */
   static async getTotalExpenses(queryDto: AnalyticsQueryDto) {
-    // For total, we might want all time if no filter is specified,
-    // but consistent behavior with other endpoints is safer.
-    // If specific behavior is needed for 'total' endpoint, we can adjust.
-    // For now, using the same date range logic.
-
-    // Override filter to 'all' if not provided for total?
-    // The previous implementation used 0 to now.
-    // Let's respect the filter if provided, otherwise default to all time for this specific method if that was the intent.
-    // But the previous code: startDate: new Date(0), endDate: new Date()
-
     let startDate = new Date(0);
     let endDate = new Date();
 
@@ -232,7 +281,7 @@ export class AnalyticsService {
       endDate = range.endDate;
     }
 
-    const matchQuery: any = {
+    const matchQuery: Record<string, unknown> = {
       timestamp: { $gte: startDate, $lte: endDate },
     };
 
@@ -245,12 +294,30 @@ export class AnalyticsService {
       {
         $group: {
           _id: null,
+          totalExpenses: {
+            $sum: {
+              $cond: [{ $eq: [{ $ifNull: ['$type', 'expense'] }, 'expense'] }, '$amount', 0],
+            },
+          },
+          totalIncome: {
+            $sum: {
+              $cond: [{ $eq: ['$type', 'income'] }, '$amount', 0],
+            },
+          },
           total: { $sum: '$amount' },
         },
       },
     ]);
 
-    return result.length > 0 ? result[0].total : 0;
+    if (result.length === 0) {
+      return { total: 0, totalExpenses: 0, totalIncome: 0 };
+    }
+
+    return {
+      total: result[0].total,
+      totalExpenses: result[0].totalExpenses,
+      totalIncome: result[0].totalIncome,
+    };
   }
 }
 

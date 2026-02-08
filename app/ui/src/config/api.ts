@@ -22,7 +22,8 @@ export const endpoints = {
     byId: (id: string) => `${getApiUrl()}/tracker/get/${id}`,
   },
   categories: {
-    getAll: (trackerId: string) => `${getApiUrl()}/category/all?trackerId=${trackerId}`,
+    getAll: (trackerId: string, type?: string) =>
+      `${getApiUrl()}/category/all?trackerId=${trackerId}${type ? `&type=${type}` : ''}`,
     create: `${getApiUrl()}/category/create`,
     getById: (id: string) => `${getApiUrl()}/category/${id}`,
     update: (id: string) => `${getApiUrl()}/category/${id}`,
@@ -36,6 +37,7 @@ export const endpoints = {
     create: `${getApiUrl()}/expense/create`,
     update: (id: string) => `${getApiUrl()}/expense/${id}`,
     delete: (id: string) => `${getApiUrl()}/expense/${id}`,
+    bulkDelete: `${getApiUrl()}/expense/bulk-delete`,
   },
   analytics: {
     summary: `${getApiUrl()}/analytics/summary`,
@@ -43,6 +45,7 @@ export const endpoints = {
     byMonth: `${getApiUrl()}/analytics/by-month`,
     byPaymentMethod: `${getApiUrl()}/analytics/by-expense-from`,
     total: `${getApiUrl()}/analytics/total`,
+    emailReport: `${getApiUrl()}/analytics/email-report`,
   },
   usage: {
     overview: `${getApiUrl()}/usage/overview`,

@@ -1,10 +1,21 @@
+export type TransactionType = 'expense' | 'income' | 'transfer';
+
+export interface OpenAIUsage {
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+}
+
 export interface Expense {
   id: string;
+  type: TransactionType;
   amount: number;
   category: string;
   subcategory: string;
   categoryId: string;
   paymentMethod: string;
+  creditFrom?: string;
+  currency: string;
   description?: string;
   timestamp: Date;
   createdAt?: Date;
@@ -17,11 +28,14 @@ export interface ChatMessage {
 }
 
 export interface ParsedExpense {
+  type: TransactionType;
   amount: number;
   category: string;
   subcategory: string;
   categoryId: string;
-  paymentMethod: string; // Required - defaults to "User not provided payment method"
+  paymentMethod?: string;
+  creditFrom?: string;
+  currency: string;
   description?: string;
   timestamp?: Date;
 }

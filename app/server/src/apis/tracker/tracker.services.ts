@@ -8,50 +8,263 @@ import { logger } from '../../utils/logger';
  */
 class TrackerService {
   /**
-   * Default categories to create with new tracker
+   * Helper to generate unique IDs for subcategories
    */
-  private readonly DEFAULT_CATEGORIES = [
-    {
-      name: 'Food & Dining',
-      subcategories: [
-        { id: `${Date.now()}-1`, name: 'Groceries' },
-        { id: `${Date.now()}-2`, name: 'Restaurants' },
-        { id: `${Date.now()}-3`, name: 'Fast Food' },
-      ],
-    },
-    {
-      name: 'Transportation',
-      subcategories: [
-        { id: `${Date.now()}-4`, name: 'Fuel' },
-        { id: `${Date.now()}-5`, name: 'Public Transport' },
-        { id: `${Date.now()}-6`, name: 'Taxi/Uber' },
-      ],
-    },
-    {
-      name: 'Shopping',
-      subcategories: [
-        { id: `${Date.now()}-7`, name: 'Clothing' },
-        { id: `${Date.now()}-8`, name: 'Electronics' },
-        { id: `${Date.now()}-9`, name: 'Books' },
-      ],
-    },
-    {
-      name: 'Entertainment',
-      subcategories: [
-        { id: `${Date.now()}-10`, name: 'Movies' },
-        { id: `${Date.now()}-11`, name: 'Games' },
-        { id: `${Date.now()}-12`, name: 'Hobbies' },
-      ],
-    },
-    {
-      name: 'Bills & Utilities',
-      subcategories: [
-        { id: `${Date.now()}-13`, name: 'Electricity' },
-        { id: `${Date.now()}-14`, name: 'Water' },
-        { id: `${Date.now()}-15`, name: 'Internet' },
-      ],
-    },
-  ];
+  private genId(prefix: string, idx: number): string {
+    return `${Date.now()}-${prefix}${idx}`;
+  }
+
+  /**
+   * Default expense categories to create with new tracker
+   */
+  private get DEFAULT_CATEGORIES() {
+    return [
+      {
+        name: 'Food & Dining',
+        type: 'expense',
+        subcategories: [
+          { id: this.genId('e', 1), name: 'Groceries' },
+          { id: this.genId('e', 2), name: 'Restaurants' },
+          { id: this.genId('e', 3), name: 'Fast Food' },
+          { id: this.genId('e', 4), name: 'Coffee & Tea' },
+          { id: this.genId('e', 5), name: 'Snacks' },
+          { id: this.genId('e', 6), name: 'Food Delivery' },
+        ],
+      },
+      {
+        name: 'Transportation',
+        type: 'expense',
+        subcategories: [
+          { id: this.genId('e', 7), name: 'Fuel' },
+          { id: this.genId('e', 8), name: 'Public Transport' },
+          { id: this.genId('e', 9), name: 'Taxi/Uber' },
+          { id: this.genId('e', 10), name: 'Parking' },
+          { id: this.genId('e', 11), name: 'Toll' },
+          { id: this.genId('e', 12), name: 'Vehicle Maintenance' },
+        ],
+      },
+      {
+        name: 'Shopping',
+        type: 'expense',
+        subcategories: [
+          { id: this.genId('e', 13), name: 'Clothing' },
+          { id: this.genId('e', 14), name: 'Electronics' },
+          { id: this.genId('e', 15), name: 'Books' },
+          { id: this.genId('e', 16), name: 'Gifts' },
+          { id: this.genId('e', 17), name: 'Home Decor' },
+          { id: this.genId('e', 18), name: 'Personal Care' },
+        ],
+      },
+      {
+        name: 'Entertainment',
+        type: 'expense',
+        subcategories: [
+          { id: this.genId('e', 19), name: 'Movies' },
+          { id: this.genId('e', 20), name: 'Games' },
+          { id: this.genId('e', 21), name: 'Hobbies' },
+          { id: this.genId('e', 22), name: 'Streaming Services' },
+          { id: this.genId('e', 23), name: 'Events & Concerts' },
+          { id: this.genId('e', 24), name: 'Sports' },
+        ],
+      },
+      {
+        name: 'Bills & Utilities',
+        type: 'expense',
+        subcategories: [
+          { id: this.genId('e', 25), name: 'Electricity' },
+          { id: this.genId('e', 26), name: 'Water' },
+          { id: this.genId('e', 27), name: 'Internet' },
+          { id: this.genId('e', 28), name: 'Mobile Recharge' },
+          { id: this.genId('e', 29), name: 'Gas' },
+          { id: this.genId('e', 30), name: 'Rent' },
+          { id: this.genId('e', 31), name: 'EMI' },
+          { id: this.genId('e', 32), name: 'Insurance' },
+        ],
+      },
+      {
+        name: 'Health & Fitness',
+        type: 'expense',
+        subcategories: [
+          { id: this.genId('e', 33), name: 'Medicine' },
+          { id: this.genId('e', 34), name: 'Doctor' },
+          { id: this.genId('e', 35), name: 'Gym' },
+          { id: this.genId('e', 36), name: 'Hospital' },
+          { id: this.genId('e', 37), name: 'Lab Tests' },
+        ],
+      },
+      {
+        name: 'Education',
+        type: 'expense',
+        subcategories: [
+          { id: this.genId('e', 38), name: 'Tuition Fee' },
+          { id: this.genId('e', 39), name: 'Courses' },
+          { id: this.genId('e', 40), name: 'Books & Stationery' },
+          { id: this.genId('e', 41), name: 'Exam Fee' },
+        ],
+      },
+      {
+        name: 'Travel',
+        type: 'expense',
+        subcategories: [
+          { id: this.genId('e', 42), name: 'Flights' },
+          { id: this.genId('e', 43), name: 'Hotels' },
+          { id: this.genId('e', 44), name: 'Train' },
+          { id: this.genId('e', 45), name: 'Bus' },
+          { id: this.genId('e', 46), name: 'Sightseeing' },
+        ],
+      },
+      {
+        name: 'Investments',
+        type: 'expense',
+        subcategories: [
+          { id: this.genId('e', 47), name: 'Mutual Funds' },
+          { id: this.genId('e', 48), name: 'Stocks' },
+          { id: this.genId('e', 49), name: 'Fixed Deposit' },
+          { id: this.genId('e', 50), name: 'PPF' },
+          { id: this.genId('e', 51), name: 'Gold' },
+        ],
+      },
+      {
+        name: 'Personal & Family',
+        type: 'expense',
+        subcategories: [
+          { id: this.genId('e', 52), name: 'Salon & Grooming' },
+          { id: this.genId('e', 53), name: 'Laundry' },
+          { id: this.genId('e', 54), name: 'Donations' },
+          { id: this.genId('e', 55), name: 'Kids' },
+          { id: this.genId('e', 56), name: 'Pet Care' },
+        ],
+      },
+      {
+        name: 'Miscellaneous',
+        type: 'expense',
+        subcategories: [
+          { id: this.genId('e', 57), name: 'Other' },
+          { id: this.genId('e', 58), name: 'ATM Withdrawal' },
+          { id: this.genId('e', 59), name: 'Fees & Charges' },
+        ],
+      },
+    ];
+  }
+
+  /**
+   * Default income categories
+   */
+  private get DEFAULT_INCOME_CATEGORIES() {
+    return [
+      {
+        name: 'Salary & Wages',
+        type: 'income',
+        subcategories: [
+          { id: this.genId('ic', 1), name: 'Salary' },
+          { id: this.genId('ic', 2), name: 'Bonus' },
+          { id: this.genId('ic', 3), name: 'Overtime' },
+          { id: this.genId('ic', 4), name: 'Allowance' },
+        ],
+      },
+      {
+        name: 'Freelance & Business',
+        type: 'income',
+        subcategories: [
+          { id: this.genId('ic', 5), name: 'Freelance' },
+          { id: this.genId('ic', 6), name: 'Consulting' },
+          { id: this.genId('ic', 7), name: 'Business Income' },
+          { id: this.genId('ic', 8), name: 'Commission' },
+          { id: this.genId('ic', 9), name: 'Side Hustle' },
+        ],
+      },
+      {
+        name: 'Investments & Returns',
+        type: 'income',
+        subcategories: [
+          { id: this.genId('ic', 10), name: 'Dividends' },
+          { id: this.genId('ic', 11), name: 'Interest' },
+          { id: this.genId('ic', 12), name: 'Capital Gains' },
+          { id: this.genId('ic', 13), name: 'Mutual Fund Returns' },
+          { id: this.genId('ic', 14), name: 'FD Maturity' },
+        ],
+      },
+      {
+        name: 'Refunds & Cashback',
+        type: 'income',
+        subcategories: [
+          { id: this.genId('ic', 15), name: 'Refund' },
+          { id: this.genId('ic', 16), name: 'Cashback' },
+          { id: this.genId('ic', 17), name: 'Reimbursement' },
+          { id: this.genId('ic', 18), name: 'Insurance Claim' },
+        ],
+      },
+      {
+        name: 'Other Income',
+        type: 'income',
+        subcategories: [
+          { id: this.genId('ic', 19), name: 'Gift' },
+          { id: this.genId('ic', 20), name: 'Rental Income' },
+          { id: this.genId('ic', 21), name: 'Pension' },
+          { id: this.genId('ic', 22), name: 'Pocket Money' },
+          { id: this.genId('ic', 23), name: 'Others' },
+        ],
+      },
+    ];
+  }
+
+  /**
+   * Default debit modes (how money goes out)
+   */
+  private get DEFAULT_DEBIT_MODES() {
+    return [
+      {
+        name: 'Digital Payments',
+        type: 'debit_mode',
+        subcategories: [
+          { id: this.genId('dm', 1), name: 'UPI' },
+          { id: this.genId('dm', 2), name: 'Credit Card' },
+          { id: this.genId('dm', 3), name: 'Debit Card' },
+          { id: this.genId('dm', 4), name: 'Net Banking' },
+          { id: this.genId('dm', 5), name: 'Wallet' },
+          { id: this.genId('dm', 6), name: 'EMI' },
+        ],
+      },
+      {
+        name: 'Cash & Others',
+        type: 'debit_mode',
+        subcategories: [
+          { id: this.genId('dm', 7), name: 'Cash' },
+          { id: this.genId('dm', 8), name: 'Cheque' },
+          { id: this.genId('dm', 9), name: 'Bank Transfer' },
+          { id: this.genId('dm', 10), name: 'Auto Debit' },
+        ],
+      },
+    ];
+  }
+
+  /**
+   * Default credit modes (how money comes in)
+   */
+  private get DEFAULT_CREDIT_MODES() {
+    return [
+      {
+        name: 'Bank & Digital',
+        type: 'credit_mode',
+        subcategories: [
+          { id: this.genId('cm', 1), name: 'Bank Transfer' },
+          { id: this.genId('cm', 2), name: 'UPI' },
+          { id: this.genId('cm', 3), name: 'Online Payment' },
+          { id: this.genId('cm', 4), name: 'Wallet' },
+          { id: this.genId('cm', 5), name: 'Direct Deposit' },
+        ],
+      },
+      {
+        name: 'Cash & Others',
+        type: 'credit_mode',
+        subcategories: [
+          { id: this.genId('cm', 6), name: 'Cash' },
+          { id: this.genId('cm', 7), name: 'Cheque' },
+          { id: this.genId('cm', 8), name: 'Demand Draft' },
+        ],
+      },
+    ];
+  }
 
   /**
    * Get all trackers for a user
@@ -98,10 +311,18 @@ class TrackerService {
 
     await tracker.save();
 
-    // Create default categories for the new tracker
-    const defaultCategories = this.DEFAULT_CATEGORIES.map(category => ({
+    // Create default categories for the new tracker (all 4 types)
+    const allDefaults = [
+      ...this.DEFAULT_CATEGORIES,
+      ...this.DEFAULT_INCOME_CATEGORIES,
+      ...this.DEFAULT_DEBIT_MODES,
+      ...this.DEFAULT_CREDIT_MODES,
+    ];
+
+    const defaultCategories = allDefaults.map(category => ({
       trackerId: tracker._id.toString(),
       name: category.name,
+      type: category.type,
       subcategories: category.subcategories,
     }));
 
