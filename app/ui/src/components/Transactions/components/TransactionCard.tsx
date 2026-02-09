@@ -20,15 +20,14 @@ interface TransactionCardProps {
 
 /**
  * TransactionCard Component
- * Displays a single transaction card with income/expense/transfer type styling
+ * Displays a single transaction card with income/expense type styling
  */
 const TransactionCard: React.FC<TransactionCardProps> = ({ expense, onEdit, onDelete }) => {
   const isIncome = expense.type === 'income';
-  const isTransfer = expense.type === 'transfer';
   const currSym = CURRENCY_SYM[expense.currency || 'INR'] || '₹';
 
-  const amountChipColor = isIncome ? 'success' : isTransfer ? 'info' : 'error';
-  const amountPrefix = isIncome ? '+' : isTransfer ? '' : '-';
+  const amountChipColor = isIncome ? 'success' : 'error';
+  const amountPrefix = isIncome ? '+' : '-';
 
   const formatDate = (date: string | Date) => {
     return new Date(date).toLocaleDateString('en-IN', {
@@ -47,7 +46,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ expense, onEdit, onDe
         transition: 'all 0.2s',
         borderColor: '#ddd',
         borderLeft: `3px solid`,
-        borderLeftColor: isIncome ? 'success.main' : isTransfer ? 'info.main' : 'error.main',
+        borderLeftColor: isIncome ? 'success.main' : 'error.main',
       }}
     >
       <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 2, border: 0 }}>
@@ -67,11 +66,11 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ expense, onEdit, onDe
             <Typography variant="h6" fontWeight="600">
               {expense.subcategory}
             </Typography>
-            {(isIncome || isTransfer) && (
+            {isIncome && (
               <Chip
-                label={isIncome ? 'Income' : 'Transfer'}
+                label="Income"
                 size="small"
-                color={isIncome ? 'success' : 'info'}
+                color="success"
                 sx={{ height: 20, fontSize: '0.65rem', fontWeight: 700 }}
               />
             )}

@@ -96,7 +96,7 @@ export const parseExpenseController = async (req: any, res: Response) => {
         // Create response text for logging
         const responseText =
           parsedExpenses.length === 1
-            ? `Parsed 1 expense: ₹${firstExpense.amount} for ${firstExpense.subcategory} via ${firstExpense.paymentMethod}`
+            ? `Parsed 1 expense: ₹${firstExpense.amount} for ${firstExpense.subcategory || firstExpense.category} via ${firstExpense.paymentMethod}`
             : `Parsed ${parsedExpenses.length} expenses totaling ₹${parsedExpenses.reduce((sum, e) => sum + e.amount, 0)}`;
 
         // Log AI response with actual completion tokens
@@ -140,11 +140,11 @@ export const createExpenseController = async (req: any, res: Response) => {
     // Validate that each expense has required fields
     for (let i = 0; i < expenses.length; i++) {
       const exp = expenses[i];
-      if (!exp.amount || !exp.category || !exp.subcategory || !exp.categoryId) {
+      if (!exp.amount || !exp.category || !exp.categoryId) {
         return badRequestResponse(
           res,
           null,
-          `Expense at index ${i}: Missing required fields (amount, category, subcategory, categoryId)`
+          `Expense at index ${i}: Missing required fields (amount, category, categoryId)`
         );
       }
     }

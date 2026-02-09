@@ -6,6 +6,7 @@ import Trackers from './components/Trackers/Trackers';
 import Usage from './components/Usage/Usage';
 import Billing from './pages/Billing';
 import UpcomingFeatures from './pages/UpcomingFeatures';
+import Integrations from './pages/Integrations';
 import Policy from './pages/Policy';
 import NotFound from './pages/NotFound';
 import { ThemeModeProvider, useThemeMode } from './contexts/ThemeContext';
@@ -42,9 +43,20 @@ const RedirectToProfile = () => {
 };
 
 const RedirectToAdmin = () => {
+  const { user } = useAuth();
+
   useEffect(() => {
-    window.location.href = AUTH_CONFIG.authUrl + '/admin';
-  }, []);
+    // Check roleSlug from user context (backed by localStorage)
+    if (user?.roleSlug === 'admin') {
+      window.location.href = AUTH_CONFIG.authUrl + '/admin';
+    }
+  }, [user?.roleSlug]);
+
+  // If not admin, redirect to home
+  if (!user || user.roleSlug !== 'admin') {
+    return <Navigate to="/trackers" replace />;
+  }
+
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
       <CircularProgress />
@@ -133,10 +145,14 @@ const AppContent = () => {
                 path="/upcoming-features"
                 element={isAuthenticated ? <UpcomingFeatures /> : <RedirectToAuth />}
               />
+              <Route
+                path="/integrations"
+                element={isAuthenticated ? <Integrations /> : <RedirectToAuth />}
+              />
               <Route path="/policy" element={<Policy />} />
               <Route
                 path="/admin/*"
-                element={<RedirectToAdmin />}
+                element={isAuthenticated ? <RedirectToAdmin /> : <RedirectToAuth />}
               />
               <Route path="*" element={<NotFound />} />
             </Routes>

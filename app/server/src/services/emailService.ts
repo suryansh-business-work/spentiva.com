@@ -351,7 +351,7 @@ export const sendTransactionNotificationEmail = async (
     amount: number;
     currency: string;
     category: string;
-    subcategory: string;
+    subcategory: string | null;
     paymentMethod: string;
     description?: string;
     createdByName: string;
@@ -378,7 +378,7 @@ export const sendTransactionNotificationEmail = async (
     currencySymbol: getCurrencySymbol(transaction.currency),
     amountColor: isExpense ? '#ef4444' : '#10b981',
     category: transaction.category,
-    subcategory: transaction.subcategory,
+    subcategory: transaction.subcategory || transaction.category,
     paymentMethod: transaction.paymentMethod || 'N/A',
     createdByName: transaction.createdByName,
     date,

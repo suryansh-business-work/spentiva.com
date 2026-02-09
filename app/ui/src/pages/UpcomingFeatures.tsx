@@ -13,8 +13,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from '@mui/material';
-import LockIcon from '@mui/icons-material/Lock';
-import AssessmentIcon from '@mui/icons-material/Assessment';
+import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
@@ -24,35 +23,21 @@ const UpcomingFeatures: React.FC = () => {
   const features = [
     {
       id: 1,
-      title: 'End-to-End Encryption',
-      icon: <LockIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
-      timeline: 'Coming Q2 2026',
+      title: 'Integration to Multiple Apps',
+      icon: (
+        <IntegrationInstructionsIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />
+      ),
+      timeline: 'Coming Q3 2026',
       status: 'In Development',
       description:
-        "Your data security is our top priority. We're implementing military-grade end-to-end encryption to ensure your financial data remains completely private.",
+        'Track your expenses directly from the apps you already use. Send a message and Spentiva will log it for you — no need to open the app.',
       benefits: [
-        'Zero-knowledge architecture',
-        'Client-side encryption',
-        'Encrypted data storage',
-        'Secure data transmission',
-        'Privacy-first approach',
-      ],
-    },
-    {
-      id: 2,
-      title: 'Advanced Reporting & Analytics',
-      icon: <AssessmentIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
-      timeline: 'Coming Q3 2026',
-      status: 'Planning',
-      description:
-        'Gain deeper insights into your spending patterns with powerful analytics and customizable reports.',
-      benefits: [
-        'Custom report builder',
-        'Export to PDF & CSV',
-        'Advanced visualizations',
-        'Trend analysis',
-        'Budget forecasting',
-        'Category insights',
+        'WhatsApp integration — log expenses via chat',
+        'Slack integration — track from your workspace',
+        'Telegram bot — instant expense logging',
+        'Real-time sync across all platforms',
+        'Natural language parsing on every channel',
+        'Secure & encrypted communication',
       ],
     },
   ];
@@ -87,9 +72,9 @@ const UpcomingFeatures: React.FC = () => {
       </Box>
 
       {/* Feature Cards */}
-      <Grid container spacing={4}>
+      <Grid container spacing={4} justifyContent="center">
         {features.map((feature, index) => (
-          <Grid size={{ xs: 12, md: 6 }} key={feature.id}>
+          <Grid size={{ xs: 12, md: 8 }} sx={{ mx: 'auto' }} key={feature.id}>
             <Card
               elevation={0}
               sx={{

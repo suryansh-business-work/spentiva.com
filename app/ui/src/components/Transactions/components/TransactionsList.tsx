@@ -166,7 +166,6 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
           <TableBody>
             {expenses.map(exp => {
               const isIncome = exp.type === 'income';
-              const isTransfer = exp.type === 'transfer';
               const currSym = CURRENCY_SYM[exp.currency || 'INR'] || '₹';
               const isSelected = selected.includes(exp.id);
 
@@ -180,9 +179,7 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
                     borderLeft: '3px solid',
                     borderColor: isIncome
                       ? 'success.main'
-                      : isTransfer
-                        ? 'info.main'
-                        : 'error.main',
+                      : 'error.main',
                   }}
                 >
                   <TableCell padding="checkbox">

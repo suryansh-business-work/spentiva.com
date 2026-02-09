@@ -1,13 +1,13 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-export type TransactionType = 'expense' | 'income' | 'transfer';
+export type TransactionType = 'expense' | 'income';
 
 export interface IExpense extends Document {
   _id: mongoose.Types.ObjectId;
   type: TransactionType;
   amount: number;
   category: string;
-  subcategory: string;
+  subcategory: string | null;
   categoryId: string;
   paymentMethod?: string;
   creditFrom?: string;
@@ -29,7 +29,7 @@ const ExpenseSchema: Schema = new Schema(
     type: {
       type: String,
       required: true,
-      enum: ['expense', 'income', 'transfer'],
+      enum: ['expense', 'income'],
       default: 'expense',
     },
     amount: {
@@ -44,7 +44,8 @@ const ExpenseSchema: Schema = new Schema(
     },
     subcategory: {
       type: String,
-      required: true,
+      required: false,
+      default: null,
       trim: true,
     },
     categoryId: {

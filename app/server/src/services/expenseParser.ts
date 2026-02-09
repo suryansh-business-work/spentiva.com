@@ -60,15 +60,15 @@ ${cats.creditModes.join(', ')}
 TRANSACTION TYPE RULES:
 1. "expense" - User spent money (bought, paid, spent, purchased, etc.)
 2. "income" - User received money (salary, refund, cashback, earned, received, credited, got money, etc.)
-3. "transfer" - User moved money between own accounts (transferred from X to Y) - NOT an expense or income
 
 PARSING RULES:
 1. Extract ALL transactions from the message (can be single or multiple, mixed expense & income)
-2. Determine the TYPE of each transaction: "expense", "income", or "transfer"
-3. For EXPENSES: extract amount, category (from expense list), subcategory, paymentMethod (debit from), currency, description
-4. For INCOME: extract amount, category (from income list), subcategory, creditFrom (income source), currency, description
-5. For TRANSFERS: extract amount, description (from/to accounts), type="transfer"
+2. Determine the TYPE of each transaction: "expense" or "income"
+3. REQUIRED fields: amount, category, type. Everything else is optional.
+4. For EXPENSES: extract amount, category (from expense list), optionally subcategory, paymentMethod (debit from), currency, description
+5. For INCOME: extract amount, category (from income list), optionally subcategory, creditFrom (income source), currency, description
 6. ALWAYS return an array of transaction objects
+7. subcategory is OPTIONAL — only include it if you can confidently match it from the available subcategories list. If unsure, omit it or set to null.
 
 CURRENCY RULES:
 - This tracker ONLY supports "${defaultCurrency}" currency
@@ -86,6 +86,11 @@ CATEGORY MATCHING RULES:
 - "refund/cashback" → income type with income categories
 - If NO match found, use EXACT word/phrase from user input
 - DO NOT invent categories or use "Unknown"
+
+SUBCATEGORY RULES:
+- Subcategory is OPTIONAL — try to match but don't force it
+- Only use subcategory names from the available list above
+- If no clear subcategory match exists, set subcategory to null or omit it
 
 PAYMENT METHOD (DEBIT FROM) RULES - FOR EXPENSES:
 - If user mentions a payment method, use it (credit card, debit card, cash, UPI, etc.)
@@ -109,7 +114,7 @@ Input: "My salary of 75000 got credited today"
 Output: [{"type": "income", "amount": 75000, "category": "Salary & Wages", "subcategory": "Salary", "creditFrom": "Bank Transfer", "currency": "INR"}]
 
 Input: "I got a refund of 1200 from Amazon"
-Output: [{"type": "income", "amount": 1200, "category": "Refunds & Cashback", "subcategory": "Refund", "creditFrom": "User not provided credit source", "currency": "INR", "description": "Amazon refund"}]
+Output: [{"type": "income", "amount": 1200, "category": "Refunds & Cashback", "creditFrom": "User not provided credit source", "currency": "INR", "description": "Amazon refund"}]
 
 Input: "Salary 50000 credited and I spent 2000 on rent"
 Output: [
@@ -120,11 +125,6 @@ Output: [
 Input: "I spent 20 USD on coffee and 500 INR on dinner"
 (If tracker currency is INR):
 Output: {"error": "Currency mismatch", "message": "Your tracker supports INR only. Please use INR or update your tracker's currency in settings."}
-(If tracker currency is USD):
-Output: {"error": "Currency mismatch", "message": "Your tracker supports USD only. Please use USD or update your tracker's currency in settings."}
-
-Input: "Transferred 10000 from savings to wallet"
-Output: [{"type": "transfer", "amount": 10000, "category": "Transfer", "subcategory": "Transfer", "paymentMethod": "User not provided payment method", "currency": "INR", "description": "From savings to wallet"}]
 
 Input: "Bought shoes for 2500 and a shirt for 1200 via UPI"
 Output: [
@@ -142,7 +142,7 @@ Input: "Paid 8000 EMI for laptop via bank transfer"
 Output: [{"type": "expense", "amount": 8000, "category": "Bills & Utilities", "subcategory": "EMI", "paymentMethod": "Net Banking", "currency": "INR", "description": "laptop EMI"}]
 
 Input: "Received 15000 from freelance project"
-Output: [{"type": "income", "amount": 15000, "category": "Freelance & Business", "subcategory": "Freelance", "creditFrom": "User not provided credit source", "currency": "INR"}]
+Output: [{"type": "income", "amount": 15000, "category": "Freelance & Business", "creditFrom": "User not provided credit source", "currency": "INR"}]
 
 Input: "Petrol 500 cash and gym 2000 UPI"
 Output: [
@@ -171,10 +171,10 @@ Output: {"error": "Parsing failed", "message": "Could you please specify the amo
 RESPONSE FORMAT (MUST be valid JSON array):
 [
   {
-    "type": "expense" | "income" | "transfer",
+    "type": "expense" | "income",
     "amount": number,
     "category": "string",
-    "subcategory": "string",
+    "subcategory": "string | null (optional — omit if unsure)",
     "paymentMethod": "string (for expenses, default: 'User not provided payment method')",
     "creditFrom": "string (for income, default: 'User not provided credit source')",
     "currency": "${defaultCurrency}",
@@ -313,38 +313,22 @@ ERROR FORMAT (only if you cannot parse amount):
       for (let i = 0; i < transactionsArray.length; i++) {
         const txn = transactionsArray[i];
 
-        if (!txn.amount || !txn.category || !txn.subcategory) {
+        // Only amount and category are required; subcategory is optional
+        if (!txn.amount || !txn.category) {
           return {
             error: 'Validation error',
-            message: `Transaction at index ${i}: Missing required fields (amount, category, subcategory)`,
+            message: `Transaction at index ${i}: Missing required fields (amount, category)`,
             usage,
           };
         }
 
-        const txnType = txn.type || 'expense';
+        const txnType = txn.type === 'income' ? 'income' : 'expense';
 
         // Choose category pool based on type
         const categoryPool = txnType === 'income' ? categoriesMap.income : categoriesMap.expense;
 
         // Find the category ID
         const categoryEntry = categoryPool.find(cat => cat.name === txn.category);
-
-        // For transfers, use a placeholder categoryId
-        if (txnType === 'transfer') {
-          validatedExpenses.push({
-            type: 'transfer',
-            amount: txn.amount,
-            category: txn.category || 'Transfer',
-            subcategory: txn.subcategory || 'Transfer',
-            categoryId: 'transfer',
-            paymentMethod: txn.paymentMethod || 'User not provided payment method',
-            creditFrom: txn.creditFrom,
-            currency: txn.currency || 'INR',
-            description: txn.description,
-            timestamp: new Date(),
-          });
-          continue;
-        }
 
         if (!categoryEntry) {
           if (!missingCategories.includes(txn.category)) {
@@ -357,7 +341,7 @@ ERROR FORMAT (only if you cannot parse amount):
           type: txnType,
           amount: txn.amount,
           category: txn.category,
-          subcategory: txn.subcategory,
+          subcategory: txn.subcategory || null,
           categoryId: (categoryEntry._id || categoryEntry.id || '').toString(),
           paymentMethod:
             txnType === 'expense'

@@ -17,6 +17,7 @@ import ShowChartIcon from '@mui/icons-material/ShowChart';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import ShieldIcon from '@mui/icons-material/Shield';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { useAuth } from '../../contexts/AuthContext';
 import { AUTH_CONFIG, isAdmin } from '../../config/auth-config';
@@ -36,6 +37,7 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, onClose }) =>
     const items = [
       { text: 'Usage', icon: <ShowChartIcon />, path: '/usage' },
       { text: 'Billing & Subscription', icon: <CreditCardIcon />, path: '/billing' },
+      { text: 'Integrations', icon: <IntegrationInstructionsIcon />, path: '/integrations' },
       { text: 'Upcoming Features', icon: <RocketLaunchIcon />, path: '/upcoming-features' },
       { text: 'Privacy & Policy', icon: <ShieldIcon />, path: '/policy' },
     ];

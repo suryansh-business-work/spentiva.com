@@ -19,7 +19,7 @@ interface ExpenseCardProps {
 
 /**
  * ExpenseCard Component
- * Displays single or multiple transactions (expense / income / transfer) in a compact card
+ * Displays single or multiple transactions (expense / income) in a compact card
  */
 const ExpenseCard: React.FC<ExpenseCardProps> = ({ expenses }) => {
   const theme = useTheme();
@@ -78,10 +78,9 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({ expenses }) => {
         {/* Transaction Items */}
         {expenses.map((expense, index) => {
           const isIncome = expense.type === 'income';
-          const isTransfer = expense.type === 'transfer';
           const currSym = CURRENCY_SYMBOL[expense.currency || 'INR'] || '₹';
-          const amountColor = isIncome ? 'success.main' : isTransfer ? 'info.main' : 'error.main';
-          const amountPrefix = isIncome ? '+' : isTransfer ? '' : '-';
+          const amountColor = isIncome ? 'success.main' : 'error.main';
+          const amountPrefix = isIncome ? '+' : '-';
 
           return (
             <React.Fragment key={expense.id || index}>
@@ -95,16 +94,16 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({ expenses }) => {
                     <Typography variant="body2" fontWeight="600" sx={{ fontSize: '0.85rem' }}>
                       {expense.subcategory}
                     </Typography>
-                    {(isIncome || isTransfer) && (
+                    {isIncome && (
                       <Chip
-                        label={isIncome ? 'Income' : 'Transfer'}
+                        label="Income"
                         size="small"
                         sx={{
                           height: '16px',
                           fontSize: '0.6rem',
                           fontWeight: 700,
-                          bgcolor: isIncome ? 'rgba(16,185,129,0.15)' : 'rgba(33,150,243,0.15)',
-                          color: isIncome ? 'success.main' : 'info.main',
+                          bgcolor: 'rgba(16,185,129,0.15)',
+                          color: 'success.main',
                         }}
                       />
                     )}

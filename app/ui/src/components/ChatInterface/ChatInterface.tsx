@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Box, useTheme } from '@mui/material';
+import { Box, LinearProgress, useTheme } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
 import { notifyExpenseAdded } from '../../services/notificationService';
 import { useChatMessages } from './hooks/useChatMessages';
@@ -208,6 +208,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         bgcolor: theme.palette.mode === 'dark' ? 'background.default' : '#eee',
       }}
     >
+      {/* Progress bar during bot reply */}
+      {isLoading && (
+        <LinearProgress
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 10,
+            height: 3,
+          }}
+        />
+      )}
+
       {/* Messages Container - Scrollable */}
       <Box
         className="chat-messages"

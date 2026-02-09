@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Paper, Fade, Box, Typography } from '@mui/material';
+import { Paper, Fade, Box, Typography, useTheme, useMediaQuery } from '@mui/material';
 import Draggable from 'react-draggable';
 import SupportDialogHeader from './SupportDialogHeader';
 import SupportForm from './SupportForm';
@@ -32,6 +32,8 @@ const SupportDialog: React.FC<SupportDialogProps> = ({
   const [ticket, setTicket] = useState<SupportTicket | null>(null);
   const [isLoadingTicket, setIsLoadingTicket] = useState(false);
   const draggableRef = useRef<HTMLDivElement>(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const { recording, recordingTime, startRecording, stopRecording } = useRecording();
   const { uploadFile } = useFileUpload();
@@ -140,7 +142,7 @@ const SupportDialog: React.FC<SupportDialogProps> = ({
 
   return (
     <>
-      <Draggable nodeRef={draggableRef} handle="#draggable-dialog-title" disabled={minimized}>
+      <Draggable nodeRef={draggableRef} handle="#draggable-dialog-title" disabled={minimized || isMobile}>
         <Paper
           ref={draggableRef}
           elevation={0}
@@ -158,16 +160,26 @@ const SupportDialog: React.FC<SupportDialogProps> = ({
                   height: 56,
                   overflow: 'hidden',
                 }
-              : {
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: '90%',
-                  maxWidth: 900,
-                  maxHeight: '90vh',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }),
+              : isMobile
+                ? {
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '95%',
+                    maxHeight: '90dvh',
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }
+                : {
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '90%',
+                    maxWidth: 900,
+                    maxHeight: '90vh',
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }),
           }}
         >
           <SupportDialogHeader

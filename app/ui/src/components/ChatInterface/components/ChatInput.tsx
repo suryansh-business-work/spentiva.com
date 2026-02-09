@@ -1,53 +1,15 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Box, TextField, IconButton, Paper, useTheme, Typography, keyframes } from '@mui/material';
+import { Box, TextField, IconButton, Paper, useTheme } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import MicIcon from '@mui/icons-material/Mic';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import { Visualizer } from 'react-sound-visualizer';
-
-/* ---------- Web Speech API type shims (not in default TS lib) ---------- */
-interface SpeechRecognitionResult {
-  readonly length: number;
-  readonly isFinal: boolean;
-  item(index: number): SpeechRecognitionAlternative;
-  [index: number]: SpeechRecognitionAlternative;
-}
-interface SpeechRecognitionAlternative {
-  readonly transcript: string;
-  readonly confidence: number;
-}
-interface SpeechRecognitionResultList {
-  readonly length: number;
-  item(index: number): SpeechRecognitionResult;
-  [index: number]: SpeechRecognitionResult;
-  [Symbol.iterator](): Iterator<SpeechRecognitionResult>;
-}
-interface SpeechRecognitionEventShim extends Event {
-  readonly results: SpeechRecognitionResultList;
-}
-interface SpeechRecognitionShim extends EventTarget {
-  lang: string;
-  continuous: boolean;
-  interimResults: boolean;
-  onresult: ((event: SpeechRecognitionEventShim) => void) | null;
-  onerror: ((event: Event) => void) | null;
-  onend: (() => void) | null;
-  start(): void;
-  stop(): void;
-  abort(): void;
-}
-interface SpeechRecognitionConstructor {
-  new (): SpeechRecognitionShim;
-}
-/* ---------------------------------------------------------------------- */
-
-/** Pulsing animation for active recording */
-const pulse = keyframes`
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.15); opacity: 0.7; }
-  100% { transform: scale(1); opacity: 1; }
-`;
+import RecordingOverlay from './chatInput/RecordingOverlay';
+import {
+  isSpeechSupported,
+  SpeechRecognitionConstructor,
+  SpeechRecognitionShim,
+  SpeechRecognitionEventShim,
+  SpeechRecognitionResult,
+} from './chatInput/speechTypes';
 
 interface ChatInputProps {
   value: string;
@@ -57,14 +19,9 @@ interface ChatInputProps {
   placeholder?: string;
 }
 
-const isSpeechSupported = (): boolean =>
-  typeof window !== 'undefined' &&
-  ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window);
-
 /**
  * ChatInput Component
- * Compact input form with continuous speech-to-text (records until user
- * explicitly accepts ✓ or cancels ✗) and live audio visualizer
+ * Multiline input form with continuous speech-to-text and live audio visualizer
  */
 const ChatInput: React.FC<ChatInputProps> = ({
   value,
@@ -81,7 +38,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const preRecordValueRef = useRef('');
   const stoppedByUserRef = useRef(false);
 
-  /** Cleanup on unmount */
   useEffect(() => {
     return () => {
       recognitionRef.current?.abort();
@@ -89,36 +45,30 @@ const ChatInput: React.FC<ChatInputProps> = ({
     };
   }, []);
 
-  /** Stop mic stream + recorder */
   const stopMedia = useCallback(() => {
     streamRef.current?.getTracks().forEach(t => t.stop());
     streamRef.current = null;
     setMediaRecorder(null);
   }, []);
 
-  /** Start continuous recording */
   const startRecording = useCallback(async () => {
     if (!isSpeechSupported()) return;
-
     preRecordValueRef.current = value;
     stoppedByUserRef.current = false;
 
-    // Start mic stream for visualizer
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
-      // Keep MediaRecorder reference for compatibility but we use stream directly
       const recorder = new MediaRecorder(stream);
       recorder.start();
       setMediaRecorder(recorder);
     } catch {
-      // Visualizer won't work but speech recognition can still proceed
+      /* Visualizer won't work but speech recognition can still proceed */
     }
 
     const SpeechRecognitionCtor: SpeechRecognitionConstructor | undefined =
       (window as unknown as Record<string, SpeechRecognitionConstructor>).SpeechRecognition ||
       (window as unknown as Record<string, SpeechRecognitionConstructor>).webkitSpeechRecognition;
-
     if (!SpeechRecognitionCtor) return;
 
     const recognition = new SpeechRecognitionCtor();
@@ -140,7 +90,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       }
     };
 
-    // Auto-restart if the browser stops recognition (e.g. silence timeout)
+    // Keep recognition alive on silence — do NOT reset transcript
     recognition.onend = () => {
       if (!stoppedByUserRef.current && recognitionRef.current === recognition) {
         try {
@@ -157,17 +107,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
     setIsRecording(true);
   }, [value, onChange, stopMedia]);
 
-  /** Accept the transcription and stop recording */
   const acceptRecording = useCallback(() => {
     stoppedByUserRef.current = true;
     recognitionRef.current?.stop();
     recognitionRef.current = null;
     stopMedia();
     setIsRecording(false);
-    // value already has transcript — user can now send it
   }, [stopMedia]);
 
-  /** Cancel recording and restore previous value */
   const cancelRecording = useCallback(() => {
     stoppedByUserRef.current = true;
     recognitionRef.current?.abort();
@@ -181,6 +128,13 @@ const ChatInput: React.FC<ChatInputProps> = ({
     e.preventDefault();
     if (!value.trim() || disabled) return;
     onSubmit();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
   };
 
   return (
@@ -199,92 +153,21 @@ const ChatInput: React.FC<ChatInputProps> = ({
       }}
     >
       {isRecording ? (
-        /* ------- Recording Mode: cancel + waveform + accept ------- */
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {/* Visualizer + listening label */}
-          <Box
-            sx={{
-              flex: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 1,
-              borderRadius: 3,
-              py: 0.75,
-              px: 1.5,
-              bgcolor:
-                theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-              border: `1px solid ${theme.palette.divider}`,
-            }}
-          >
-            {streamRef.current && (
-              <Visualizer
-                audio={streamRef.current}
-                mode="continuous"
-                strokeColor={theme.palette.error.main}
-                autoStart
-              >
-                {({ canvasRef }) => (
-                  <canvas ref={canvasRef} width={200} height={28} style={{ display: 'block' }} />
-                )}
-              </Visualizer>
-            )}
-            <Box
-              sx={{
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                bgcolor: 'error.main',
-                animation: `${pulse} 1.2s ease-in-out infinite`,
-              }}
-            />
-            <Typography
-              variant="caption"
-              color="error"
-              sx={{ fontWeight: 600, fontSize: '0.7rem' }}
-            >
-              Listening…
-            </Typography>
-          </Box>
-
-          {/* Cancel + Accept side by side */}
-          <IconButton
-            onClick={cancelRecording}
-            size="small"
-            sx={{
-              width: 38,
-              height: 38,
-              bgcolor: 'error.main',
-              color: '#fff',
-              '&:hover': { bgcolor: 'error.dark' },
-            }}
-          >
-            <CloseIcon sx={{ fontSize: 18 }} />
-          </IconButton>
-
-          <IconButton
-            onClick={acceptRecording}
-            size="small"
-            sx={{
-              width: 38,
-              height: 38,
-              bgcolor: 'success.main',
-              color: '#fff',
-              '&:hover': { bgcolor: 'success.dark' },
-            }}
-          >
-            <CheckIcon sx={{ fontSize: 18 }} />
-          </IconButton>
-        </Box>
+        <RecordingOverlay
+          stream={streamRef.current}
+          onAccept={acceptRecording}
+          onCancel={cancelRecording}
+        />
       ) : (
-        /* ------- Normal Mode: text input + send + mic ------- */
         <form onSubmit={handleSubmit}>
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            {/* Input Field */}
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}>
             <TextField
               fullWidth
+              multiline
+              maxRows={4}
               value={value}
               onChange={e => onChange(e.target.value)}
+              onKeyDown={handleKeyDown}
               placeholder={placeholder}
               disabled={disabled}
               variant="outlined"
@@ -297,8 +180,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 },
               }}
             />
-
-            {/* Submit Button */}
             <IconButton
               type="submit"
               disabled={disabled || !value.trim()}
@@ -324,8 +205,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
             >
               <SendIcon fontSize="small" />
             </IconButton>
-
-            {/* Microphone Button — right of send */}
             {isSpeechSupported() && (
               <IconButton
                 onClick={startRecording}

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Typography, Button, Paper, Chip, Stack, useTheme } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import BusinessIcon from '@mui/icons-material/Business';
 import PersonIcon from '@mui/icons-material/Person';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
@@ -14,7 +13,6 @@ interface TrackerDetailsProps {
     currency: string;
   };
   onEdit: () => void;
-  onDelete: () => void;
 }
 
 const CURRENCY_MAP: Record<string, string> = {
@@ -24,7 +22,7 @@ const CURRENCY_MAP: Record<string, string> = {
   GBP: '£ GBP — British Pound',
 };
 
-const TrackerDetailsSection: React.FC<TrackerDetailsProps> = ({ tracker, onEdit, onDelete }) => {
+const TrackerDetailsSection: React.FC<TrackerDetailsProps> = ({ tracker, onEdit }) => {
   const theme = useTheme();
 
   return (
@@ -104,34 +102,6 @@ const TrackerDetailsSection: React.FC<TrackerDetailsProps> = ({ tracker, onEdit,
             />
           </Box>
         </Stack>
-      </Paper>
-
-      {/* Danger Zone */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 2.5,
-          borderRadius: 2,
-          border: `1px solid ${theme.palette.error.main}30`,
-          bgcolor: `${theme.palette.error.main}05`,
-        }}
-      >
-        <Typography variant="subtitle2" fontWeight={700} color="error" sx={{ mb: 1 }}>
-          Danger Zone
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Permanently delete this tracker and all associated data.
-        </Typography>
-        <Button
-          variant="outlined"
-          color="error"
-          size="small"
-          startIcon={<DeleteOutlineIcon />}
-          onClick={onDelete}
-          sx={{ textTransform: 'none', fontWeight: 600 }}
-        >
-          Delete Tracker
-        </Button>
       </Paper>
     </Box>
   );

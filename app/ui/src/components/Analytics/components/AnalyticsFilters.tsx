@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, TextField } from '@mui/material';
+import { Box, ButtonGroup, Button, TextField, useMediaQuery, useTheme } from '@mui/material';
 
 interface AnalyticsFiltersProps {
   filter: string;
@@ -13,16 +13,16 @@ interface AnalyticsFiltersProps {
 const filterOptions = [
   { value: 'today', label: 'Today' },
   { value: 'yesterday', label: 'Yesterday' },
-  { value: 'last7days', label: 'Last 7 Days' },
-  { value: 'lastMonth', label: 'Last Month' },
-  { value: 'thisMonth', label: 'This Month' },
-  { value: 'thisYear', label: 'This Year' },
+  { value: 'last7days', label: '7D' },
+  { value: 'lastMonth', label: 'Last Mo' },
+  { value: 'thisMonth', label: 'This Mo' },
+  { value: 'thisYear', label: 'Year' },
   { value: 'custom', label: 'Custom' },
 ];
 
 /**
  * AnalyticsFilters Component
- * Renders filter buttons and custom date range inputs
+ * Renders responsive ButtonGroup filter controls and custom date range inputs
  */
 const AnalyticsFilters: React.FC<AnalyticsFiltersProps> = ({
   filter,
@@ -32,43 +32,36 @@ const AnalyticsFilters: React.FC<AnalyticsFiltersProps> = ({
   onCustomStartDateChange,
   onCustomEndDateChange,
 }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <Box>
-      <Box
-        sx={{
-          display: 'flex',
-          flexWrap: 'nowrap',
-          gap: 1,
-          width: '100%',
-          overflowX: 'auto',
-          pb: 0.5,
-          '&::-webkit-scrollbar': {
-            height: '6px',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: 'rgba(0,0,0,0.2)',
-            borderRadius: '3px',
-          },
-        }}
-      >
-        {filterOptions.map(option => (
-          <Button
-            key={option.value}
-            variant={filter === option.value ? 'contained' : 'outlined'}
-            onClick={() => onFilterChange(option.value)}
-            size="small"
-            sx={{
+      <Box sx={{ width: '100%', overflowX: 'auto', pb: 0.5 }}>
+        <ButtonGroup
+          size={isMobile ? 'small' : 'medium'}
+          variant="outlined"
+          sx={{
+            flexWrap: { xs: 'wrap', sm: 'nowrap' },
+            '& .MuiButton-root': {
               textTransform: 'none',
-              fontSize: { xs: '0.75rem', sm: '0.875rem' },
-              px: { xs: 1, sm: 1.5 },
-              minWidth: 'auto',
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-            }}
-          >
-            {option.label}
-          </Button>
-        ))}
+              fontSize: { xs: '0.7rem', sm: '0.8rem' },
+              px: { xs: 0.75, sm: 1.5 },
+              py: { xs: 0.5, sm: 0.75 },
+              minWidth: { xs: 'auto', sm: 64 },
+            },
+          }}
+        >
+          {filterOptions.map(option => (
+            <Button
+              key={option.value}
+              variant={filter === option.value ? 'contained' : 'outlined'}
+              onClick={() => onFilterChange(option.value)}
+            >
+              {option.label}
+            </Button>
+          ))}
+        </ButtonGroup>
       </Box>
 
       {filter === 'custom' && (

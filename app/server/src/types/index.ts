@@ -1,4 +1,4 @@
-export type TransactionType = 'expense' | 'income' | 'transfer';
+export type TransactionType = 'expense' | 'income';
 
 export interface OpenAIUsage {
   prompt_tokens: number;
@@ -11,7 +11,7 @@ export interface Expense {
   type: TransactionType;
   amount: number;
   category: string;
-  subcategory: string;
+  subcategory: string | null;
   categoryId: string;
   paymentMethod: string;
   creditFrom?: string;
@@ -31,7 +31,7 @@ export interface ParsedExpense {
   type: TransactionType;
   amount: number;
   category: string;
-  subcategory: string;
+  subcategory: string | null;
   categoryId: string;
   paymentMethod?: string;
   creditFrom?: string;

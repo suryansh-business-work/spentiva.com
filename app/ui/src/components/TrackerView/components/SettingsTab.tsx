@@ -92,6 +92,10 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
               fontWeight: 500,
               fontSize: '0.8rem',
               px: 2,
+              maxWidth: { xs: 100, sm: 'none' },
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
             },
             '& .MuiTab-root.Mui-selected': { fontWeight: 600 },
             '& .MuiTabs-indicator': { height: 2.5, borderRadius: '2px 2px 0 0' },
@@ -134,7 +138,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
           />
         )}
         {subTab === 1 && (
-          <TrackerDetailsSection tracker={tracker} onEdit={onEdit} onDelete={onDelete} />
+          <TrackerDetailsSection tracker={tracker} onEdit={onEdit} />
         )}
         {subTab === 2 && (
           <Box

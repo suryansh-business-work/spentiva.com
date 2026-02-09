@@ -68,7 +68,7 @@ export class ExpenseService {
     type?: string;
     amount: number;
     category: string;
-    subcategory: string;
+    subcategory?: string | null;
     categoryId: string;
     paymentMethod?: string;
     creditFrom?: string;
@@ -93,15 +93,15 @@ export class ExpenseService {
       userId,
     } = data;
 
-    if (!amount || !category || !subcategory || !categoryId) {
-      throw new Error('Missing required fields: amount, category, subcategory, categoryId');
+    if (!amount || !category || !categoryId) {
+      throw new Error('Missing required fields: amount, category, categoryId');
     }
 
     const expense = await ExpenseModel.create({
       type: type || 'expense',
       amount,
       category,
-      subcategory,
+      subcategory: subcategory || null,
       categoryId,
       paymentMethod,
       creditFrom,
@@ -123,7 +123,7 @@ export class ExpenseService {
       type?: string;
       amount: number;
       category: string;
-      subcategory: string;
+      subcategory?: string | null;
       categoryId: string;
       paymentMethod?: string;
       creditFrom?: string;
@@ -139,9 +139,9 @@ export class ExpenseService {
     const validatedExpenses = expensesData.map((expense, index) => {
       const { amount, category, subcategory, categoryId } = expense;
 
-      if (!amount || !category || !subcategory || !categoryId) {
+      if (!amount || !category || !categoryId) {
         throw new Error(
-          `Expense at index ${index}: Missing required fields (amount, category, subcategory, categoryId)`
+          `Expense at index ${index}: Missing required fields (amount, category, categoryId)`
         );
       }
 
@@ -149,7 +149,7 @@ export class ExpenseService {
         type: expense.type || 'expense',
         amount,
         category,
-        subcategory,
+        subcategory: subcategory || null,
         categoryId,
         paymentMethod: expense.paymentMethod,
         creditFrom: expense.creditFrom,

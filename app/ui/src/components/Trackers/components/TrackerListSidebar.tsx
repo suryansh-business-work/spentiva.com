@@ -96,7 +96,7 @@ const TrackerListSidebar: React.FC<TrackerListSidebarProps> = ({
       </Box>
 
       {/* Tracker List */}
-      <Box sx={{ flex: 1, overflowY: 'auto' }}>
+      <Box sx={{ flex: 1, overflowY: 'auto', borderTop: `1px solid ${theme.palette.divider}` }}>
         {loading ? (
           <Box sx={{ p: 1 }}>
             {[1, 2, 3, 4].map(i => (

@@ -29,7 +29,7 @@ export class ParseExpenseDto {
  * Create Expense DTO
  */
 export class CreateExpenseDto {
-  @IsEnum(['expense', 'income', 'transfer'])
+  @IsEnum(['expense', 'income'])
   @IsOptional()
   type?: string;
 
@@ -42,8 +42,8 @@ export class CreateExpenseDto {
   category!: string;
 
   @IsString()
-  @IsNotEmpty()
-  subcategory!: string;
+  @IsOptional()
+  subcategory?: string;
 
   @IsString()
   @IsNotEmpty()
@@ -93,7 +93,7 @@ export class CreateBulkExpensesDto {
  * Update Expense DTO
  */
 export class UpdateExpenseDto {
-  @IsEnum(['expense', 'income', 'transfer'])
+  @IsEnum(['expense', 'income'])
   @IsOptional()
   type?: string;
 

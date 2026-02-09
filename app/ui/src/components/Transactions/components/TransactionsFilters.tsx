@@ -212,7 +212,6 @@ const TransactionsFilters: React.FC<TransactionsFiltersProps> = ({
           { value: 'all', label: 'All' },
           { value: 'expense', label: 'Expenses' },
           { value: 'income', label: 'Income' },
-          { value: 'transfer', label: 'Transfers' },
         ].map(opt => (
           <Chip
             key={opt.value}
@@ -320,7 +319,6 @@ const TransactionsFilters: React.FC<TransactionsFiltersProps> = ({
             <MenuItem value="all">All Types</MenuItem>
             <MenuItem value="expense">Expense</MenuItem>
             <MenuItem value="income">Income</MenuItem>
-            <MenuItem value="transfer">Transfer</MenuItem>
           </Select>
         </FormControl>
 

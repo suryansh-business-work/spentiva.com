@@ -297,7 +297,7 @@ const Trackers: React.FC = () => {
   if (isMobile) {
     return (
       <>
-        <Box sx={{ height: 'calc(100dvh - 54px)', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ height: 'calc(100dvh - 47px)', display: 'flex', flexDirection: 'column' }}>
           {!activeTrackerId ? <TrackerListSidebar {...sidebarProps} /> : <TrackerView />}
         </Box>
         {dialogs}
@@ -307,7 +307,7 @@ const Trackers: React.FC = () => {
 
   return (
     <>
-      <Box sx={{ display: 'flex', height: 'calc(100vh - 54px)', overflow: 'hidden' }}>
+      <Box sx={{ display: 'flex', height: 'calc(100vh - 47px)', overflow: 'hidden' }}>
         <Box
           sx={{
             width: 320,

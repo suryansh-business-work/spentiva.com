@@ -124,7 +124,7 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
   const totals = filteredExpenses.reduce(
     (acc, exp) => {
       if (exp.type === 'income') acc.income += exp.amount;
-      else if (exp.type !== 'transfer') acc.expense += exp.amount;
+      else acc.expense += exp.amount;
       return acc;
     },
     { income: 0, expense: 0 }
