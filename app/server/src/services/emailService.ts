@@ -2,16 +2,16 @@ import nodemailer from 'nodemailer';
 import mjml2html from 'mjml';
 import fs from 'fs';
 import path from 'path';
-import config from '../config/env';
+import config from '../config/config';
 import { logger } from '../utils/logger';
 
 // SMTP readiness flag
 let smtpReady = false;
 
-const smtpHost = config?.SERVICES?.EMAIL?.NODEMAILER?.HOST;
-const smtpPort = config?.SERVICES?.EMAIL?.NODEMAILER?.PORT ?? 587;
-const smtpUser = config?.SERVICES?.EMAIL?.NODEMAILER?.USER;
-const smtpPass = config?.SERVICES?.EMAIL?.NODEMAILER?.PASS;
+const smtpHost = config.SMTP.HOST;
+const smtpPort = config.SMTP.PORT;
+const smtpUser = config.SMTP.USER;
+const smtpPass = config.SMTP.PASS;
 
 const smtpConfigured = Boolean(smtpHost && smtpUser && smtpPass);
 
@@ -38,7 +38,7 @@ const getTransporter = (): nodemailer.Transporter => {
     pool: true,
     maxConnections: 5,
     maxMessages: 10,
-    tls: { rejectUnauthorized: config?.SERVICES?.EMAIL?.NODEMAILER?.HOST !== 'localhost' },
+    tls: { rejectUnauthorized: config.SMTP.HOST !== 'localhost' },
   });
 
   return transporter;
@@ -333,6 +333,71 @@ export const sendSupportTicketAgentEmail = async (ticketDetails: {
   });
 };
 
+/**
+ * Currency symbol helper
+ */
+const getCurrencySymbol = (currency: string): string => {
+  const symbols: Record<string, string> = { INR: '₹', USD: '$', EUR: '€', GBP: '£' };
+  return symbols[currency] || currency;
+};
+
+/**
+ * Send transaction notification email to tracker members
+ */
+export const sendTransactionNotificationEmail = async (
+  recipients: string[],
+  transaction: {
+    type: string;
+    amount: number;
+    currency: string;
+    category: string;
+    subcategory: string;
+    paymentMethod: string;
+    description?: string;
+    createdByName: string;
+    timestamp: Date | string;
+  },
+  trackerInfo: { id: string; name: string }
+): Promise<void> => {
+  if (!recipients.length) return;
+
+  const templatePath = path.join(__dirname, '../templates/emails/transaction-notification.mjml');
+  const isExpense = transaction.type === 'expense';
+  const date = new Date(transaction.timestamp).toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  const html = compileMjmlTemplate(templatePath, {
+    transactionType: isExpense ? 'Expense' : 'Income',
+    trackerName: trackerInfo.name,
+    amount: transaction.amount.toLocaleString(),
+    currencySymbol: getCurrencySymbol(transaction.currency),
+    amountColor: isExpense ? '#ef4444' : '#10b981',
+    category: transaction.category,
+    subcategory: transaction.subcategory,
+    paymentMethod: transaction.paymentMethod || 'N/A',
+    createdByName: transaction.createdByName,
+    date,
+    description: transaction.description || '',
+    trackerUrl: `${config.APP_URL}/tracker/${trackerInfo.id}`,
+  });
+
+  const subject = `${isExpense ? '💸' : '💰'} ${getCurrencySymbol(transaction.currency)}${transaction.amount} ${isExpense ? 'spent' : 'received'} — ${trackerInfo.name}`;
+
+  // Send to all recipients in parallel
+  await Promise.allSettled(
+    recipients.map(email =>
+      sendEmail({ to: email, subject, html }).catch(err =>
+        logger.error('Failed to send transaction notification', { email, error: err.message })
+      )
+    )
+  );
+};
+
 export default {
   sendEmail,
   sendWelcomeEmail,
@@ -343,4 +408,5 @@ export default {
   sendPasswordResetSuccessEmail,
   sendSupportTicketUserEmail,
   sendSupportTicketAgentEmail,
+  sendTransactionNotificationEmail,
 };

@@ -2,6 +2,8 @@ import { Response } from 'express';
 import ExpenseService from './expense.services';
 import { successResponse, errorResponse, badRequestResponse } from '../../utils/response-object';
 import TrackerModel from '../tracker/tracker.models';
+import { sendTransactionNotificationEmail } from '../../services/emailService';
+import { logger } from '../../utils/logger';
 
 /**
  * Expense Controllers - Request handlers using response-object.ts
@@ -173,6 +175,55 @@ export const createExpenseController = async (req: any, res: Response) => {
       createdAt: expense.createdAt,
       updatedAt: expense.updatedAt,
     }));
+
+    // Fire-and-forget: Send email notifications to tracker members
+    if (trackerId) {
+      (async () => {
+        try {
+          const tracker = await TrackerModel.findById(trackerId);
+          if (!tracker) return;
+
+          // Collect all member emails except the person who created the expense
+          const userEmail = req.user?.email || '';
+          const recipients: string[] = [];
+
+          // Add shared users who accepted the invitation
+          for (const su of tracker.sharedWith || []) {
+            if (su.status === 'accepted' && su.email && su.email !== userEmail) {
+              recipients.push(su.email);
+            }
+          }
+
+          // If creator is a collaborator (not owner), notify the owner too
+          // We don't have owner email on tracker model, skip owner notification for now
+          // unless we add it later
+
+          if (!recipients.length) return;
+
+          for (const expense of formattedExpenses) {
+            sendTransactionNotificationEmail(
+              recipients,
+              {
+                type: expense.type,
+                amount: expense.amount,
+                currency: expense.currency,
+                category: expense.category,
+                subcategory: expense.subcategory,
+                paymentMethod: expense.paymentMethod || '',
+                description: expense.description || '',
+                createdByName: expense.createdByName || 'Someone',
+                timestamp: expense.timestamp || expense.createdAt,
+              },
+              { id: trackerId, name: tracker.name }
+            ).catch(err =>
+              logger.error('Transaction notification failed', { error: err.message })
+            );
+          }
+        } catch (err: any) {
+          logger.error('Error sending transaction notifications', { error: err.message });
+        }
+      })();
+    }
 
     return successResponse(
       res,

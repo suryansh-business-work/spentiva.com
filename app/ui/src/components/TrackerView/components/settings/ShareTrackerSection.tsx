@@ -74,6 +74,8 @@ const ShareTrackerSection: React.FC<ShareTrackerSectionProps> = ({
       if (res?.data?.data?.sharedWith) {
         onSharedUsersChange(res.data.data.sharedWith);
       }
+      // Notify sidebar/tracker list to refresh
+      window.dispatchEvent(new Event('trackersUpdated'));
     } catch {
       /* handled by interceptor */
     } finally {

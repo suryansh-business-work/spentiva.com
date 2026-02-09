@@ -10,9 +10,13 @@ import Policy from './pages/Policy';
 import NotFound from './pages/NotFound';
 import { ThemeModeProvider, useThemeMode } from './contexts/ThemeContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { TokenExpiredProvider, useTokenExpired } from './contexts/TokenExpiredContext';
 import { requestNotificationPermission } from './services/notificationService';
 import { themeConfig, getDarkModeConfig } from './theme/palette';
 import { AUTH_CONFIG } from './config/auth-config';
+import { setTokenExpiredCallback } from './utils/axiosSetup';
+// Import axios setup to initialize interceptors
+import './utils/axiosSetup';
 
 const RedirectToAuth = () => {
   useEffect(() => {
@@ -51,6 +55,7 @@ const RedirectToAdmin = () => {
 const AppContent = () => {
   const { isDarkMode } = useThemeMode();
   const { isAuthenticated, loading: authLoading } = useAuth();
+  const { showTokenExpiredModal } = useTokenExpired();
 
   const theme = useMemo(
     () =>
@@ -64,7 +69,9 @@ const AppContent = () => {
   useEffect(() => {
     // Request notification permission
     requestNotificationPermission();
-  }, []);
+    // Setup token expired callback for axios interceptor
+    setTokenExpiredCallback(showTokenExpiredModal);
+  }, [showTokenExpiredModal]);
 
   if (authLoading) {
     return (
@@ -129,7 +136,7 @@ const AppContent = () => {
               <Route path="/policy" element={<Policy />} />
               <Route
                 path="/admin/*"
-                element={isAuthenticated ? <RedirectToAdmin /> : <RedirectToAuth />}
+                element={<RedirectToAdmin />}
               />
               <Route path="*" element={<NotFound />} />
             </Routes>
@@ -144,7 +151,9 @@ function App() {
   return (
     <AuthProvider>
       <ThemeModeProvider>
-        <AppContent />
+        <TokenExpiredProvider>
+          <AppContent />
+        </TokenExpiredProvider>
       </ThemeModeProvider>
     </AuthProvider>
   );

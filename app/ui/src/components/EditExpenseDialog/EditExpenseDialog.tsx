@@ -180,9 +180,6 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
             <ToggleButton value="income" sx={{ fontWeight: 700 }}>
               Income
             </ToggleButton>
-            <ToggleButton value="transfer" sx={{ fontWeight: 700 }}>
-              Transfer
-            </ToggleButton>
           </ToggleButtonGroup>
 
           {/* Amount */}

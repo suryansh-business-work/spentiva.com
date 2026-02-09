@@ -203,6 +203,37 @@ export const resendShareInviteController = async (req: any, res: Response) => {
 };
 
 /**
+ * Respond to a tracker invitation (accept/decline)
+ */
+export const respondToInviteController = async (req: any, res: Response) => {
+  try {
+    const userId = req.user.userId;
+    const userEmail = req.user.email;
+    const { id } = req.params;
+    const { response } = req.body;
+
+    if (!response || !['accepted', 'rejected'].includes(response)) {
+      return badRequestResponse(res, null, 'Response must be "accepted" or "rejected"');
+    }
+
+    const result = await TrackerService.respondToInvite(userId, userEmail, id, response);
+    return successResponse(
+      res,
+      result,
+      response === 'accepted'
+        ? `You have joined "${result.trackerName}"`
+        : 'Invitation declined'
+    );
+  } catch (error: any) {
+    const clientErrors = ['Invitation not found', 'not invited', 'already'];
+    if (clientErrors.some(msg => error.message?.includes(msg))) {
+      return badRequestResponse(res, null, error.message);
+    }
+    return errorResponse(res, error, 'Internal server error');
+  }
+};
+
+/**
  * Request OTP for tracker deletion
  */
 export const requestDeleteOtpController = async (req: any, res: Response) => {

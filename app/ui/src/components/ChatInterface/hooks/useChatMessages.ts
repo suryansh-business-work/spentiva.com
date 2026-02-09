@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Message } from '../../../types';
 
 /**
@@ -20,19 +20,31 @@ const SUBSCRIPTION_LIMITS: Record<string, number> = {
   businesspro: 2000,
 };
 
+const WELCOME_MESSAGE: Message = {
+  id: '1',
+  role: 'assistant',
+  content:
+    'Hi! I\'m your expense & income tracker. Just type naturally, for example:\n\n💸 Expenses:\n• "Lunch 250 credit card"\n• "Groceries 1500 from UPI"\n• "Paid 8000 rent via net banking"\n• "Bought shoes 2500 and shirt 1200"\n\n💰 Income:\n• "Salary 50000 credited"\n• "Got 1200 refund from Amazon"\n• "Freelance payment 15000 received"\n• "Cashback 500 from Paytm"\n\n🔄 Multiple:\n• "Salary 50k credited and spent 2000 on dinner"',
+  timestamp: new Date(),
+};
+
 /**
  * Custom hook to manage chat message state and usage tracking
  */
 export const useChatMessages = (_trackerId: string | undefined) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content:
-        'Hi! I\'m your expense & income tracker. Just type naturally, for example:\n\n💸 Expenses:\n• "Lunch 250 credit card"\n• "Groceries 1500 from UPI"\n• "Paid 8000 rent via net banking"\n• "Bought shoes 2500 and shirt 1200"\n\n💰 Income:\n• "Salary 50000 credited"\n• "Got 1200 refund from Amazon"\n• "Freelance payment 15000 received"\n• "Cashback 500 from Paytm"\n\n🔄 Multiple:\n• "Salary 50k credited and spent 2000 on dinner"',
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
+
+  // Listen for clear chat event from settings
+  useEffect(() => {
+    const handleClearChat = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (!detail?.trackerId || detail.trackerId === _trackerId) {
+        setMessages([{ ...WELCOME_MESSAGE, id: Date.now().toString(), timestamp: new Date() }]);
+      }
+    };
+    window.addEventListener('clearChat', handleClearChat);
+    return () => window.removeEventListener('clearChat', handleClearChat);
+  }, [_trackerId]);
 
   /**
    * Track message usage in localStorage

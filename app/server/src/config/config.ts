@@ -25,6 +25,7 @@ const config = {
   /** Server */
   PORT: parseInt(optionalEnv('PORT', '5002'), 10),
   NODE_ENV: optionalEnv('NODE_ENV', 'development'),
+  LOG_LEVEL: optionalEnv('LOG_LEVEL', 'info'),
 
   /** Database */
   DBURL: requireEnv('DBURL', 'mongodb://localhost:27017/spentiva'),

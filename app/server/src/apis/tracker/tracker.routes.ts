@@ -10,6 +10,7 @@ import {
   resendShareInviteController,
   requestDeleteOtpController,
   confirmDeleteController,
+  respondToInviteController,
 } from './tracker.controllers';
 import { authenticateMiddleware } from '../../middleware/auth.middleware';
 
@@ -49,5 +50,6 @@ router.post('/unshare/:id', authenticateMiddleware, removeSharedUserController);
 
 // Resend share invitation
 router.post('/resend-invite/:id', authenticateMiddleware, resendShareInviteController);
+router.post('/respond-invite/:id', authenticateMiddleware, respondToInviteController);
 
 export default router;

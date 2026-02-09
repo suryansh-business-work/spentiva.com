@@ -615,6 +615,46 @@ class TrackerService {
   }
 
   /**
+   * Respond to a tracker invitation (accept or decline)
+   */
+  async respondToInvite(
+    userId: string,
+    userEmail: string,
+    trackerId: string,
+    response: 'accepted' | 'rejected'
+  ) {
+    const tracker = await TrackerModel.findOne({
+      _id: trackerId,
+      'sharedWith.email': userEmail,
+    });
+
+    if (!tracker) {
+      throw new Error('Invitation not found');
+    }
+
+    const shared = tracker.sharedWith.find(s => s.email === userEmail);
+    if (!shared) {
+      throw new Error('You are not invited to this tracker');
+    }
+
+    if (shared.status !== 'pending') {
+      throw new Error(`Invitation already ${shared.status}`);
+    }
+
+    shared.status = response;
+    if (response === 'accepted') {
+      shared.userId = userId;
+    }
+
+    await tracker.save();
+    return {
+      status: response,
+      trackerName: tracker.name,
+      trackerId: tracker._id.toString(),
+    };
+  }
+
+  /**
    * Request OTP for tracker deletion — generates a 6-digit code and returns it.
    * The controller is responsible for emailing it.
    */

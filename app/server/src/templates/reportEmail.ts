@@ -56,14 +56,14 @@ export const generateReportEmail = (data: ReportData): string => {
         </mj-style>
       </mj-head>
 
-      <mj-body background-color="#f3f4f6">
+      <mj-body background-color="#f8fafc">
         <!-- Header -->
-        <mj-section background-color="#059669" padding="28px 20px 20px">
+        <mj-section background-color="#ffffff" padding="28px 24px 20px" border-bottom="2px solid #10b981">
           <mj-column>
-            <mj-text align="center" font-size="26px" font-weight="700" color="#ffffff" letter-spacing="0.5px">
+            <mj-text font-size="22px" font-weight="700" color="#0f172a" letter-spacing="-0.3px">
               Spentiva
             </mj-text>
-            <mj-text align="center" font-size="13px" color="rgba(255,255,255,0.8)" padding-top="6px">
+            <mj-text font-size="13px" color="#6b7280" padding-top="4px">
               Financial Report &middot; ${data.dateRange}
             </mj-text>
           </mj-column>
@@ -176,7 +176,7 @@ export const generateReportEmail = (data: ReportData): string => {
               <mj-column>
                 <mj-raw>
                   <div class="progress-bar">
-                    <div style="width: ${percentage}%; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); height: 100%;"></div>
+                    <div style="width: ${percentage}%; background: #dc2626; height: 100%;"></div>
                   </div>
                 </mj-raw>
               </mj-column>
@@ -216,7 +216,7 @@ export const generateReportEmail = (data: ReportData): string => {
               <mj-column>
                 <mj-raw>
                   <div class="progress-bar">
-                    <div style="width: ${percentage}%; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); height: 100%;"></div>
+                    <div style="width: ${percentage}%; background: #16a34a; height: 100%;"></div>
                   </div>
                 </mj-raw>
               </mj-column>

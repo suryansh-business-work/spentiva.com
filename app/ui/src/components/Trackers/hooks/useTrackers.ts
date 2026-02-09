@@ -128,6 +128,13 @@ export const useTrackers = () => {
     loadTrackers();
   }, [loadTrackers]);
 
+  // Refresh tracker list when collaborators change
+  useEffect(() => {
+    const handler = () => loadTrackers();
+    window.addEventListener('trackersUpdated', handler);
+    return () => window.removeEventListener('trackersUpdated', handler);
+  }, [loadTrackers]);
+
   return {
     trackers,
     loading,

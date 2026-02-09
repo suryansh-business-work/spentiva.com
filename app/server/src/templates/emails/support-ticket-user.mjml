@@ -1,98 +1,93 @@
 <mjml>
   <mj-head>
     <mj-title>Support Ticket Created - Spentiva</mj-title>
-    <mj-font
-      name="Inter"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-    />
+    <mj-font name="Inter" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
     <mj-attributes>
       <mj-all font-family="Inter, Arial, sans-serif" />
-      <mj-text font-size="16px" color="#333333" line-height="1.6" />
-      <mj-section padding="20px" />
+      <mj-text font-size="14px" color="#334155" line-height="1.6" />
+      <mj-section background-color="#ffffff" padding="0" />
     </mj-attributes>
   </mj-head>
-  <mj-body background-color="#f4f4f4">
+  <mj-body background-color="#f8fafc">
     <!-- Header -->
-    <mj-section background-color="#6366f1" padding="30px">
+    <mj-section background-color="#ffffff" padding="28px 24px 20px" border-bottom="2px solid #10b981">
       <mj-column>
-        <mj-text align="center" color="#ffffff" font-size="28px" font-weight="700">
+        <mj-text font-size="22px" font-weight="700" color="#0f172a" letter-spacing="-0.3px">
           Spentiva
         </mj-text>
       </mj-column>
     </mj-section>
 
     <!-- Main Content -->
-    <mj-section background-color="#ffffff" padding="40px 30px">
+    <mj-section background-color="#ffffff" padding="32px 28px">
       <mj-column>
-        <mj-text font-size="24px" font-weight="600" color="#1f2937" padding-bottom="20px">
-          Your Ticket Has Been Created! ✅
+        <mj-text font-size="15px" color="#475569" padding-bottom="16px">
+          Hi {{ userName }},
         </mj-text>
 
-        <mj-text color="#4b5563"> Hi {{ userName }}, </mj-text>
-
-        <mj-text color="#4b5563">
-          Thank you for contacting Spentiva Support. We have received your support request and our
-          team will review it shortly.
+        <mj-text font-size="15px" color="#334155" line-height="1.7" padding-bottom="24px">
+          Your support ticket has been created. Our team will review it and respond within 24 hours.
         </mj-text>
 
-        <!-- Ticket Details Box -->
-        <mj-section
-          background-color="#f0f9ff"
-          border-radius="8px"
-          padding="25px"
-          border="1px solid #e0e7ff"
-        >
-          <mj-column>
-            <mj-text font-size="14px" color="#6b7280" padding-bottom="5px"> Ticket ID </mj-text>
-            <mj-text font-size="20px" font-weight="700" color="#6366f1" padding-bottom="15px">
-              {{ ticketId }}
-            </mj-text>
+        <!-- Ticket Details -->
+        <mj-wrapper background-color="#f8fafc" padding="20px 24px" border-radius="6px" border="1px solid #e2e8f0">
+          <mj-section background-color="transparent" padding="0">
+            <mj-column>
+              <mj-text font-size="11px" color="#64748b" font-weight="600" letter-spacing="0.8px" padding-bottom="4px">
+                TICKET ID
+              </mj-text>
+              <mj-text font-size="16px" font-weight="700" color="#0f172a" padding-bottom="16px">
+                {{ ticketId }}
+              </mj-text>
 
-            <mj-text font-size="14px" color="#6b7280" padding-bottom="5px"> Type </mj-text>
-            <mj-text font-size="16px" font-weight="600" color="#1f2937" padding-bottom="15px">
-              {{ ticketType }}
-            </mj-text>
+              <mj-text font-size="11px" color="#64748b" font-weight="600" letter-spacing="0.8px" padding-bottom="4px">
+                TYPE
+              </mj-text>
+              <mj-text font-size="14px" font-weight="600" color="#334155" padding-bottom="16px">
+                {{ ticketType }}
+              </mj-text>
 
-            <mj-text font-size="14px" color="#6b7280" padding-bottom="5px"> Subject </mj-text>
-            <mj-text font-size="16px" font-weight="600" color="#1f2937" padding-bottom="15px">
-              {{ subject }}
-            </mj-text>
+              <mj-text font-size="11px" color="#64748b" font-weight="600" letter-spacing="0.8px" padding-bottom="4px">
+                SUBJECT
+              </mj-text>
+              <mj-text font-size="14px" font-weight="600" color="#334155" padding-bottom="16px">
+                {{ subject }}
+              </mj-text>
 
-            <mj-text font-size="14px" color="#6b7280" padding-bottom="5px"> Status </mj-text>
-            <mj-text font-size="16px" font-weight="600" color="#10b981"> Open </mj-text>
-          </mj-column>
-        </mj-section>
+              <mj-text font-size="11px" color="#64748b" font-weight="600" letter-spacing="0.8px" padding-bottom="4px">
+                STATUS
+              </mj-text>
+              <mj-text font-size="14px" font-weight="600" color="#10b981">
+                Open
+              </mj-text>
+            </mj-column>
+          </mj-section>
+        </mj-wrapper>
 
-        <mj-text color="#4b5563" padding-top="20px">
-          <strong>What happens next?</strong>
+        <!-- Next Steps -->
+        <mj-text font-size="14px" color="#334155" font-weight="600" padding="24px 0 12px 0">
+          What happens next?
         </mj-text>
 
-        <mj-text color="#4b5563" padding-left="10px">
-          • Our support team will review your request<br />
-          • You'll receive updates via email<br />
-          • We typically respond within 24 hours
+        <mj-text font-size="13px" color="#475569" line-height="2" padding-bottom="24px">
+          &#8226; Our support team will review your request<br />
+          &#8226; You'll receive updates via email<br />
+          &#8226; We typically respond within 24 hours
         </mj-text>
 
-        <mj-divider border-color="#e5e7eb" padding="30px 0" />
+        <mj-divider border-color="#e2e8f0" border-width="1px" padding="4px 0 20px 0" />
 
-        <mj-text color="#6b7280" font-size="14px">
-          You can track your ticket status by contacting us or checking your email for updates.
-        </mj-text>
-
-        <mj-text color="#6b7280" font-size="14px" padding-top="20px">
-          Need immediate assistance? Contact our support team at suryansh.personal1@gmail.com
+        <mj-text font-size="12px" color="#94a3b8" line-height="1.6">
+          Need immediate assistance? Contact us at suryansh.personal1@gmail.com
         </mj-text>
       </mj-column>
     </mj-section>
 
     <!-- Footer -->
-    <mj-section background-color="#f4f4f4" padding="20px">
+    <mj-section background-color="#f8fafc" padding="20px 24px" border-top="1px solid #e2e8f0">
       <mj-column>
-        <mj-text align="center" color="#9ca3af" font-size="12px">
-          © 2025 Spentiva. All rights reserved.
-        </mj-text>
-        <mj-text align="center" color="#9ca3af" font-size="12px">
-          You're receiving this email because you created a support ticket.
+        <mj-text align="center" font-size="11px" color="#94a3b8">
+          &copy; 2025 Spentiva &middot; Smart Expense Tracking
         </mj-text>
       </mj-column>
     </mj-section>

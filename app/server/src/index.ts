@@ -11,7 +11,7 @@ import compression from 'compression';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 import db from './config/db';
-import config from './config/env';
+import config from './config/config';
 import swaggerSpec from './swagger/config';
 import { logger } from './utils/logger';
 import { requestLogger } from './middleware/request-logger';
@@ -69,7 +69,7 @@ app.use(
       if (!origin) return callback(null, true);
 
       // If allowedOrigins contains * or the origin itself, allow it
-      if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+      if (allowedOrigins.indexOf(origin) !== -1 || config.NODE_ENV === 'development') {
         callback(null, true);
       } else {
         logger.warn('CORS blocked origin', { origin });
@@ -177,7 +177,7 @@ app.use((err: any, _req: any, res: any, _next: any) => {
 app.listen(PORT, () => {
   logger.info('🚀 Spentiva Server Started', {
     port: PORT,
-    environment: process.env.NODE_ENV || 'development',
+    environment: config.NODE_ENV,
     nodeVersion: process.version,
   });
   console.log(`\n✅ Server running on http://localhost:${PORT}`);

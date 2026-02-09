@@ -1,15 +1,12 @@
 import OpenAI from 'openai';
 import { EXPENSE_CATEGORIES, PAYMENT_METHODS } from '../config/categories';
 import { ParsedExpense, OpenAIUsage } from '../types';
-import config from '../config/env';
+import config from '../config/config';
 import { logger } from '../utils/logger';
 
-// Prefer the configured key from `config`, but fall back to process.env
-const OPENAI_KEY = config.OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+const OPENAI_KEY = config.OPENAI_API_KEY;
 if (!OPENAI_KEY) {
-  logger.warn(
-    'OpenAI API key is not set in config or process.env. OpenAI features will be disabled.'
-  );
+  logger.warn('OpenAI API key is not configured. OpenAI features will be disabled.');
 }
 const openai = OPENAI_KEY ? new OpenAI({ apiKey: OPENAI_KEY }) : null;
 

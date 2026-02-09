@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Box, Snackbar, Alert, useMediaQuery, useTheme, Typography } from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { Tracker, TrackerFormData } from './types/tracker.types';
 import { useTrackers } from './hooks/useTrackers';
 import TrackerActionsDrawer from './components/TrackerActionsDrawer';
 import CreateEditDialog from './components/CreateEditDialog';
 import DeleteDialog from './components/DeleteDialog';
+import AcceptInviteDialog from './components/AcceptInviteDialog';
 import TrackerListSidebar from './components/TrackerListSidebar';
 import TrackerView from '../TrackerView/TrackerView';
 import { endpoints } from '../../config/api';
@@ -29,13 +30,13 @@ const Trackers: React.FC = () => {
     saving,
     deleting,
     snackbar,
-    createTracker,
     updateTracker,
     requestDeleteOtp,
     confirmDeleteWithOtp,
     closeSnackbar,
   } = useTrackers();
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -44,6 +45,9 @@ const Trackers: React.FC = () => {
   const [menuTracker, setMenuTracker] = useState<Tracker | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [monthlyStats, setMonthlyStats] = useState<Record<string, MonthlyStats>>({});
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [inviteTrackerId, setInviteTrackerId] = useState('');
+  const [inviteEmail, setInviteEmail] = useState('');
   const [dialogInitialValues, setDialogInitialValues] = useState<TrackerFormData>({
     name: '',
     type: 'personal',
@@ -51,6 +55,22 @@ const Trackers: React.FC = () => {
     currency: 'INR',
     shareEmails: [],
   });
+
+  // Detect invite link query params
+  useEffect(() => {
+    const acceptId = searchParams.get('accept');
+    const email = searchParams.get('email');
+    if (acceptId && email) {
+      setInviteTrackerId(acceptId);
+      setInviteEmail(email);
+      setInviteDialogOpen(true);
+    }
+  }, [searchParams]);
+
+  const clearInviteParams = useCallback(() => {
+    setInviteDialogOpen(false);
+    setSearchParams({}, { replace: true });
+  }, [setSearchParams]);
 
   // Fetch monthly stats for all trackers
   const fetchStats = useCallback(async () => {
@@ -156,27 +176,30 @@ const Trackers: React.FC = () => {
 
   const handleSave = async (values: TrackerFormData) => {
     const { shareEmails, ...trackerData } = values;
-    const success =
-      editMode && selectedTracker
-        ? await updateTracker(selectedTracker.id, trackerData)
-        : await createTracker(trackerData);
-    if (success) {
+    let newTrackerId: string | null = null;
+    if (editMode && selectedTracker) {
+      await updateTracker(selectedTracker.id, trackerData);
+    } else {
+      const res = await postRequest(endpoints.trackers.create, trackerData);
+      const data = parseResponseData<any>(res, {});
+      newTrackerId = data?.tracker?.id || data?.tracker?._id || null;
       // Send share invites for new tracker
-      if (!editMode && shareEmails?.length) {
-        const newTracker = trackers[trackers.length - 1];
-        if (newTracker) {
-          for (const email of shareEmails) {
-            try {
-              await postRequest(endpoints.trackers.share(newTracker.id), { email, role: 'editor' });
-            } catch {
-              /* silent */
-            }
+      if (newTrackerId && shareEmails?.length) {
+        for (const email of shareEmails) {
+          try {
+            await postRequest(endpoints.trackers.share(newTrackerId), { email, role: 'editor' });
+          } catch {
+            /* silent */
           }
         }
       }
-      setDialogOpen(false);
-      setEditMode(false);
-      setSelectedTracker(null);
+    }
+    setDialogOpen(false);
+    setEditMode(false);
+    setSelectedTracker(null);
+    // Navigate to newly created tracker
+    if (newTrackerId) {
+      navigate(`/tracker/${newTrackerId}`);
     }
   };
 
@@ -238,7 +261,10 @@ const Trackers: React.FC = () => {
         onConfirm={async (otp: string) => {
           if (!selectedTracker) return false;
           const success = await confirmDeleteWithOtp(selectedTracker.id, otp);
-          if (success) setDeleteDialogOpen(false);
+          if (success) {
+            setDeleteDialogOpen(false);
+            navigate('/trackers');
+          }
           return success;
         }}
         deleting={deleting}
@@ -253,6 +279,18 @@ const Trackers: React.FC = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+      <AcceptInviteDialog
+        open={inviteDialogOpen}
+        trackerId={inviteTrackerId}
+        email={inviteEmail}
+        onClose={clearInviteParams}
+        onAccepted={(id) => {
+          clearInviteParams();
+          window.dispatchEvent(new Event('trackersUpdated'));
+          navigate(`/tracker/${id}`);
+        }}
+        onDeclined={clearInviteParams}
+      />
     </>
   );
 

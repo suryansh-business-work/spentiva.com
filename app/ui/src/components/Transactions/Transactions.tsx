@@ -11,6 +11,7 @@ import {
   Button,
   Snackbar,
   Alert,
+  CircularProgress,
 } from '@mui/material';
 import { Expense } from '../../types';
 import EditExpenseDialog from '../EditExpenseDialog/EditExpenseDialog';
@@ -33,6 +34,7 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
+  const [deleting, setDeleting] = useState(false);
 
   const paymentMethods = [
     'Cash',
@@ -94,7 +96,9 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
 
   const handleDeleteConfirm = async () => {
     if (!selectedExpense) return;
+    setDeleting(true);
     await handleConfirmDelete(selectedExpense.id);
+    setDeleting(false);
     setDeleteDialogOpen(false);
   };
 
@@ -197,7 +201,7 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
         creditSources={creditSources}
       />
 
-      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+      <Dialog open={deleteDialogOpen} onClose={() => !deleting && setDeleteDialogOpen(false)}>
         <DialogTitle>Delete Transaction</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -206,9 +210,17 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
-            Delete
+          <Button onClick={() => setDeleteDialogOpen(false)} disabled={deleting}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDeleteConfirm}
+            color="error"
+            variant="contained"
+            disabled={deleting}
+            startIcon={deleting ? <CircularProgress size={16} color="inherit" /> : undefined}
+          >
+            {deleting ? 'Deleting...' : 'Delete'}
           </Button>
         </DialogActions>
       </Dialog>

@@ -24,7 +24,7 @@ const Header: React.FC<HeaderProps> = ({ onCreateTracker }) => {
   const { isDarkMode, toggleTheme } = useThemeMode();
   const { user } = useAuth();
 
-  const isTrackersPage = location.pathname === '/trackers' || location.pathname === '/';
+  const isTrackersPage = location.pathname.startsWith('/tracker') || location.pathname === '/';
 
   return (
     <>
@@ -36,14 +36,14 @@ const Header: React.FC<HeaderProps> = ({ onCreateTracker }) => {
           borderBottom: `1px solid ${theme.palette.divider}`,
         }}
       >
-        <Toolbar sx={{ minHeight: '52px !important', height: 52, px: 2, gap: 1 }}>
+        <Toolbar sx={{ minHeight: '46px !important', height: 46, px: 1.5, gap: 0.5 }}>
           <Box sx={{ cursor: 'pointer', flexShrink: 0 }} onClick={() => navigate('/trackers')}>
-            <Logo width={90} height={24} />
+            <Logo width={80} height={22} showSubtitle={false} />
           </Box>
 
           <Box sx={{ flexGrow: 1 }} />
 
-          {/* Create Tracker Button — only visible on /trackers */}
+          {/* Create Tracker Button — always visible */}
           {onCreateTracker && isTrackersPage && (
             <Tooltip title="Create Tracker" arrow>
               <IconButton
@@ -53,12 +53,12 @@ const Header: React.FC<HeaderProps> = ({ onCreateTracker }) => {
                   bgcolor: theme.palette.primary.main,
                   color: theme.palette.primary.contrastText,
                   borderRadius: 1.5,
-                  width: 32,
-                  height: 32,
+                  width: 30,
+                  height: 30,
                   '&:hover': { bgcolor: theme.palette.primary.dark },
                 }}
               >
-                <AddIcon sx={{ fontSize: 18 }} />
+                <AddIcon sx={{ fontSize: 16 }} />
               </IconButton>
             </Tooltip>
           )}
@@ -70,14 +70,14 @@ const Header: React.FC<HeaderProps> = ({ onCreateTracker }) => {
             sx={{
               bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
               borderRadius: 1.5,
-              width: 32,
-              height: 32,
+              width: 30,
+              height: 30,
             }}
           >
             {isDarkMode ? (
-              <LightModeIcon sx={{ fontSize: 18, color: theme.palette.warning.main }} />
+              <LightModeIcon sx={{ fontSize: 16, color: theme.palette.warning.main }} />
             ) : (
-              <DarkModeIcon sx={{ fontSize: 18, color: theme.palette.primary.main }} />
+              <DarkModeIcon sx={{ fontSize: 16, color: theme.palette.primary.main }} />
             )}
           </IconButton>
 
@@ -90,11 +90,11 @@ const Header: React.FC<HeaderProps> = ({ onCreateTracker }) => {
                 bgcolor:
                   theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
                 borderRadius: 1.5,
-                width: 32,
-                height: 32,
+                width: 30,
+                height: 30,
               }}
             >
-              <SupportAgentIcon sx={{ fontSize: 18 }} />
+              <SupportAgentIcon sx={{ fontSize: 16 }} />
             </IconButton>
           </Tooltip>
 
@@ -111,10 +111,10 @@ const Header: React.FC<HeaderProps> = ({ onCreateTracker }) => {
             <Avatar
               src={user?.profilePicture}
               sx={{
-                width: 26,
-                height: 26,
+                width: 24,
+                height: 24,
                 background: theme.palette.primary.main,
-                fontSize: '0.75rem',
+                fontSize: '0.7rem',
               }}
             >
               {user?.firstName?.charAt(0).toUpperCase()}

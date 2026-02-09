@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import config from '../config/env';
+import config from '../config/config';
 import { errorResponse } from '../utils/response-object';
 
 /**
@@ -19,6 +19,15 @@ export const authenticateMiddleware = (req: any, res: any, next: any) => {
 
   jwt.verify(token, JWT_SECRET, (err: any, decoded: any) => {
     if (err) {
+      // Check if token is expired
+      if (err.name === 'TokenExpiredError') {
+        return res.status(401).json({
+          success: false,
+          message: 'Token expired',
+          error: 'TOKEN_EXPIRED',
+          data: null
+        });
+      }
       return errorResponse(res, err, 'Invalid or expired token');
     }
 

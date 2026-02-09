@@ -93,7 +93,7 @@ const CreateEditDialog: React.FC<CreateEditDialogProps> = ({
 
             <TrackerTypeSelector
               type={formik.values.type}
-              disabled={disabled}
+              disabled={disabled || editMode}
               onChange={v => formik.setFieldValue('type', v)}
               pal={pal}
               theme={theme}
@@ -113,7 +113,7 @@ const CreateEditDialog: React.FC<CreateEditDialogProps> = ({
               disabled={disabled}
             />
 
-            <FormControl fullWidth disabled={disabled}>
+            <FormControl fullWidth disabled={disabled || editMode}>
               <InputLabel>Currency</InputLabel>
               <Select
                 name="currency"
@@ -128,14 +128,25 @@ const CreateEditDialog: React.FC<CreateEditDialogProps> = ({
               </Select>
             </FormControl>
 
-            <Alert
-              severity="info"
-              variant="outlined"
-              sx={{ py: 0.5, '& .MuiAlert-message': { fontSize: '0.8rem' } }}
-            >
-              All transactions will be recorded in the selected currency. Currency conversion is not
-              supported.
-            </Alert>
+            {editMode ? (
+              <Alert
+                severity="info"
+                variant="outlined"
+                sx={{ py: 0.5, '& .MuiAlert-message': { fontSize: '0.8rem' } }}
+              >
+                Type and currency cannot be changed after creation. Only name and description are
+                editable.
+              </Alert>
+            ) : (
+              <Alert
+                severity="info"
+                variant="outlined"
+                sx={{ py: 0.5, '& .MuiAlert-message': { fontSize: '0.8rem' } }}
+              >
+                All transactions will be recorded in the selected currency. Currency conversion is
+                not supported.
+              </Alert>
+            )}
 
             {!editMode && (
               <ShareEmailsField

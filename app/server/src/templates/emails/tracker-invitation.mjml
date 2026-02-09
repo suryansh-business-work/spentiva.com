@@ -1,169 +1,97 @@
 <mjml>
   <mj-head>
     <mj-title>Tracker Invitation - Spentiva</mj-title>
-    <mj-font
-      name="Inter"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-    />
+    <mj-font name="Inter" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
     <mj-attributes>
       <mj-all font-family="Inter, Arial, sans-serif" />
       <mj-text font-size="14px" color="#334155" line-height="1.6" />
-      <mj-section background-color="#ffffff" padding="0px" />
+      <mj-section background-color="#ffffff" padding="0" />
     </mj-attributes>
-    <mj-style inline="inline">
-      .tracker-name {
-        color: #0f172a;
-        font-weight: 700;
-        font-size: 20px;
-      }
-      .role-badge {
-        display: inline-block;
-        padding: 4px 12px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: #ffffff;
-        border-radius: 16px;
-        font-weight: 600;
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      .feature-item {
-        margin: 8px 0;
-      }
-      .feature-icon {
-        color: #10b981;
-        font-weight: bold;
-        margin-right: 8px;
-      }
-    </mj-style>
   </mj-head>
-  <mj-body background-color="#f1f5f9">
+  <mj-body background-color="#f8fafc">
     <!-- Header -->
-    <mj-section background-color="#0f172a" padding="32px 20px">
+    <mj-section background-color="#ffffff" padding="28px 24px 20px" border-bottom="2px solid #10b981">
       <mj-column>
-        <mj-text
-          align="center"
-          color="#ffffff"
-          font-size="28px"
-          font-weight="700"
-          letter-spacing="-0.5px"
-        >
+        <mj-text font-size="22px" font-weight="700" color="#0f172a" letter-spacing="-0.3px">
           Spentiva
-        </mj-text>
-        <mj-text align="center" color="#94a3b8" font-size="14px" padding-top="8px">
-          Smart Expense Tracking
         </mj-text>
       </mj-column>
     </mj-section>
 
     <!-- Main Content -->
-    <mj-section background-color="#ffffff" padding="40px 30px">
+    <mj-section background-color="#ffffff" padding="32px 28px">
       <mj-column>
-        <!-- Greeting -->
-        <mj-text font-size="16px" color="#475569" padding-bottom="20px"> Hello! 👋 </mj-text>
-
-        <!-- Invitation Message -->
-        <mj-text font-size="15px" color="#334155" line-height="1.7" padding-bottom="24px">
-          You've been invited to collaborate on a tracker in Spentiva:
+        <mj-text font-size="15px" color="#475569" padding-bottom="16px">
+          Hello,
         </mj-text>
 
-        <!-- Tracker Card -->
-        <mj-wrapper
-          background-color="#f8fafc"
-          border-radius="12px"
-          padding="24px"
-          css-class="tracker-card"
-        >
+        <mj-text font-size="15px" color="#334155" line-height="1.7" padding-bottom="24px">
+          You've been invited to collaborate on a tracker in Spentiva.
+        </mj-text>
+
+        <!-- Tracker Info -->
+        <mj-wrapper background-color="#f8fafc" padding="20px 24px" border-radius="6px" border="1px solid #e2e8f0">
           <mj-section background-color="transparent" padding="0">
             <mj-column>
-              <mj-text align="center" css-class="tracker-name" padding-bottom="12px">
+              <mj-text font-size="11px" color="#64748b" font-weight="600" letter-spacing="0.8px" padding-bottom="6px">
+                TRACKER
+              </mj-text>
+              <mj-text font-size="18px" font-weight="700" color="#0f172a" padding-bottom="12px">
                 {{ trackerName }}
               </mj-text>
-              <mj-text align="center" font-size="13px" color="#64748b" padding-bottom="16px">
-                Tracker Type: <strong>{{ trackerType }}</strong>
-              </mj-text>
-              <mj-text align="center" padding-bottom="0">
-                <span class="role-badge">{{ role }}</span>
+              <mj-text font-size="13px" color="#64748b" padding-bottom="0">
+                Type: <strong style="color:#334155">{{ trackerType }}</strong> &nbsp;&middot;&nbsp;
+                Role: <strong style="color:#334155">{{ role }}</strong>
               </mj-text>
             </mj-column>
           </mj-section>
         </mj-wrapper>
 
-        <!-- Features -->
-        <mj-text font-size="15px" color="#334155" font-weight="600" padding="32px 0 16px 0">
+        <!-- Permissions -->
+        <mj-text font-size="14px" color="#334155" font-weight="600" padding="24px 0 12px 0">
           What you can do:
         </mj-text>
 
-        <mj-text font-size="14px" color="#475569" padding="0 0 8px 0">
-          <div class="feature-item">
-            <span class="feature-icon">✓</span> Track and manage expenses
-          </div>
-        </mj-text>
-        <mj-text font-size="14px" color="#475569" padding="0 0 8px 0">
-          <div class="feature-item">
-            <span class="feature-icon">✓</span> View detailed analytics and reports
-          </div>
-        </mj-text>
-        <mj-text font-size="14px" color="#475569" padding="0 0 8px 0">
-          <div class="feature-item">
-            <span class="feature-icon">✓</span> Collaborate in real-time with AI assistance
-          </div>
-        </mj-text>
-        <mj-text font-size="14px" color="#475569" padding="0 0 24px 0">
-          <div class="feature-item"><span class="feature-icon">✓</span> {{ rolePermission }}</div>
+        <mj-text font-size="13px" color="#475569" line-height="2" padding-bottom="24px">
+          &#8226; Track and manage expenses<br />
+          &#8226; View analytics and reports<br />
+          &#8226; Collaborate with AI assistance<br />
+          &#8226; {{ rolePermission }}
         </mj-text>
 
         <!-- CTA Button -->
         <mj-button
-          background-color="#667eea"
+          background-color="#10b981"
           color="#ffffff"
-          font-size="16px"
+          font-size="15px"
           font-weight="600"
-          border-radius="8px"
-          padding="32px 0 24px 0"
+          border-radius="6px"
+          padding="24px 0 16px 0"
           href="{{ acceptUrl }}"
-          inner-padding="14px 32px"
+          inner-padding="12px 28px"
         >
-          Accept Invitation & Get Started
+          Accept Invitation
         </mj-button>
 
-        <!-- Alternative Link -->
-        <mj-text align="center" font-size="12px" color="#94a3b8" padding="16px 0 0 0">
-          Or copy and paste this link in your browser:
-        </mj-text>
-        <mj-text
-          align="center"
-          font-size="11px"
-          color="#3b82f6"
-          padding="8px 20px 0 20px"
-          line-height="1.5"
-        >
-          <a
-            href="{{ acceptUrl }}"
-            style="color: #3b82f6; text-decoration: none; word-break: break-all"
-            >{{ acceptUrl }}</a
-          >
+        <mj-text align="center" font-size="12px" color="#94a3b8" padding="12px 20px 0 20px">
+          Or copy this link:
+          <a href="{{ acceptUrl }}" style="color:#10b981;text-decoration:none;word-break:break-all">{{ acceptUrl }}</a>
         </mj-text>
 
-        <!-- Divider -->
-        <mj-divider border-color="#e2e8f0" border-width="1px" padding="32px 0" />
+        <mj-divider border-color="#e2e8f0" border-width="1px" padding="28px 0 20px 0" />
 
-        <!-- Footer Note -->
-        <mj-text font-size="13px" color="#64748b" align="center" line-height="1.6">
-          If you didn't expect this invitation, you can safely ignore this email. The invitation
-          will remain pending until you accept or the tracker owner removes it.
+        <mj-text font-size="12px" color="#94a3b8" line-height="1.6">
+          If you didn't expect this invitation, you can safely ignore this email.
+          The invitation will remain pending until you accept or the tracker owner removes it.
         </mj-text>
       </mj-column>
     </mj-section>
 
     <!-- Footer -->
-    <mj-section background-color="#f8fafc" padding="24px 20px">
+    <mj-section background-color="#f8fafc" padding="20px 24px" border-top="1px solid #e2e8f0">
       <mj-column>
-        <mj-text align="center" font-size="12px" color="#94a3b8" padding-bottom="8px">
-          © 2026 Spentiva - Smart Expense Tracking
-        </mj-text>
-        <mj-text align="center" font-size="11px" color="#cbd5e1">
-          Manage your finances with AI-powered insights
+        <mj-text align="center" font-size="11px" color="#94a3b8">
+          &copy; 2025 Spentiva &middot; Smart Expense Tracking
         </mj-text>
       </mj-column>
     </mj-section>

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { successResponse, errorResponse, noContentResponse } from '../../utils/response-object';
 import { logger } from '../../utils/logger';
+import config from '../../config/config';
 
 /**
  * Health check controller
@@ -13,7 +14,7 @@ export const healthCheck = async (req: Request, res: Response) => {
       status: 'ok',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      environment: process.env.NODE_ENV || 'development',
+      environment: config.NODE_ENV,
       version: '1.0.0',
       checks: {
         database: 'unknown',

@@ -6,15 +6,17 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CategoryIcon from '@mui/icons-material/Category';
 import ShareIcon from '@mui/icons-material/Share';
 import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CategorySettings from '../../CategorySettings/CategorySettings';
 import BotAvatarSection from './settings/BotAvatarSection';
 import TrackerDetailsSection from './settings/TrackerDetailsSection';
 import ShareTrackerSection from './settings/ShareTrackerSection';
 import ReportScheduleSection from './settings/ReportScheduleSection';
+import DangerZoneSection from './settings/DangerZoneSection';
 import { SharedUser } from '../../../types/tracker';
 
 // Sub-tab route names
-const SUBTAB_KEYS = ['bot-avatar', 'details', 'categories', 'share', 'reports'] as const;
+const SUBTAB_KEYS = ['bot-avatar', 'details', 'categories', 'share', 'reports', 'danger-zone'] as const;
 type SubTabKey = (typeof SUBTAB_KEYS)[number];
 
 interface SettingsTabProps {
@@ -112,6 +114,12 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
             label="Reports"
             iconPosition="start"
           />
+          <Tab
+            icon={<WarningAmberIcon sx={{ fontSize: 16 }} />}
+            label="Danger Zone"
+            iconPosition="start"
+            sx={{ color: 'error.main', '&.Mui-selected': { color: 'error.main' } }}
+          />
         </Tabs>
       </Box>
 
@@ -148,6 +156,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
           />
         )}
         {subTab === 4 && <ReportScheduleSection trackerId={trackerId} trackerName={tracker.name} />}
+        {subTab === 5 && <DangerZoneSection trackerId={trackerId} onDelete={onDelete} />}
       </Box>
     </Box>
   );

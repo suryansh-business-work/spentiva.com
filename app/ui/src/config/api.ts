@@ -25,6 +25,7 @@ export const endpoints = {
     share: (id: string) => `${getApiUrl()}/tracker/share/${id}`,
     unshare: (id: string) => `${getApiUrl()}/tracker/unshare/${id}`,
     resendInvite: (id: string) => `${getApiUrl()}/tracker/resend-invite/${id}`,
+    respondInvite: (id: string) => `${getApiUrl()}/tracker/respond-invite/${id}`,
   },
   categories: {
     getAll: (trackerId: string, type?: string) =>
