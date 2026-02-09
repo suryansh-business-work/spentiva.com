@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { endpoints } from '../../../config/api';
-import { getRequest, postRequest } from '../../../utils/http';
+import { getRequest, postRequest, putRequest } from '../../../utils/http';
 import { parseResponseData } from '../../../utils/response-parser';
 import { ParsedExpense, CreateExpenseData, Expense } from '../../../types/expense';
 
@@ -37,7 +37,7 @@ export const useExpenseActions = (trackerId?: string) => {
   }, [trackerId]);
 
   /**
-   * Add a missing category to the tracker
+   * Add a missing category to the tracker (as main category)
    */
   const addCategory = useCallback(
     async (categoryName: string, type: string = 'expense') => {
@@ -59,6 +59,34 @@ export const useExpenseActions = (trackerId?: string) => {
       }
     },
     [trackerId, loadCategories]
+  );
+
+  /**
+   * Add a subcategory to an existing parent category
+   */
+  const addSubcategory = useCallback(
+    async (parentCategoryId: string, subName: string) => {
+      if (!trackerId) return;
+
+      try {
+        // Get parent category
+        const parentCat = categories.find((c: any) => c._id === parentCategoryId);
+        if (!parentCat) throw new Error('Parent category not found');
+
+        const existingSubs = parentCat.subcategories || [];
+        const updatedSubs = [...existingSubs, { id: `${Date.now()}`, name: subName }];
+
+        await putRequest(endpoints.categories.update(parentCategoryId), {
+          subcategories: updatedSubs,
+        });
+        await loadCategories();
+        window.dispatchEvent(new Event('categoriesUpdated'));
+      } catch (error) {
+        console.error('Error adding subcategory:', error);
+        throw error;
+      }
+    },
+    [trackerId, categories, loadCategories]
   );
 
   /**
@@ -158,6 +186,7 @@ export const useExpenseActions = (trackerId?: string) => {
     parseExpense,
     createExpense,
     addCategory,
+    addSubcategory,
     loadCategories,
   };
 };

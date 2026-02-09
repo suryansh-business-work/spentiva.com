@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ThemeProvider, createTheme, CssBaseline, Box, CircularProgress } from '@mui/material';
 import Header from './components/Header/Header';
 import Trackers from './components/Trackers/Trackers';
-import TrackerView from './components/TrackerView/TrackerView';
 import TrackerCategorySettings from './components/TrackerCategorySettings/TrackerCategorySettings';
 import Usage from './components/Usage/Usage';
 import Billing from './pages/Billing';
@@ -70,7 +69,9 @@ const AppContent = () => {
       <CssBaseline />
       <Router>
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-          {isAuthenticated && <Header />}
+          {isAuthenticated && <Header onCreateTracker={() => {
+              window.dispatchEvent(new CustomEvent('createTracker'));
+            }} />}
           <Box sx={{ flexGrow: 1 }}>
             <Routes>
               {/* Redirect root to trackers if auth, else external login */}
@@ -97,7 +98,7 @@ const AppContent = () => {
               />
               <Route
                 path="/tracker/:trackerId"
-                element={isAuthenticated ? <TrackerView /> : <RedirectToAuth />}
+                element={isAuthenticated ? <Trackers /> : <RedirectToAuth />}
               />
               <Route
                 path="/tracker/:trackerId/chat"
@@ -161,8 +162,8 @@ const AppContent = () => {
                 element={isAuthenticated ? <UpcomingFeatures /> : <RedirectToAuth />}
               />
               <Route path="/policy" element={<Policy />} />
-              {/* Admin panel removed - user management is now handled by external auth server */}
-              <Route path="/admin/*" element={<Navigate to="/trackers" replace />} />
+              {/* Admin panel — accessible if user is admin */}
+              <Route path="/admin/*" element={isAuthenticated ? <Navigate to="/trackers" replace /> : <RedirectToAuth />} />
               {/* 404 Catch-all Route */}
               <Route path="*" element={<NotFound />} />
             </Routes>

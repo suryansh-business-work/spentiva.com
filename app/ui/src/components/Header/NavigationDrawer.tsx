@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Drawer,
   Box,
@@ -17,8 +17,9 @@ import ShowChartIcon from '@mui/icons-material/ShowChart';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import ShieldIcon from '@mui/icons-material/Shield';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { useAuth } from '../../contexts/AuthContext';
-import { AUTH_CONFIG } from '../../config/auth-config';
+import { AUTH_CONFIG, isAdmin } from '../../config/auth-config';
 
 interface NavigationDrawerProps {
   open: boolean;
@@ -31,14 +32,23 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, onClose }) =>
   const theme = useTheme();
   const { logout, user } = useAuth();
 
-  const drawerItems = [
-    { text: 'Usage', icon: <ShowChartIcon />, path: '/usage' },
-    { text: 'Billing & Subscription', icon: <CreditCardIcon />, path: '/billing' },
-    { text: 'Upcoming Features', icon: <RocketLaunchIcon />, path: '/upcoming-features' },
-    { text: 'Privacy & Policy', icon: <ShieldIcon />, path: '/policy' },
-  ];
-
-  // Admin panel removed - user management is now handled by external auth server
+  const drawerItems = useMemo(() => {
+    const items = [
+      { text: 'Usage', icon: <ShowChartIcon />, path: '/usage' },
+      { text: 'Billing & Subscription', icon: <CreditCardIcon />, path: '/billing' },
+      { text: 'Upcoming Features', icon: <RocketLaunchIcon />, path: '/upcoming-features' },
+      { text: 'Privacy & Policy', icon: <ShieldIcon />, path: '/policy' },
+    ];
+    // Show Admin Panel if user has admin role
+    if (isAdmin() || user?.roleSlug === 'admin') {
+      items.unshift({
+        text: 'Admin Panel',
+        icon: <AdminPanelSettingsIcon />,
+        path: '/admin',
+      });
+    }
+    return items;
+  }, [user?.roleSlug]);
 
   const handleNavigate = (path: string) => {
     navigate(path);

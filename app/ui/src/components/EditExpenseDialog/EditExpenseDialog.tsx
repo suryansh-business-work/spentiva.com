@@ -48,6 +48,8 @@ interface EditExpenseDialogProps {
   incomeCategories?: Category[];
   /** Credit-from sources list */
   creditSources?: string[];
+  /** Tracker currency (read-only, set from tracker settings) */
+  trackerCurrency?: string;
 }
 
 const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
@@ -59,6 +61,7 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
   paymentMethods,
   incomeCategories = [],
   creditSources = [],
+  trackerCurrency = 'INR',
 }) => {
   const [type, setType] = useState<TransactionType>('expense');
   const [amount, setAmount] = useState('');
@@ -66,7 +69,6 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
   const [subcategory, setSubcategory] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [creditFrom, setCreditFrom] = useState('');
-  const [currency, setCurrency] = useState('INR');
   const [description, setDescription] = useState('');
   const [availableSubcategories, setAvailableSubcategories] = useState<
     { id: string; name: string }[]
@@ -92,7 +94,6 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
       setSubcategory(expense.subcategory);
       setPaymentMethod(expense.paymentMethod || '');
       setCreditFrom(expense.creditFrom || '');
-      setCurrency(expense.currency || 'INR');
       setDescription(expense.description || '');
 
       const list = (expense.type || 'expense') === 'income' ? safeIncomeCategories : safeCategories;
@@ -101,19 +102,18 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
         setAvailableSubcategories(selectedCat.subcategories);
       }
     }
-  }, [expense, safeCategories, safeIncomeCategories]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expense]);
 
   useEffect(() => {
     const selectedCat = activeCatList.find(cat => cat.name === category);
     if (selectedCat) {
       setAvailableSubcategories(selectedCat.subcategories);
-      if (subcategory && !selectedCat.subcategories.find(sub => sub.name === subcategory)) {
-        setSubcategory('');
-      }
-    } else {
+    } else if (category) {
       setAvailableSubcategories([]);
     }
-  }, [category, activeCatList]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category, type]);
 
   const handleTypeChange = useCallback(
     (_: React.MouseEvent<HTMLElement>, newType: TransactionType | null) => {
@@ -136,7 +136,7 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
       category,
       subcategory,
       description,
-      currency,
+      currency: trackerCurrency,
     };
 
     if (type === 'income') {
@@ -156,15 +156,15 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
     (type === 'expense' && !paymentMethod) ||
     (type === 'income' && !creditFrom);
 
-  const currSym = CURRENCY_SYM[currency] || '₹';
+  const currSym = CURRENCY_SYM[trackerCurrency] || trackerCurrency;
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth fullScreen={isMobile}>
       <DialogTitle>Edit Transaction</DialogTitle>
-      <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+      <DialogContent sx={{ pb: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, mt: 1 }}>
           {/* Type toggle */}
           <ToggleButtonGroup
             value={type}
@@ -185,36 +185,21 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
             </ToggleButton>
           </ToggleButtonGroup>
 
-          {/* Amount + Currency */}
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <TextField
-              fullWidth
-              label="Amount"
-              type="number"
-              value={amount}
-              onChange={e => setAmount(e.target.value)}
-              InputProps={{
-                startAdornment: <InputAdornment position="start">{currSym}</InputAdornment>,
-              }}
-            />
-            <FormControl sx={{ minWidth: 110 }}>
-              <InputLabel>Currency</InputLabel>
-              <Select
-                value={currency}
-                onChange={e => setCurrency(e.target.value)}
-                label="Currency"
-              >
-                {CURRENCY_OPTIONS.map(c => (
-                  <MenuItem key={c.value} value={c.value}>
-                    {c.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
+          {/* Amount */}
+          <TextField
+            fullWidth
+            label="Amount"
+            type="number"
+            value={amount}
+            onChange={e => setAmount(e.target.value)}
+            size="small"
+            InputProps={{
+              startAdornment: <InputAdornment position="start">{currSym}</InputAdornment>,
+            }}
+          />
 
           {/* Category */}
-          <FormControl fullWidth>
+          <FormControl fullWidth size="small">
             <InputLabel>Category</InputLabel>
             <Select value={category} onChange={e => setCategory(e.target.value)} label="Category">
               {activeCatList.map((cat, index) => (
@@ -226,7 +211,7 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
           </FormControl>
 
           {/* Subcategory */}
-          <FormControl fullWidth>
+          <FormControl fullWidth size="small">
             <InputLabel>Subcategory</InputLabel>
             <Select
               value={subcategory}
@@ -244,7 +229,7 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
 
           {/* Payment Method OR Credit From based on type */}
           {type !== 'income' && (
-            <FormControl fullWidth>
+            <FormControl fullWidth size="small">
               <InputLabel>Payment Method</InputLabel>
               <Select
                 value={paymentMethod}
@@ -261,7 +246,7 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
           )}
 
           {type === 'income' && (
-            <FormControl fullWidth>
+            <FormControl fullWidth size="small">
               <InputLabel>Credit From</InputLabel>
               <Select
                 value={creditFrom}
@@ -282,7 +267,8 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
             fullWidth
             label="Description"
             multiline
-            rows={3}
+            rows={2}
+            size="small"
             value={description}
             onChange={e => setDescription(e.target.value)}
           />

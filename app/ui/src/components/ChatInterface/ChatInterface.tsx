@@ -7,7 +7,7 @@ import { useExpenseActions } from './hooks/useExpenseActions';
 import ChatMessage from './components/ChatMessage';
 import ChatInput from './components/ChatInput';
 import LoadingSkeleton from './components/LoadingSkeleton';
-import './ChatInterface.scss';
+import AddCategoryDialog from './components/AddCategoryDialog';
 
 /**
  * Props for ChatInterface component
@@ -32,7 +32,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
   const { messages, addUserMessage, addAssistantMessage, trackMessageUsage, checkUsageLimit } =
     useChatMessages(trackerId);
 
-  const { parseExpense, createExpense, addCategory } = useExpenseActions(trackerId);
+  const { parseExpense, createExpense, addCategory, addSubcategory, categories } = useExpenseActions(trackerId);
+
+  // State for add category dialog
+  const [addCatDialogOpen, setAddCatDialogOpen] = useState(false);
+  const [pendingCategoryName, setPendingCategoryName] = useState('');
 
   /**
    * Get user profile photo URL
@@ -139,16 +143,30 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
   ]);
 
   /**
-   * Handle adding a missing category from chat
+   * Handle adding a missing category from chat - opens dialog
    */
-  const handleAddCategory = useCallback(async (categoryName: string) => {
+  const handleAddCategory = useCallback((categoryName: string) => {
+    setPendingCategoryName(categoryName);
+    setAddCatDialogOpen(true);
+  }, []);
+
+  const handleAddMainCategory = useCallback(async (name: string, type: string) => {
     try {
-      await addCategory(categoryName, 'expense');
-      addAssistantMessage(`✅ Category "${categoryName}" added successfully! You can now try your message again.`);
+      await addCategory(name, type);
+      addAssistantMessage(`✅ Category "${name}" added successfully! You can now try your message again.`);
     } catch {
-      addAssistantMessage(`❌ Failed to add category "${categoryName}". Please try again or add it from Settings.`);
+      addAssistantMessage(`❌ Failed to add category "${name}". Please try again or add it from Settings.`);
     }
   }, [addCategory, addAssistantMessage]);
+
+  const handleAddSubCategory = useCallback(async (parentId: string, subName: string) => {
+    try {
+      await addSubcategory(parentId, subName);
+      addAssistantMessage(`✅ Subcategory "${subName}" added successfully! You can now try your message again.`);
+    } catch {
+      addAssistantMessage(`❌ Failed to add subcategory "${subName}". Please try again or add it from Settings.`);
+    }
+  }, [addSubcategory, addAssistantMessage]);
 
   /**
    * Auto-scroll when messages update
@@ -162,7 +180,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        height: { xs: 'calc(100dvh - 175px)', sm: 'calc(100vh - 175px)' },
+        height: '100%',
         position: 'relative',
         bgcolor: theme.palette.mode === 'dark' ? 'background.default' : '#eee',
       }}
@@ -212,6 +230,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
 
       {/* Input Form - Fixed at Bottom */}
       <ChatInput value={input} onChange={setInput} onSubmit={handleSubmit} disabled={isLoading} />
+
+      {/* Add Category Dialog */}
+      <AddCategoryDialog
+        open={addCatDialogOpen}
+        categoryName={pendingCategoryName}
+        existingCategories={categories}
+        onClose={() => setAddCatDialogOpen(false)}
+        onAddMain={handleAddMainCategory}
+        onAddSub={handleAddSubCategory}
+      />
     </Box>
   );
 };

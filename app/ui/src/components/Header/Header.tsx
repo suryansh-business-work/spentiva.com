@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Button, Box, IconButton, Avatar, useTheme, Tooltip } from '@mui/material';
+import { AppBar, Toolbar, Box, IconButton, Avatar, useTheme, Tooltip, Button } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
-import FolderIcon from '@mui/icons-material/Folder';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import AddIcon from '@mui/icons-material/Add';
 import { useThemeMode } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import Logo from '../Logo';
 import NavigationDrawer from './NavigationDrawer';
 import SupportDialog from '../Support/SupportDialog';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onCreateTracker?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onCreateTracker }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
@@ -19,6 +23,8 @@ const Header: React.FC = () => {
   const [supportDialogOpen, setSupportDialogOpen] = useState(false);
   const { isDarkMode, toggleTheme } = useThemeMode();
   const { user } = useAuth();
+
+  const isTrackersPage = location.pathname === '/trackers' || location.pathname === '/';
 
   return (
     <>
@@ -30,30 +36,48 @@ const Header: React.FC = () => {
           borderBottom: `1px solid ${theme.palette.divider}`,
         }}
       >
-        <Toolbar sx={{ minHeight: '64px !important', height: 64, px: 2, gap: 1.5 }}>
-          <Box sx={{ flexGrow: 1, cursor: 'pointer' }} onClick={() => navigate('/trackers')}>
-            <Logo width={100} height={28} />
+        <Toolbar sx={{ minHeight: '52px !important', height: 52, px: 2, gap: 1 }}>
+          <Box sx={{ cursor: 'pointer', flexShrink: 0 }} onClick={() => navigate('/trackers')}>
+            <Logo width={90} height={24} />
           </Box>
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          {/* Create Tracker Button — only visible on /trackers */}
+          {onCreateTracker && isTrackersPage && (
+            <Button
+              onClick={onCreateTracker}
+              size="small"
+              variant="contained"
+              startIcon={<AddIcon sx={{ fontSize: 16 }} />}
+              sx={{
+                height: 32,
+                textTransform: 'none',
+                fontWeight: 600,
+                fontSize: '0.8rem',
+                borderRadius: 1.5,
+                px: 1.5,
+              }}
+            >
+              Create Tracker
+            </Button>
+          )}
 
           {/* Dark/Light Mode Toggle */}
           <IconButton
             onClick={toggleTheme}
+            size="small"
             sx={{
               bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
-              borderRadius: 2,
-              px: 1.5,
-              py: 0.75,
-              transition: 'all 0.2s ease',
-              '&:hover': {
-                bgcolor:
-                  theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)',
-              },
+              borderRadius: 1.5,
+              width: 32,
+              height: 32,
             }}
           >
             {isDarkMode ? (
-              <LightModeIcon sx={{ fontSize: 20, color: theme.palette.warning.main }} />
+              <LightModeIcon sx={{ fontSize: 18, color: theme.palette.warning.main }} />
             ) : (
-              <DarkModeIcon sx={{ fontSize: 20, color: theme.palette.primary.main }} />
+              <DarkModeIcon sx={{ fontSize: 18, color: theme.palette.primary.main }} />
             )}
           </IconButton>
 
@@ -61,55 +85,18 @@ const Header: React.FC = () => {
           <Tooltip title="Contact Support" arrow>
             <IconButton
               onClick={() => setSupportDialogOpen(true)}
+              size="small"
               sx={{
                 bgcolor:
                   theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
-                borderRadius: 2,
-                px: 1.5,
-                py: 0.75,
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  bgcolor:
-                    theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)',
-                },
+                borderRadius: 1.5,
+                width: 32,
+                height: 32,
               }}
             >
-              <SupportAgentIcon />
+              <SupportAgentIcon sx={{ fontSize: 18 }} />
             </IconButton>
           </Tooltip>
-
-          {/* Trackers Button */}
-          <Button
-            startIcon={<FolderIcon />}
-            size="small"
-            onClick={() => navigate('/trackers')}
-            sx={{
-              color:
-                location.pathname === '/trackers'
-                  ? theme.palette.primary.contrastText
-                  : theme.palette.text.primary,
-              textTransform: 'none',
-              fontWeight: 600,
-              px: 1.5,
-              py: 0.5,
-              minHeight: 32,
-              borderRadius: 1,
-              fontSize: '0.875rem',
-              transition: 'all 0.2s ease',
-              background:
-                location.pathname === '/trackers' ? theme.palette.primary.main : 'transparent',
-              '&:hover': {
-                background:
-                  location.pathname === '/trackers'
-                    ? theme.palette.primary.dark
-                    : theme.palette.mode === 'dark'
-                      ? 'rgba(255,255,255,0.08)'
-                      : 'rgba(0,0,0,0.04)',
-              },
-            }}
-          >
-            Trackers
-          </Button>
 
           {/* User Avatar - Opens Drawer */}
           <IconButton
@@ -118,19 +105,16 @@ const Header: React.FC = () => {
             sx={{
               p: 0.25,
               border: `1.5px solid ${theme.palette.divider}`,
-              transition: 'all 0.2s ease',
-              '&:hover': {
-                borderColor: theme.palette.primary.main,
-              },
+              '&:hover': { borderColor: theme.palette.primary.main },
             }}
           >
             <Avatar
               src={user?.profilePicture}
               sx={{
-                width: 28,
-                height: 28,
+                width: 26,
+                height: 26,
                 background: theme.palette.primary.main,
-                fontSize: '0.8rem',
+                fontSize: '0.75rem',
               }}
             >
               {user?.firstName?.charAt(0).toUpperCase()}
@@ -139,10 +123,7 @@ const Header: React.FC = () => {
         </Toolbar>
       </AppBar>
 
-      {/* Navigation Drawer */}
       <NavigationDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-
-      {/* Support Dialog */}
       <SupportDialog open={supportDialogOpen} onClose={() => setSupportDialogOpen(false)} />
     </>
   );

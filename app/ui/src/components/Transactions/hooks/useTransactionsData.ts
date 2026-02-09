@@ -15,6 +15,8 @@ interface UseTransactionsDataReturn {
   hasMore: boolean;
   limit: number;
   categories: any[];
+  incomeCategories: any[];
+  creditSources: any[];
   snackbar: { open: boolean; message: string; severity: 'success' | 'error' };
   loadExpenses: () => Promise<void>;
   loadMoreExpenses: () => void;
@@ -40,6 +42,8 @@ export const useTransactionsData = ({
   const [limit, setLimit] = useState(20);
   const [hasMore, setHasMore] = useState(true);
   const [categories, setCategories] = useState<any[]>([]);
+  const [incomeCategories, setIncomeCategories] = useState<any[]>([]);
+  const [creditSources, setCreditSources] = useState<string[]>([]);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -77,10 +81,17 @@ export const useTransactionsData = ({
   const loadCategories = async () => {
     if (!trackerId) return;
     try {
-      const response = await getRequest(endpoints.categories.getAll(trackerId));
-      const data = parseResponseData<any>(response, {});
-      const categories = data?.categories || [];
-      setCategories(categories);
+      const [expenseRes, incomeRes, creditRes] = await Promise.all([
+        getRequest(endpoints.categories.getAll(trackerId, 'expense')),
+        getRequest(endpoints.categories.getAll(trackerId, 'income')),
+        getRequest(endpoints.categories.getAll(trackerId, 'credit_mode')),
+      ]);
+      const expenseCats = parseResponseData<any>(expenseRes, {})?.categories || [];
+      const incomeCats = parseResponseData<any>(incomeRes, {})?.categories || [];
+      const creditCats = parseResponseData<any>(creditRes, {})?.categories || [];
+      setCategories(expenseCats.map((c: any) => ({ id: c._id, name: c.name, subcategories: c.subcategories || [] })));
+      setIncomeCategories(incomeCats.map((c: any) => ({ id: c._id, name: c.name, subcategories: c.subcategories || [] })));
+      setCreditSources(creditCats.flatMap((c: any) => c.subcategories?.map((s: any) => s.name) || []));
     } catch (error) {
       console.error('Error loading categories:', error);
     }
@@ -164,6 +175,8 @@ export const useTransactionsData = ({
     hasMore,
     limit,
     categories,
+    incomeCategories,
+    creditSources,
     snackbar,
     loadExpenses,
     loadMoreExpenses,

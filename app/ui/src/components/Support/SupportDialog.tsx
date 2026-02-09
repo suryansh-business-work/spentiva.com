@@ -26,6 +26,7 @@ const SupportDialog: React.FC<SupportDialogProps> = ({
   ticketId,
 }) => {
   const [minimized, setMinimized] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [previewAttachment, setPreviewAttachment] = useState<Attachment | null>(null);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [ticket, setTicket] = useState<SupportTicket | null>(null);
@@ -34,6 +35,11 @@ const SupportDialog: React.FC<SupportDialogProps> = ({
 
   const { recording, recordingTime, startRecording, stopRecording } = useRecording();
   const { uploadFile } = useFileUpload();
+
+  // Reset hidden state when opened
+  React.useEffect(() => {
+    if (open) setHidden(false);
+  }, [open]);
 
   // Load ticket data when in view/update mode
   React.useEffect(() => {
@@ -130,7 +136,7 @@ const SupportDialog: React.FC<SupportDialogProps> = ({
     }
   };
 
-  if (!open) return null;
+  if (!open || hidden) return null;
 
   return (
     <>
@@ -170,7 +176,11 @@ const SupportDialog: React.FC<SupportDialogProps> = ({
             minimized={minimized}
             onMinimize={() => setMinimized(!minimized)}
             onStopRecording={stopRecording}
-            onClose={onClose}
+            onClose={() => {
+              // Hide instead of destroying — preserves dialog state
+              setMinimized(true);
+              setHidden(true);
+            }}
           />
 
           <Fade in={!minimized}>

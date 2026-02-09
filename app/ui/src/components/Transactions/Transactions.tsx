@@ -18,7 +18,6 @@ import TransactionsFilters from './components/TransactionsFilters';
 import TransactionsList from './components/TransactionsList';
 import { useTransactionsData } from './hooks/useTransactionsData';
 import { useTransactionsFilters } from './hooks/useTransactionsFilters';
-import './Transactions.scss';
 
 interface TransactionsProps {
   trackerId?: string;
@@ -51,6 +50,8 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
     loadingMore,
     hasMore,
     categories,
+    incomeCategories,
+    creditSources,
     snackbar,
     loadMoreExpenses,
     handleSaveEdit,
@@ -192,6 +193,8 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
         onSave={handleSave}
         categories={categories}
         paymentMethods={paymentMethods}
+        incomeCategories={incomeCategories}
+        creditSources={creditSources}
       />
 
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>

@@ -62,13 +62,12 @@ PARSING RULES:
 6. ALWAYS return an array of transaction objects
 
 CURRENCY RULES:
-- The user's DEFAULT currency is "${defaultCurrency}"
-- If no specific currency is mentioned, ALWAYS use "${defaultCurrency}"
-- If user mentions USD, dollars → currency: "USD"
-- If user mentions EUR, euros → currency: "EUR"
-- If user mentions GBP, pounds → currency: "GBP"
-- If user mentions rupees, INR, ₹ → currency: "INR"
-- Each transaction can have its own currency
+- This tracker ONLY supports "${defaultCurrency}" currency
+- ALWAYS set currency to "${defaultCurrency}" for every transaction
+- If the user mentions a DIFFERENT currency (e.g. USD, EUR, GBP, or any other currency that is NOT "${defaultCurrency}"), return an error:
+  {"error": "Currency mismatch", "message": "Your tracker supports ${defaultCurrency} only. Please use ${defaultCurrency} or update your tracker's currency in settings."}
+- Do NOT convert currencies. If user says "20 USD" and tracker is INR, return the error above.
+- If no currency is mentioned, default to "${defaultCurrency}"
 
 CATEGORY MATCHING RULES:
 - For expenses: match to EXPENSE CATEGORIES list
@@ -110,10 +109,10 @@ Output: [
 ]
 
 Input: "I spent 20 USD on coffee and 500 INR on dinner"
-Output: [
-  {"type": "expense", "amount": 20, "category": "Food & Dining", "subcategory": "Fast Food", "paymentMethod": "User not provided payment method", "currency": "USD"},
-  {"type": "expense", "amount": 500, "category": "Food & Dining", "subcategory": "Restaurants", "paymentMethod": "User not provided payment method", "currency": "INR"}
-]
+(If tracker currency is INR):
+Output: {"error": "Currency mismatch", "message": "Your tracker supports INR only. Please use INR or update your tracker's currency in settings."}
+(If tracker currency is USD):
+Output: {"error": "Currency mismatch", "message": "Your tracker supports USD only. Please use USD or update your tracker's currency in settings."}
 
 Input: "Transferred 10000 from savings to wallet"
 Output: [{"type": "transfer", "amount": 10000, "category": "Transfer", "subcategory": "Transfer", "paymentMethod": "User not provided payment method", "currency": "INR", "description": "From savings to wallet"}]
@@ -169,10 +168,16 @@ RESPONSE FORMAT (MUST be valid JSON array):
     "subcategory": "string",
     "paymentMethod": "string (for expenses, default: 'User not provided payment method')",
     "creditFrom": "string (for income, default: 'User not provided credit source')",
-    "currency": "string (default: 'INR')",
+    "currency": "${defaultCurrency}",
     "description": "string (optional)"
   }
 ]
+
+CURRENCY MISMATCH ERROR FORMAT:
+{
+  "error": "Currency mismatch",
+  "message": "Your tracker supports ${defaultCurrency} only. Please use ${defaultCurrency} or update your tracker's currency in settings."
+}
 
 ERROR FORMAT (only if you cannot parse amount):
 {

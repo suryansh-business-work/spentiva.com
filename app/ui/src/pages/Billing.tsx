@@ -71,36 +71,31 @@ const Billing: React.FC = () => {
     try {
       setLoading(true);
 
-      // Fetch user data
-      const userResponse = await getRequest(endpoints.auth.me);
-      const userData = parseResponseData<any>(userResponse, {});
-      const user = userData?.user || userData;
-      const accountType = (user?.accountType || 'free').toLowerCase() as PlanType;
+      // Use user from AuthContext — auth server doesn't return accountType, derive from role
+      const accountType: PlanType = user?.roleSlug === 'admin' ? 'businesspro' : 'free';
       setCurrentPlan(accountType);
 
       // Fetch trackers
       try {
         const trackersResponse = await getRequest(endpoints.trackers.getAll);
-        const data = parseResponseData<any>(trackersResponse, {});
+        const data = parseResponseData<{ trackers?: Array<Record<string, unknown>> }>(trackersResponse, {});
         const trackers = data?.trackers || [];
         setTrackerCount(Array.isArray(trackers) ? trackers.length : 0);
-      } catch (err) {
-        console.error('Error fetching trackers:', err);
+      } catch {
         setTrackerCount(0);
       }
 
       // Fetch messages
       try {
         const usageResponse = await getRequest(endpoints.usage.overview);
-        const usageData = parseResponseData<any>(usageResponse, {});
+        const usageData = parseResponseData<Record<string, any>>(usageResponse, {});
         const messages = usageData?.overall?.totalMessages || usageData?.totalMessages || 0;
         setMessageCount(messages);
-      } catch (err) {
-        console.error('Error fetching usage:', err);
+      } catch {
         setMessageCount(0);
       }
-    } catch (error) {
-      console.error('Error fetching data:', error);
+    } catch {
+      /* top-level fallback */
     } finally {
       setLoading(false);
     }
