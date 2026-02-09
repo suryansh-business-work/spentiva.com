@@ -16,6 +16,10 @@ export interface IExpense extends Document {
   timestamp: Date;
   userId?: string;
   trackerId?: string;
+  createdBy?: string;
+  createdByName?: string;
+  lastUpdatedBy?: string;
+  lastUpdatedByName?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -79,6 +83,22 @@ const ExpenseSchema: Schema = new Schema(
       default: 'default',
     },
     userId: {
+      type: String,
+      trim: true,
+    },
+    createdBy: {
+      type: String,
+      trim: true,
+    },
+    createdByName: {
+      type: String,
+      trim: true,
+    },
+    lastUpdatedBy: {
+      type: String,
+      trim: true,
+    },
+    lastUpdatedByName: {
       type: String,
       trim: true,
     },

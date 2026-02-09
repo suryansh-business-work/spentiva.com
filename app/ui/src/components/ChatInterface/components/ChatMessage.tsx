@@ -14,6 +14,8 @@ interface ChatMessageProps {
   message: Message;
   userPhotoUrl?: string;
   userName?: string;
+  botImage?: string;
+  botName?: string;
   onAddCategory?: (categoryName: string) => void;
 }
 
@@ -21,7 +23,7 @@ interface ChatMessageProps {
  * ChatMessage Component
  * Displays a single chat message with avatar and content (WhatsApp-style)
  */
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userName, onAddCategory }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userName, botImage, botName, onAddCategory }) => {
   const isUser = message.role === 'user';
   const theme = useTheme();
 
@@ -68,7 +70,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userNa
     >
       {/* Avatar */}
       <Avatar
-        src={isUser ? userPhotoUrl : undefined}
+        src={isUser ? userPhotoUrl : botImage}
         sx={{
           width: 36,
           height: 36,
@@ -81,7 +83,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userNa
             : `0 2px 8px ${theme.palette.primary.main}40`,
         }}
       >
-        {getAvatarContent()}
+        {isUser ? getAvatarContent() : (botName ? botName.charAt(0).toUpperCase() : <SmartToyIcon />)}
       </Avatar>
 
       {/* Message Content */}

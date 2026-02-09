@@ -47,13 +47,13 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
   const {
     expenses,
     loading,
-    loadingMore,
-    hasMore,
+    pagination,
     categories,
     incomeCategories,
     creditSources,
     snackbar,
-    loadMoreExpenses,
+    onPageChange,
+    onRowsPerPageChange,
     handleSaveEdit,
     handleConfirmDelete,
     handleBulkDelete,
@@ -152,16 +152,16 @@ const Transactions: React.FC<TransactionsProps> = ({ trackerId }) => {
 
       <TransactionsList
         loading={loading}
-        loadingMore={loadingMore}
-        hasMore={hasMore}
         expenses={filteredExpenses}
         selected={selected}
+        pagination={pagination}
+        onPageChange={onPageChange}
+        onRowsPerPageChange={onRowsPerPageChange}
         onToggleSelect={handleToggleSelect}
         onToggleSelectAll={handleToggleSelectAll}
         onEdit={handleEdit}
         onDelete={handleDelete}
         onBulkDelete={() => setBulkDeleteDialogOpen(true)}
-        onLoadMore={loadMoreExpenses}
       />
 
       <Paper

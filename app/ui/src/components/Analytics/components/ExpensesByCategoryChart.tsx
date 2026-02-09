@@ -1,39 +1,20 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Paper,
-  Typography,
-  useTheme,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@mui/material';
+import { Box, Paper, Typography, useTheme, IconButton } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import CloseIcon from '@mui/icons-material/Close';
 import { Bar, Pie } from 'react-chartjs-2';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend,
+  Chart as ChartJS, CategoryScale, LinearScale, BarElement,
+  ArcElement, Title, Tooltip, Legend,
 } from 'chart.js';
 import { CategoryExpense } from '../../../types/analytics';
+import { getCurrencySymbol } from '../utils/currency';
+import CategoryDetailsDialog from './CategoryDetailsDialog';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
 interface ExpensesByCategoryChartProps {
   data: CategoryExpense[];
+  currency?: string;
 }
 
 const categoryColors = [
@@ -53,10 +34,11 @@ const categoryColors = [
  * ExpensesByCategoryChart Component
  * Displays Bar and Pie charts for category distribution
  */
-const ExpensesByCategoryChart: React.FC<ExpensesByCategoryChartProps> = ({ data }) => {
+const ExpensesByCategoryChart: React.FC<ExpensesByCategoryChartProps> = ({ data, currency = 'INR' }) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
   const [openDialog, setOpenDialog] = useState(false);
+  const sym = getCurrencySymbol(currency);
 
   const textColor = isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.87)';
   const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
@@ -65,63 +47,20 @@ const ExpensesByCategoryChart: React.FC<ExpensesByCategoryChartProps> = ({ data 
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: {
-        position: 'top' as const,
-        labels: {
-          color: textColor,
-          font: {
-            size: 12,
-            weight: 500,
-          },
-          padding: 15,
-        },
-      },
+      legend: { position: 'top' as const, labels: { color: textColor, font: { size: 12, weight: 500 as const }, padding: 15 } },
       tooltip: {
-        backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.95)',
-        titleColor: isDarkMode ? '#fff' : '#000',
-        bodyColor: isDarkMode ? '#fff' : '#000',
-        borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
-        borderWidth: 1,
-        padding: 12,
-        displayColors: true,
+        backgroundColor: isDarkMode ? 'rgba(0,0,0,0.9)' : 'rgba(255,255,255,0.95)',
+        titleColor: isDarkMode ? '#fff' : '#000', bodyColor: isDarkMode ? '#fff' : '#000',
+        borderColor: isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)', borderWidth: 1, padding: 12,
         callbacks: {
-          label: function (context: any) {
-            return ` ₹${context.parsed.y?.toLocaleString('en-IN') || context.parsed}`;
-          },
+          label: (ctx: any) => ` ${sym}${(ctx.parsed.y ?? ctx.parsed)?.toLocaleString('en-IN')}`,
         },
       },
     },
-    scales: isBar
-      ? {
-          x: {
-            grid: {
-              color: gridColor,
-              drawBorder: false,
-            },
-            ticks: {
-              color: textColor,
-              font: {
-                size: 11,
-              },
-            },
-          },
-          y: {
-            grid: {
-              color: gridColor,
-              drawBorder: false,
-            },
-            ticks: {
-              color: textColor,
-              font: {
-                size: 11,
-              },
-              callback: function (value: any) {
-                return '₹' + value.toLocaleString('en-IN');
-              },
-            },
-          },
-        }
-      : undefined,
+    scales: isBar ? {
+      x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 } } },
+      y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 }, callback: (v: any) => sym + v.toLocaleString('en-IN') } },
+    } : undefined,
   });
 
   const barChartData = {
@@ -153,8 +92,6 @@ const ExpensesByCategoryChart: React.FC<ExpensesByCategoryChartProps> = ({ data 
       },
     ],
   };
-
-  const totalExpenses = data.reduce((sum, item) => sum + item.total, 0);
 
   return (
     <>
@@ -255,83 +192,7 @@ const ExpensesByCategoryChart: React.FC<ExpensesByCategoryChartProps> = ({ data 
         </Paper>
       </Box>
 
-      {/* Details Dialog */}
-      <Dialog
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-        maxWidth="sm"
-        fullWidth
-        PaperProps={{
-          sx: {
-            bgcolor: isDarkMode ? 'rgba(30, 30, 30, 0.98)' : 'background.paper',
-            backdropFilter: 'blur(10px)',
-          },
-        }}
-      >
-        <DialogTitle
-          sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}
-        >
-          <Typography variant="h6" fontWeight={600}>
-            Category Expenses Details
-          </Typography>
-          <IconButton
-            edge="end"
-            onClick={() => setOpenDialog(false)}
-            size="small"
-            sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <TableContainer>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>
-                    Amount
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>
-                    Transactions
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>
-                    %
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.map((item, index) => {
-                  const percentage =
-                    totalExpenses > 0 ? ((item.total / totalExpenses) * 100).toFixed(1) : '0.0';
-                  return (
-                    <TableRow key={index} hover>
-                      <TableCell>{item.category}</TableCell>
-                      <TableCell align="right">₹{item.total.toLocaleString('en-IN')}</TableCell>
-                      <TableCell align="right">{item.count}</TableCell>
-                      <TableCell align="right">{percentage}%</TableCell>
-                    </TableRow>
-                  );
-                })}
-                <TableRow
-                  sx={{ bgcolor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)' }}
-                >
-                  <TableCell sx={{ fontWeight: 600 }}>Total</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>
-                    ₹{totalExpenses.toLocaleString('en-IN')}
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>
-                    {data.reduce((sum, item) => sum + item.count, 0)}
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>
-                    100%
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </DialogContent>
-      </Dialog>
+      <CategoryDetailsDialog open={openDialog} onClose={() => setOpenDialog(false)} data={data} currency={currency} />
     </>
   );
 };

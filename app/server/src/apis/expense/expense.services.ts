@@ -16,16 +16,30 @@ export class ExpenseService {
   /**
    * Get all expenses with optional filtering
    */
-  static async getAllExpenses(filters: { trackerId?: string; userId?: string; limit?: number }) {
-    const { trackerId, userId, limit = 100 } = filters;
+  static async getAllExpenses(filters: { trackerId?: string; userId?: string; limit?: number; page?: number }) {
+    const { trackerId, userId, limit = 20, page = 1 } = filters;
     const query: any = {};
 
     if (trackerId) query.trackerId = trackerId;
     if (userId) query.userId = userId;
 
-    const expenses = await ExpenseModel.find(query).sort({ timestamp: -1 }).limit(limit);
+    const skip = (page - 1) * limit;
+    const expenses = await ExpenseModel.find(query).sort({ timestamp: -1 }).skip(skip).limit(limit);
 
     return expenses;
+  }
+
+  /**
+   * Get count of expenses matching filters
+   */
+  static async getExpenseCount(filters: { trackerId?: string; userId?: string }) {
+    const { trackerId, userId } = filters;
+    const query: any = {};
+
+    if (trackerId) query.trackerId = trackerId;
+    if (userId) query.userId = userId;
+
+    return ExpenseModel.countDocuments(query);
   }
 
   /**
@@ -112,9 +126,9 @@ export class ExpenseService {
       description?: string;
       timestamp?: Date;
     }>,
-    commonData: { trackerId?: string; userId?: string }
+    commonData: { trackerId?: string; userId?: string; createdBy?: string; createdByName?: string }
   ) {
-    const { trackerId, userId } = commonData;
+    const { trackerId, userId, createdBy, createdByName } = commonData;
 
     // Validate each expense before attempting to insert
     const validatedExpenses = expensesData.map((expense, index) => {
@@ -139,6 +153,8 @@ export class ExpenseService {
         timestamp: expense.timestamp || new Date(),
         trackerId: trackerId || 'default',
         userId,
+        createdBy,
+        createdByName,
       };
     });
 
@@ -172,6 +188,8 @@ export class ExpenseService {
       currency?: string;
       description?: string;
       timestamp?: Date;
+      lastUpdatedBy?: string;
+      lastUpdatedByName?: string;
     },
     userId?: string
   ) {

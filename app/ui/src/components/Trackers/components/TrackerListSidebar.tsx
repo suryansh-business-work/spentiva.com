@@ -10,6 +10,9 @@ import {
   ListItemText,
   Typography,
   Skeleton,
+  Avatar,
+  AvatarGroup,
+  Tooltip,
   useTheme,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -120,6 +123,7 @@ const TrackerListSidebar: React.FC<TrackerListSidebarProps> = ({
                   borderLeft: isActive
                     ? `3px solid ${theme.palette.success.main}`
                     : '3px solid transparent',
+                  borderTop: `1px solid ${theme.palette.divider}`,
                   '&:hover': { bgcolor: theme.palette.action.hover },
                 }}>
                   <ListItemButton onClick={() => onTrackerClick(tracker)} sx={{ py: 1, px: 1.5 }}>
@@ -149,20 +153,20 @@ const TrackerListSidebar: React.FC<TrackerListSidebarProps> = ({
                       }
                       secondary={
                         stats ? (
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 0.25 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
+                          <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 0.25 }}>
+                            <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
                               <TrendingDownIcon sx={{ fontSize: 12, color: 'error.main' }} />
                               <Typography variant="caption" sx={{ fontSize: '0.68rem', color: 'error.main', fontWeight: 600 }}>
                                 {sym}{formatAmount(stats.expense)}
                               </Typography>
                             </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
+                            <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
                               <TrendingUpIcon sx={{ fontSize: 12, color: 'success.main' }} />
                               <Typography variant="caption" sx={{ fontSize: '0.68rem', color: 'success.main', fontWeight: 600 }}>
                                 {sym}{formatAmount(stats.income)}
                               </Typography>
                             </Box>
-                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
+                            <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
                               <Typography variant="caption" color="text.secondary" noWrap sx={{ fontSize: '0.7rem' }}>
                                 {tracker.type} &middot;{' '}
                                 {new Date(tracker.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
@@ -176,6 +180,21 @@ const TrackerListSidebar: React.FC<TrackerListSidebarProps> = ({
                         )
                       }
                     />
+                    {/* Shared user avatars */}
+                    {tracker.sharedWith && tracker.sharedWith.length > 0 && (
+                      <AvatarGroup max={3} sx={{
+                        ml: 1, flexShrink: 0,
+                        '& .MuiAvatar-root': { width: 22, height: 22, fontSize: '0.6rem', border: `1.5px solid ${theme.palette.background.paper}` },
+                      }}>
+                        {tracker.sharedWith.map((u) => (
+                          <Tooltip key={u.email} title={u.name || u.email} arrow>
+                            <Avatar sx={{ bgcolor: u.status === 'accepted' ? 'success.main' : 'warning.main' }}>
+                              {(u.name || u.email).charAt(0).toUpperCase()}
+                            </Avatar>
+                          </Tooltip>
+                        ))}
+                      </AvatarGroup>
+                    )}
                   </ListItemButton>
                 </ListItem>
               );

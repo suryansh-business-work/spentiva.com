@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Expense } from '../../../types';
 import { endpoints } from '../../../config/api';
 import { getRequest, putRequest, deleteRequest, postRequest } from '../../../utils/http';
@@ -8,18 +8,23 @@ interface UseTransactionsDataProps {
   trackerId?: string;
 }
 
+interface PaginationState {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 interface UseTransactionsDataReturn {
   expenses: Expense[];
   loading: boolean;
-  loadingMore: boolean;
-  hasMore: boolean;
-  limit: number;
+  pagination: PaginationState;
   categories: any[];
   incomeCategories: any[];
   creditSources: any[];
   snackbar: { open: boolean; message: string; severity: 'success' | 'error' };
-  loadExpenses: () => Promise<void>;
-  loadMoreExpenses: () => void;
+  onPageChange: (page: number) => void;
+  onRowsPerPageChange: (rowsPerPage: number) => void;
   handleSaveEdit: (id: string, updatedExpense: Partial<Expense>) => Promise<void>;
   handleConfirmDelete: (expenseId: string) => Promise<void>;
   handleBulkDelete: (ids: string[]) => Promise<void>;
@@ -38,9 +43,12 @@ export const useTransactionsData = ({
 }: UseTransactionsDataProps): UseTransactionsDataReturn => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [limit, setLimit] = useState(20);
-  const [hasMore, setHasMore] = useState(true);
+  const [pagination, setPagination] = useState<PaginationState>({
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 0,
+  });
   const [categories, setCategories] = useState<any[]>([]);
   const [incomeCategories, setIncomeCategories] = useState<any[]>([]);
   const [creditSources, setCreditSources] = useState<string[]>([]);
@@ -50,35 +58,36 @@ export const useTransactionsData = ({
     severity: 'success' as 'success' | 'error',
   });
 
-  const loadExpenses = async () => {
-    const isInitialLoad = expenses.length === 0;
-    if (isInitialLoad) {
-      setLoading(true);
-    } else {
-      setLoadingMore(true);
-    }
-
+  const loadExpenses = useCallback(async (page: number, limit: number) => {
+    setLoading(true);
     try {
       const response = await getRequest(endpoints.expenses.all, {
         trackerId,
         limit: limit.toString(),
+        page: page.toString(),
       });
       const data = parseResponseData<any>(response, {});
-      const expenses = data?.expenses || [];
-      setExpenses(expenses);
+      const fetchedExpenses = data?.expenses || [];
+      const paginationData = data?.pagination;
 
-      // Check if there are more expenses to load
-      setHasMore(data.length >= limit);
+      setExpenses(fetchedExpenses);
+      if (paginationData) {
+        setPagination({
+          page: paginationData.page,
+          limit: paginationData.limit,
+          total: paginationData.total,
+          totalPages: paginationData.totalPages,
+        });
+      }
     } catch (error) {
       console.error('Error loading expenses:', error);
       setSnackbar({ open: true, message: 'Failed to load expenses', severity: 'error' });
     } finally {
       setLoading(false);
-      setLoadingMore(false);
     }
-  };
+  }, [trackerId]);
 
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
     if (!trackerId) return;
     try {
       const [expenseRes, incomeRes, creditRes] = await Promise.all([
@@ -95,19 +104,21 @@ export const useTransactionsData = ({
     } catch (error) {
       console.error('Error loading categories:', error);
     }
+  }, [trackerId]);
+
+  const onPageChange = (newPage: number) => {
+    setPagination(prev => ({ ...prev, page: newPage }));
   };
 
-  const loadMoreExpenses = () => {
-    setLimit(prevLimit => prevLimit + 20);
+  const onRowsPerPageChange = (newLimit: number) => {
+    setPagination(prev => ({ ...prev, limit: newLimit, page: 1 }));
   };
 
   const handleSaveEdit = async (id: string, updatedExpense: Partial<Expense>) => {
     try {
       await putRequest(endpoints.expenses.byId(id), updatedExpense);
-      await loadExpenses();
+      await loadExpenses(pagination.page, pagination.limit);
       setSnackbar({ open: true, message: 'Expense updated successfully', severity: 'success' });
-
-      // Trigger update in parent (App.tsx) to refresh total
       window.dispatchEvent(new Event('expenseUpdated'));
     } catch (error) {
       console.error('Error updating expense:', error);
@@ -118,10 +129,8 @@ export const useTransactionsData = ({
   const handleConfirmDelete = async (expenseId: string) => {
     try {
       await deleteRequest(endpoints.expenses.byId(expenseId));
-      await loadExpenses();
+      await loadExpenses(pagination.page, pagination.limit);
       setSnackbar({ open: true, message: 'Expense deleted successfully', severity: 'success' });
-
-      // Trigger update in parent (App.tsx) to refresh total
       window.dispatchEvent(new Event('expenseUpdated'));
     } catch (error) {
       console.error('Error deleting expense:', error);
@@ -132,7 +141,8 @@ export const useTransactionsData = ({
   const handleBulkDelete = async (ids: string[]) => {
     try {
       await postRequest(endpoints.expenses.bulkDelete, { ids });
-      await loadExpenses();
+      await loadExpenses(1, pagination.limit);
+      setPagination(prev => ({ ...prev, page: 1 }));
       setSnackbar({
         open: true,
         message: `${ids.length} transaction(s) deleted successfully`,
@@ -146,40 +156,36 @@ export const useTransactionsData = ({
   };
 
   useEffect(() => {
-    loadExpenses();
-    if (trackerId) {
-      loadCategories();
-    }
+    loadExpenses(pagination.page, pagination.limit);
+  }, [pagination.page, pagination.limit, loadExpenses]);
 
-    // Listen for expense updates from other components
+  useEffect(() => {
+    loadCategories();
+  }, [loadCategories]);
+
+  useEffect(() => {
     const handleExpenseUpdate = () => {
-      setLimit(20);
-      loadExpenses();
-      if (trackerId) {
-        loadCategories();
-      }
+      loadExpenses(pagination.page, pagination.limit);
+      loadCategories();
     };
-
     window.addEventListener('expenseUpdated', handleExpenseUpdate);
     window.addEventListener('categoriesUpdated', handleExpenseUpdate);
     return () => {
       window.removeEventListener('expenseUpdated', handleExpenseUpdate);
       window.removeEventListener('categoriesUpdated', handleExpenseUpdate);
     };
-  }, [trackerId, limit]);
+  }, [pagination.page, pagination.limit, loadExpenses, loadCategories]);
 
   return {
     expenses,
     loading,
-    loadingMore,
-    hasMore,
-    limit,
+    pagination,
     categories,
     incomeCategories,
     creditSources,
     snackbar,
-    loadExpenses,
-    loadMoreExpenses,
+    onPageChange,
+    onRowsPerPageChange,
     handleSaveEdit,
     handleConfirmDelete,
     handleBulkDelete,

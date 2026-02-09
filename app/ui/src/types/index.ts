@@ -12,6 +12,10 @@ export interface Expense {
   currency: string;
   description?: string;
   timestamp: string;
+  createdBy?: string;
+  createdByName?: string;
+  lastUpdatedBy?: string;
+  lastUpdatedByName?: string;
   createdAt?: string;
   updatedAt?: string;
 }

@@ -1,30 +1,17 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Paper,
-  Typography,
-  useTheme,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@mui/material';
+import { Box, Paper, Typography, useTheme, IconButton } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import CloseIcon from '@mui/icons-material/Close';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Title, Tooltip, Legend } from 'chart.js';
 import { PaymentMethodExpense } from '../../../types/analytics';
+import { getCurrencySymbol } from '../utils/currency';
+import PaymentMethodDetailsDialog from './PaymentMethodDetailsDialog';
 
 ChartJS.register(ArcElement, Title, Tooltip, Legend);
 
 interface ExpensesByPaymentMethodChartProps {
   data: PaymentMethodExpense[];
+  currency?: string;
 }
 
 const paymentMethodColors = [
@@ -39,10 +26,11 @@ const paymentMethodColors = [
  * ExpensesByPaymentMethodChart Component
  * Displays pie chart for payment method distribution
  */
-const ExpensesByPaymentMethodChart: React.FC<ExpensesByPaymentMethodChartProps> = ({ data }) => {
+const ExpensesByPaymentMethodChart: React.FC<ExpensesByPaymentMethodChartProps> = ({ data, currency = 'INR' }) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
   const [openDialog, setOpenDialog] = useState(false);
+  const sym = getCurrencySymbol(currency);
 
   const textColor = isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.87)';
 
@@ -84,15 +72,11 @@ const ExpensesByPaymentMethodChart: React.FC<ExpensesByPaymentMethodChartProps> 
         padding: 12,
         displayColors: true,
         callbacks: {
-          label: function (context: any) {
-            return ` ₹${context.parsed?.toLocaleString('en-IN')}`;
-          },
+          label: (ctx: any) => ` ${sym}${ctx.parsed?.toLocaleString('en-IN')}`,
         },
       },
     },
   };
-
-  const totalExpenses = data.reduce((sum, item) => sum + item.total, 0);
 
   return (
     <>
@@ -142,83 +126,7 @@ const ExpensesByPaymentMethodChart: React.FC<ExpensesByPaymentMethodChartProps> 
         </Box>
       </Paper>
 
-      {/* Details Dialog */}
-      <Dialog
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-        maxWidth="sm"
-        fullWidth
-        PaperProps={{
-          sx: {
-            bgcolor: isDarkMode ? 'rgba(30, 30, 30, 0.98)' : 'background.paper',
-            backdropFilter: 'blur(10px)',
-          },
-        }}
-      >
-        <DialogTitle
-          sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}
-        >
-          <Typography variant="h6" fontWeight={600}>
-            Payment Method Details
-          </Typography>
-          <IconButton
-            edge="end"
-            onClick={() => setOpenDialog(false)}
-            size="small"
-            sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <TableContainer>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 600 }}>Payment Method</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>
-                    Amount
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>
-                    Transactions
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>
-                    %
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.map((item, index) => {
-                  const percentage =
-                    totalExpenses > 0 ? ((item.total / totalExpenses) * 100).toFixed(1) : '0.0';
-                  return (
-                    <TableRow key={index} hover>
-                      <TableCell>{item.paymentMethod}</TableCell>
-                      <TableCell align="right">₹{item.total.toLocaleString('en-IN')}</TableCell>
-                      <TableCell align="right">{item.count}</TableCell>
-                      <TableCell align="right">{percentage}%</TableCell>
-                    </TableRow>
-                  );
-                })}
-                <TableRow
-                  sx={{ bgcolor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)' }}
-                >
-                  <TableCell sx={{ fontWeight: 600 }}>Total</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>
-                    ₹{totalExpenses.toLocaleString('en-IN')}
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>
-                    {data.reduce((sum, item) => sum + item.count, 0)}
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>
-                    100%
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </DialogContent>
-      </Dialog>
+      <PaymentMethodDetailsDialog open={openDialog} onClose={() => setOpenDialog(false)} data={data} currency={currency} />
     </>
   );
 };

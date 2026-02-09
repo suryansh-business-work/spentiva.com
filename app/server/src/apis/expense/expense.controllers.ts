@@ -151,6 +151,8 @@ export const createExpenseController = async (req: any, res: Response) => {
     const createdExpenses = await ExpenseService.createBulkExpenses(expenses, {
       trackerId,
       userId,
+      createdBy: userId,
+      createdByName: req.user?.name || req.user?.firstName || 'Unknown',
     });
 
     const formattedExpenses = createdExpenses.map(expense => ({
@@ -166,6 +168,8 @@ export const createExpenseController = async (req: any, res: Response) => {
       description: expense.description,
       timestamp: expense.timestamp,
       trackerId: expense.trackerId,
+      createdBy: expense.createdBy,
+      createdByName: expense.createdByName,
       createdAt: expense.createdAt,
       updatedAt: expense.updatedAt,
     }));
@@ -195,13 +199,22 @@ export const createExpenseController = async (req: any, res: Response) => {
  */
 export const getAllExpensesController = async (req: any, res: Response) => {
   try {
-    const { trackerId, limit } = req.query;
+    const { trackerId, limit, page } = req.query;
     const userId = req.user?.userId;
+
+    const pageNum = page ? parseInt(page as string) : 1;
+    const limitNum = limit ? parseInt(limit as string) : 20;
 
     const expenses = await ExpenseService.getAllExpenses({
       trackerId: trackerId as string,
       userId,
-      limit: limit ? parseInt(limit as string) : undefined,
+      limit: limitNum,
+      page: pageNum,
+    });
+
+    const total = await ExpenseService.getExpenseCount({
+      trackerId: trackerId as string,
+      userId,
     });
 
     const formattedExpenses = expenses.map(expense => ({
@@ -217,11 +230,18 @@ export const getAllExpensesController = async (req: any, res: Response) => {
       description: expense.description,
       timestamp: expense.timestamp,
       trackerId: expense.trackerId || 'default',
+      createdBy: expense.createdBy,
+      createdByName: expense.createdByName,
+      lastUpdatedBy: expense.lastUpdatedBy,
+      lastUpdatedByName: expense.lastUpdatedByName,
       createdAt: expense.createdAt,
       updatedAt: expense.updatedAt,
     }));
 
-    return successResponse(res, { expenses: formattedExpenses }, 'Expenses retrieved successfully');
+    return successResponse(res, {
+      expenses: formattedExpenses,
+      pagination: { page: pageNum, limit: limitNum, total, totalPages: Math.ceil(total / limitNum) },
+    }, 'Expenses retrieved successfully');
   } catch (error: any) {
     console.error('Error fetching expenses:', error);
     return errorResponse(res, error, 'Internal server error');
@@ -277,7 +297,11 @@ export const updateExpenseController = async (req: any, res: Response) => {
 
     const expense = await ExpenseService.updateExpense(
       id,
-      { type, amount, category, subcategory, categoryId, paymentMethod, creditFrom, currency, description, timestamp },
+      {
+        type, amount, category, subcategory, categoryId, paymentMethod, creditFrom, currency, description, timestamp,
+        lastUpdatedBy: userId,
+        lastUpdatedByName: req.user?.name || req.user?.firstName || 'Unknown',
+      },
       userId
     );
 

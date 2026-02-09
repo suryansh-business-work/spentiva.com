@@ -1,22 +1,16 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Typography,
-  Button,
-  Paper,
-  TextField,
-  Stack,
-  useTheme,
-  Avatar,
-  IconButton,
-  CircularProgress,
-} from '@mui/material';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import EditIcon from '@mui/icons-material/Edit';
-import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import { Box, Tabs, Tab, useTheme } from '@mui/material';
+import FaceIcon from '@mui/icons-material/Face';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import CategoryIcon from '@mui/icons-material/Category';
+import ShareIcon from '@mui/icons-material/Share';
+import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import CategorySettings from '../../CategorySettings/CategorySettings';
-import { endpoints } from '../../../config/api';
-import { postRequest } from '../../../utils/http';
+import BotAvatarSection from './settings/BotAvatarSection';
+import TrackerDetailsSection from './settings/TrackerDetailsSection';
+import ShareTrackerSection from './settings/ShareTrackerSection';
+import ReportScheduleSection from './settings/ReportScheduleSection';
+import { SharedUser } from '../../../types/tracker';
 
 interface SettingsTabProps {
   trackerId: string;
@@ -26,10 +20,14 @@ interface SettingsTabProps {
     type: string;
     currency: string;
     botImage?: string;
+    isOwner?: boolean;
+    sharedWith?: SharedUser[];
   };
   onEdit: () => void;
   onDelete: () => void;
   onBotImageChange?: (url: string) => void;
+  onSharedUsersChange?: (users: SharedUser[]) => void;
+  defaultSubTab?: number;
 }
 
 const SettingsTab: React.FC<SettingsTabProps> = ({
@@ -38,184 +36,78 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
   onEdit,
   onDelete,
   onBotImageChange,
+  onSharedUsersChange,
+  defaultSubTab = 0,
 }) => {
   const theme = useTheme();
-  const [uploading, setUploading] = useState(false);
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !onBotImageChange) return;
-
-    setUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('folder', `trackers/${trackerId}`);
-      const res = await postRequest(endpoints.imagekit.upload, formData);
-      const data = res?.data;
-      if (data?.url) onBotImageChange(data.url);
-    } catch {
-      /* silent fail */
-    } finally {
-      setUploading(false);
-    }
-  };
+  const [subTab, setSubTab] = useState(defaultSubTab);
 
   return (
-    <Box sx={{ p: { xs: 2, sm: 3 }, overflowY: 'auto', height: '100%' }}>
-      {/* Bot Image Section */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 2.5,
-          mb: 2.5,
-          borderRadius: 2,
-          border: `1px solid ${theme.palette.divider}`,
-        }}
-      >
-        <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 2 }}>
-          Bot Avatar
-        </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box sx={{ position: 'relative' }}>
-            <Avatar
-              src={tracker.botImage}
-              sx={{
-                width: 64,
-                height: 64,
-                bgcolor: theme.palette.primary.main,
-                fontSize: '1.5rem',
-              }}
-            >
-              {tracker.name.charAt(0).toUpperCase()}
-            </Avatar>
-            <IconButton
-              component="label"
-              size="small"
-              disabled={uploading}
-              sx={{
-                position: 'absolute',
-                bottom: -4,
-                right: -4,
-                bgcolor: theme.palette.background.paper,
-                border: `1px solid ${theme.palette.divider}`,
-                width: 28,
-                height: 28,
-                '&:hover': { bgcolor: theme.palette.action.hover },
-              }}
-            >
-              {uploading ? (
-                <CircularProgress size={14} />
-              ) : (
-                <PhotoCameraIcon sx={{ fontSize: 14 }} />
-              )}
-              <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
-            </IconButton>
-          </Box>
-          <Typography variant="body2" color="text.secondary">
-            Upload a custom avatar for your tracker bot
-          </Typography>
-        </Box>
-      </Paper>
-
-      {/* Tracker Info Section */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 2.5,
-          mb: 2.5,
-          borderRadius: 2,
-          border: `1px solid ${theme.palette.divider}`,
-        }}
-      >
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="subtitle2" fontWeight={700}>
-            Tracker Details
-          </Typography>
-          <Button
-            size="small"
-            startIcon={<EditIcon sx={{ fontSize: 16 }} />}
-            onClick={onEdit}
-            sx={{ textTransform: 'none', fontWeight: 600 }}
-          >
-            Edit
-          </Button>
-        </Box>
-        <Stack spacing={1.5}>
-          <TextField
-            label="Name"
-            value={tracker.name}
-            size="small"
-            fullWidth
-            slotProps={{ input: { readOnly: true } }}
-          />
-          <TextField
-            label="Description"
-            value={tracker.description || '—'}
-            size="small"
-            fullWidth
-            slotProps={{ input: { readOnly: true } }}
-          />
-          <Box sx={{ display: 'flex', gap: 1.5 }}>
-            <TextField
-              label="Type"
-              value={tracker.type}
-              size="small"
-              fullWidth
-              slotProps={{ input: { readOnly: true } }}
-              sx={{ textTransform: 'capitalize' }}
-            />
-            <TextField
-              label="Currency"
-              value={tracker.currency}
-              size="small"
-              fullWidth
-              slotProps={{ input: { readOnly: true } }}
-            />
-          </Box>
-        </Stack>
-      </Paper>
-
-      {/* Category Settings */}
-      <Paper
-        elevation={0}
-        sx={{
-          mb: 2.5,
-          borderRadius: 2,
-          border: `1px solid ${theme.palette.divider}`,
-          overflow: 'hidden',
-        }}
-      >
-        <CategorySettings trackerId={trackerId} />
-      </Paper>
-
-      {/* Danger Zone */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 2.5,
-          borderRadius: 2,
-          border: `1px solid ${theme.palette.error.main}30`,
-          bgcolor: `${theme.palette.error.main}05`,
-        }}
-      >
-        <Typography variant="subtitle2" fontWeight={700} color="error" sx={{ mb: 1 }}>
-          Danger Zone
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Permanently delete this tracker and all associated data.
-        </Typography>
-        <Button
-          variant="outlined"
-          color="error"
-          size="small"
-          startIcon={<DeleteOutlineIcon />}
-          onClick={onDelete}
-          sx={{ textTransform: 'none', fontWeight: 600 }}
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Sub-tabs navigation */}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', flexShrink: 0 }}>
+        <Tabs
+          value={subTab}
+          onChange={(_e, v) => setSubTab(v)}
+          variant="scrollable"
+          scrollButtons="auto"
+          sx={{
+            minHeight: 40,
+            '& .MuiTab-root': {
+              minHeight: 40,
+              textTransform: 'none',
+              fontWeight: 500,
+              fontSize: '0.8rem',
+              px: 2,
+            },
+            '& .MuiTab-root.Mui-selected': { fontWeight: 600 },
+            '& .MuiTabs-indicator': { height: 2.5, borderRadius: '2px 2px 0 0' },
+          }}
         >
-          Delete Tracker
-        </Button>
-      </Paper>
+          <Tab icon={<FaceIcon sx={{ fontSize: 16 }} />} label="Bot Avatar" iconPosition="start" />
+          <Tab icon={<InfoOutlinedIcon sx={{ fontSize: 16 }} />} label="Tracker Details" iconPosition="start" />
+          <Tab icon={<CategoryIcon sx={{ fontSize: 16 }} />} label="Categories & Payment Modes" iconPosition="start" />
+          <Tab icon={<ShareIcon sx={{ fontSize: 16 }} />} label="Share" iconPosition="start" />
+          <Tab icon={<ScheduleSendIcon sx={{ fontSize: 16 }} />} label="Reports" iconPosition="start" />
+        </Tabs>
+      </Box>
+
+      {/* Sub-tab content */}
+      <Box sx={{ flex: 1, overflowY: 'auto', p: { xs: 2, sm: 3 } }}>
+        {subTab === 0 && (
+          <BotAvatarSection
+            trackerId={trackerId}
+            botImage={tracker.botImage}
+            trackerName={tracker.name}
+            onBotImageChange={onBotImageChange}
+          />
+        )}
+        {subTab === 1 && (
+          <TrackerDetailsSection tracker={tracker} onEdit={onEdit} onDelete={onDelete} />
+        )}
+        {subTab === 2 && (
+          <Box
+            sx={{
+              borderRadius: 2,
+              border: `1px solid ${theme.palette.divider}`,
+              overflow: 'hidden',
+            }}
+          >
+            <CategorySettings trackerId={trackerId} />
+          </Box>
+        )}
+        {subTab === 3 && (
+          <ShareTrackerSection
+            trackerId={trackerId}
+            sharedWith={tracker.sharedWith || []}
+            isOwner={tracker.isOwner !== false}
+            onSharedUsersChange={onSharedUsersChange || (() => {})}
+          />
+        )}
+        {subTab === 4 && (
+          <ReportScheduleSection trackerId={trackerId} trackerName={tracker.name} />
+        )}
+      </Box>
     </Box>
   );
 };

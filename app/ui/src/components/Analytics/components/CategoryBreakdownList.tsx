@@ -1,16 +1,18 @@
 import React from 'react';
 import { Box, Paper, Typography, Card, CardContent, Chip, useTheme } from '@mui/material';
 import { CategoryExpense } from '../../../types/analytics';
+import { formatAmount } from '../utils/currency';
 
 interface CategoryBreakdownListProps {
   data: CategoryExpense[];
+  currency?: string;
 }
 
 /**
  * CategoryBreakdownList Component
  * Displays detailed breakdown of expenses by category
  */
-const CategoryBreakdownList: React.FC<CategoryBreakdownListProps> = ({ data }) => {
+const CategoryBreakdownList: React.FC<CategoryBreakdownListProps> = ({ data, currency = 'INR' }) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
 
@@ -79,7 +81,7 @@ const CategoryBreakdownList: React.FC<CategoryBreakdownListProps> = ({ data }) =
                   </Typography>
                 </Box>
                 <Chip
-                  label={`₹${item.total.toLocaleString('en-IN')}`}
+                  label={formatAmount(item.total, currency)}
                   color="primary"
                   sx={{
                     fontWeight: 'bold',

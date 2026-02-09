@@ -1,25 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import {
-  Container,
-  Paper,
-  Typography,
-  Box,
-  Tabs,
-  Tab,
-  Skeleton,
-  IconButton,
-  useTheme,
-} from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ChatIcon from '@mui/icons-material/Chat';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import SettingsIcon from '@mui/icons-material/Settings';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Container, Paper, Typography, Box, Skeleton } from '@mui/material';
 import ChatInterface from '../ChatInterface/ChatInterface';
 import Analytics from '../Analytics/Analytics';
 import Transactions from '../Transactions/Transactions';
 import SettingsTab from './components/SettingsTab';
+import TrackerHeader from './components/TrackerHeader';
 import { endpoints } from '../../config/api';
 import { getRequest } from '../../utils/http';
 import { parseResponseData } from '../../utils/response-parser';
@@ -43,14 +29,13 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => (
 );
 
 const TrackerView: React.FC = () => {
-  const { trackerId } = useParams<{ trackerId: string }>();
+  const { trackerId, tab } = useParams<{ trackerId: string; tab?: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
-  const theme = useTheme();
   const [tracker, setTracker] = useState<Record<string, any> | null>(null);
   const [loading, setLoading] = useState(true);
+  const [settingsSubTab, setSettingsSubTab] = useState(0);
 
-  const currentTab = new URLSearchParams(location.search).get('tab') || 'chat';
+  const currentTab = tab || 'chat';
   const tabValue = Math.max(0, TAB_KEYS.indexOf(currentTab as typeof TAB_KEYS[number]));
 
   useEffect(() => {
@@ -70,8 +55,15 @@ const TrackerView: React.FC = () => {
     }
   };
 
-  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
-    navigate(`/tracker/${trackerId}?tab=${TAB_KEYS[newValue]}`);
+  const handleTabChange = (newValue: number) => {
+    // Index 4 = "Share" shortcut from mobile menu → open settings with Share sub-tab
+    if (newValue === 4) {
+      setSettingsSubTab(2);
+      navigate(`/tracker/${trackerId}/settings`);
+      return;
+    }
+    setSettingsSubTab(0);
+    navigate(`/tracker/${trackerId}/${TAB_KEYS[newValue]}`);
   };
 
   if (loading) {
@@ -93,86 +85,20 @@ const TrackerView: React.FC = () => {
     );
   }
 
-  const accentColor = tracker.type === 'business'
-    ? theme.palette.primary.main
-    : theme.palette.success.main;
-
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      {/* Compact single-row header: back + name + tabs */}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          bgcolor: theme.palette.background.paper,
-          borderBottom: `1px solid ${theme.palette.divider}`,
-          height: { xs: 42, sm: 46 },
-          minHeight: { xs: 42, sm: 46 },
-          maxHeight: 48,
-          px: { xs: 0.5, sm: 1 },
-          flexShrink: 0,
-          zIndex: 10,
-        }}
-      >
-        <IconButton
-          onClick={() => navigate('/trackers')}
-          size="small"
-          sx={{ color: theme.palette.text.secondary, mr: 0.5 }}
-        >
-          <ArrowBackIcon sx={{ fontSize: 18 }} />
-        </IconButton>
-
-        <Typography
-          variant="subtitle2"
-          noWrap
-          sx={{
-            fontWeight: 700,
-            fontSize: { xs: '0.85rem', sm: '0.9rem' },
-            mr: 1,
-            maxWidth: { xs: 100, sm: 160 },
-          }}
-        >
-          {tracker.name}
-        </Typography>
-
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
-          variant="scrollable"
-          scrollButtons={false}
-          sx={{
-            flex: 1,
-            minHeight: { xs: 42, sm: 46 },
-            '& .MuiTab-root': {
-              minHeight: { xs: 42, sm: 46 },
-              py: 0,
-              px: { xs: 1, sm: 1.5 },
-              fontSize: { xs: '0.75rem', sm: '0.8rem' },
-              fontWeight: 500,
-              textTransform: 'none',
-              minWidth: 0,
-              color: theme.palette.text.secondary,
-              '&.Mui-selected': { color: accentColor, fontWeight: 600 },
-            },
-            '& .MuiTabs-indicator': {
-              bgcolor: accentColor,
-              height: 2.5,
-              borderRadius: '2px 2px 0 0',
-            },
-            '& .MuiTab-iconWrapper': { fontSize: '1rem', mr: 0.5 },
-          }}
-        >
-          <Tab icon={<ChatIcon />} label="Chat" iconPosition="start" />
-          <Tab icon={<DashboardIcon />} label="Dashboard" iconPosition="start" />
-          <Tab icon={<ReceiptLongIcon />} label="Transactions" iconPosition="start" />
-          <Tab icon={<SettingsIcon />} label="Settings" iconPosition="start" />
-        </Tabs>
-      </Box>
+      <TrackerHeader
+        trackerName={tracker.name}
+        trackerType={tracker.type}
+        tabValue={tabValue}
+        onTabChange={handleTabChange}
+        onBack={() => navigate('/trackers')}
+      />
 
       {/* Tab content — each panel scrolls independently */}
       <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         <TabPanel value={tabValue} index={0}>
-          <ChatInterface trackerId={trackerId!} />
+          <ChatInterface trackerId={trackerId!} botImage={tracker?.botImage} botName={tracker?.name} />
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
@@ -191,8 +117,15 @@ const TrackerView: React.FC = () => {
           <SettingsTab
             trackerId={trackerId!}
             tracker={tracker as any}
+            defaultSubTab={settingsSubTab}
             onEdit={() => window.dispatchEvent(new CustomEvent('editTracker', { detail: tracker }))}
             onDelete={() => window.dispatchEvent(new CustomEvent('deleteTracker', { detail: tracker }))}
+            onBotImageChange={(url: string) => {
+              setTracker(prev => prev ? { ...prev, botImage: url } : prev);
+            }}
+            onSharedUsersChange={(users) => {
+              setTracker(prev => prev ? { ...prev, sharedWith: users } : prev);
+            }}
           />
         </TabPanel>
       </Box>

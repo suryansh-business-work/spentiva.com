@@ -24,21 +24,21 @@ router.post('/parse', authenticateMiddleware, parseExpenseController);
 router.post('/chat', authenticateMiddleware, chatController);
 
 // POST /api/expense - Create a new expense
-router.post('/create', createExpenseController);
+router.post('/create', authenticateMiddleware, createExpenseController);
 
 // POST /api/expense/bulk-delete - Bulk delete expenses
 router.post('/bulk-delete', authenticateMiddleware, bulkDeleteExpenseController);
 
 // GET /api/expense - Get all expenses with optional filtering
-router.get('/all', getAllExpensesController);
+router.get('/all', authenticateMiddleware, getAllExpensesController);
 
 // GET /api/expenses/:id - Get a specific expense
-router.get('/:id', getExpenseByIdController);
+router.get('/:id', authenticateMiddleware, getExpenseByIdController);
 
 // PUT /api/expenses/:id - Update an expense
-router.put('/:id', updateExpenseController);
+router.put('/:id', authenticateMiddleware, updateExpenseController);
 
 // DELETE /api/expenses/:id - Delete an expense
-router.delete('/:id', deleteExpenseController);
+router.delete('/:id', authenticateMiddleware, deleteExpenseController);
 
 export default router;

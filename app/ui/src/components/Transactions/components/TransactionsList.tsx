@@ -11,6 +11,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TablePagination,
   Checkbox,
   Chip,
   IconButton,
@@ -31,18 +32,25 @@ const CURRENCY_SYM: Record<string, string> = {
   GBP: '£',
 };
 
+interface PaginationState {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 interface TransactionsListProps {
   loading: boolean;
-  loadingMore: boolean;
-  hasMore: boolean;
   expenses: Expense[];
   selected: string[];
+  pagination: PaginationState;
+  onPageChange: (page: number) => void;
+  onRowsPerPageChange: (rowsPerPage: number) => void;
   onToggleSelect: (id: string) => void;
   onToggleSelectAll: () => void;
   onEdit: (expense: Expense) => void;
   onDelete: (expense: Expense) => void;
   onBulkDelete: () => void;
-  onLoadMore: () => void;
 }
 
 const formatDate = (date: string | Date) =>
@@ -53,20 +61,20 @@ const formatDate = (date: string | Date) =>
   });
 
 /**
- * TransactionsList Component — Table view with checkboxes for bulk actions
+ * TransactionsList Component — Table view with pagination and bulk actions
  */
 const TransactionsList: React.FC<TransactionsListProps> = ({
   loading,
-  loadingMore,
-  hasMore,
   expenses,
   selected,
+  pagination,
+  onPageChange,
+  onRowsPerPageChange,
   onToggleSelect,
   onToggleSelectAll,
   onEdit,
   onDelete,
   onBulkDelete,
-  onLoadMore,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -149,6 +157,7 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
               <TableCell align="right" sx={{ fontWeight: 700, color: 'success.main' }}>
                 Credit
               </TableCell>
+              {!isMobile && <TableCell sx={{ fontWeight: 700 }}>Logged By</TableCell>}
               <TableCell align="center" sx={{ fontWeight: 700 }}>
                 Actions
               </TableCell>
@@ -197,8 +206,11 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
                         </Typography>
                       )}
                       {isMobile && (
-                        <Box sx={{ display: 'flex', gap: 0.5, mt: 0.5 }}>
+                        <Box sx={{ display: 'flex', gap: 0.5, mt: 0.5, flexWrap: 'wrap' }}>
                           <Chip label={exp.category} size="small" variant="outlined" sx={{ height: 20, fontSize: '0.65rem' }} />
+                          {exp.createdByName && (
+                            <Chip label={exp.createdByName} size="small" color="info" variant="outlined" sx={{ height: 20, fontSize: '0.65rem' }} />
+                          )}
                         </Box>
                       )}
                     </Box>
@@ -231,6 +243,15 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
                       </Typography>
                     )}
                   </TableCell>
+                  {!isMobile && (
+                    <TableCell>
+                      <Tooltip title={exp.lastUpdatedByName ? `Updated by ${exp.lastUpdatedByName}` : ''}>
+                        <Typography variant="caption" color="text.secondary">
+                          {exp.createdByName || '—'}
+                        </Typography>
+                      </Tooltip>
+                    </TableCell>
+                  )}
                   <TableCell align="center" sx={{ whiteSpace: 'nowrap' }}>
                     <Tooltip title="Edit">
                       <IconButton size="small" color="primary" onClick={() => onEdit(exp)}>
@@ -248,29 +269,20 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
             })}
           </TableBody>
         </Table>
-      </TableContainer>
 
-      {/* Load More Button */}
-      {!loading && expenses.length > 0 && hasMore && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={onLoadMore}
-            disabled={loadingMore}
-            sx={{
-              minWidth: '200px',
-              py: 1.5,
-              borderRadius: 2,
-              textTransform: 'none',
-              fontSize: '1rem',
-              fontWeight: 600,
-            }}
-          >
-            {loadingMore ? 'Loading...' : 'Load More'}
-          </Button>
-        </Box>
-      )}
+        {/* Pagination */}
+        <TablePagination
+          component="div"
+          count={pagination.total}
+          page={pagination.page - 1}
+          rowsPerPage={pagination.limit}
+          onPageChange={(_e, newPage) => onPageChange(newPage + 1)}
+          onRowsPerPageChange={(e) => onRowsPerPageChange(parseInt(e.target.value, 10))}
+          rowsPerPageOptions={[10, 20, 50, 100]}
+          labelRowsPerPage="Per page:"
+          sx={{ borderTop: 1, borderColor: 'divider' }}
+        />
+      </TableContainer>
     </>
   );
 };

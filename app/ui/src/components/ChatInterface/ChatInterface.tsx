@@ -6,6 +6,7 @@ import { useChatMessages } from './hooks/useChatMessages';
 import { useExpenseActions } from './hooks/useExpenseActions';
 import ChatMessage from './components/ChatMessage';
 import ChatInput from './components/ChatInput';
+import QuickActionChips from './components/QuickActionChips';
 import LoadingSkeleton from './components/LoadingSkeleton';
 import AddCategoryDialog from './components/AddCategoryDialog';
 
@@ -15,13 +16,15 @@ import AddCategoryDialog from './components/AddCategoryDialog';
 interface ChatInterfaceProps {
   onExpenseAdded?: () => void;
   trackerId?: string;
+  botImage?: string;
+  botName?: string;
 }
 
 /**
  * ChatInterface Component
  * Main chat interface for expense tracking with AI assistance
  */
-const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId }) => {
+const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId, botImage, botName }) => {
   const { user } = useAuth();
   const theme = useTheme();
   const [input, setInput] = useState('');
@@ -217,6 +220,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
             message={message}
             userPhotoUrl={getUserPhotoUrl()}
             userName={user?.firstName}
+            botImage={botImage}
+            botName={botName}
             onAddCategory={handleAddCategory}
           />
         ))}
@@ -227,6 +232,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
         {/* Scroll Anchor */}
         <div ref={messagesEndRef} />
       </Box>
+
+      {/* Quick action chips — shown when chat is empty or input is empty */}
+      <QuickActionChips
+        onSelect={(prompt) => { setInput(prompt); }}
+        visible={!isLoading && !input.trim()}
+      />
 
       {/* Input Form - Fixed at Bottom */}
       <ChatInput value={input} onChange={setInput} onSubmit={handleSubmit} disabled={isLoading} />

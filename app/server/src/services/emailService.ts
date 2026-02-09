@@ -5,59 +5,112 @@ import path from 'path';
 import config from '../config/env';
 import { logger } from '../utils/logger';
 
-// Init Nodemailer Transport with timeout settings
-const transporter = nodemailer.createTransport({
-  host: config?.SERVICES?.EMAIL?.NODEMAILER?.HOST,
-  port: config?.SERVICES?.EMAIL?.NODEMAILER?.PORT,
-  secure: true, // true for 465, false for other ports
-  auth: {
-    user: config?.SERVICES?.EMAIL?.NODEMAILER?.USER,
-    pass: config?.SERVICES?.EMAIL?.NODEMAILER?.PASS,
-  },
-  connectionTimeout: 5000, // 5 seconds
-  greetingTimeout: 5000, // 5 seconds
-  socketTimeout: 10000, // 10 seconds
-  pool: true,
-  maxConnections: 5,
-  maxMessages: 10,
-});
+// SMTP readiness flag
+let smtpReady = false;
 
-// Verify SMTP connection on startup
-logger.info('Email service initializing', {
-  host: config?.SERVICES?.EMAIL?.NODEMAILER?.HOST,
-  port: config?.SERVICES?.EMAIL?.NODEMAILER?.PORT,
-  user: config?.SERVICES?.EMAIL?.NODEMAILER?.USER,
-});
+const smtpHost = config?.SERVICES?.EMAIL?.NODEMAILER?.HOST;
+const smtpPort = config?.SERVICES?.EMAIL?.NODEMAILER?.PORT ?? 587;
+const smtpUser = config?.SERVICES?.EMAIL?.NODEMAILER?.USER;
+const smtpPass = config?.SERVICES?.EMAIL?.NODEMAILER?.PASS;
 
-transporter.verify(error => {
-  if (error) {
-    logger.error('SMTP connection failed', { error: error.message });
-  } else {
-    logger.info('SMTP connection verified successfully');
+const smtpConfigured = Boolean(smtpHost && smtpUser && smtpPass);
+
+// Lazy transporter — only created when credentials are present
+let transporter: nodemailer.Transporter | null = null;
+
+const getTransporter = (): nodemailer.Transporter => {
+  if (transporter) return transporter;
+
+  if (!smtpConfigured) {
+    throw new Error('SMTP is not configured. Set NODEMAILER_HOST, NODEMAILER_USER, and NODEMAILER_PASS.');
   }
-});
+
+  transporter = nodemailer.createTransport({
+    host: smtpHost,
+    port: smtpPort,
+    secure: smtpPort === 465,
+    auth: { user: smtpUser, pass: smtpPass },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
+    pool: true,
+    maxConnections: 5,
+    maxMessages: 10,
+    tls: { rejectUnauthorized: config?.SERVICES?.EMAIL?.NODEMAILER?.HOST !== 'localhost' },
+  });
+
+  return transporter;
+};
+
+// Verify SMTP connection on startup (non-blocking, retries once)
+const verifySMTP = async (retries = 2): Promise<void> => {
+  if (!smtpConfigured) {
+    logger.warn('SMTP not configured — email features disabled', { host: smtpHost, user: smtpUser });
+    return;
+  }
+
+  logger.info('Email service initializing', { host: smtpHost, port: smtpPort, user: smtpUser });
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      await getTransporter().verify();
+      smtpReady = true;
+      logger.info('SMTP connection verified successfully');
+      return;
+    } catch (error: any) {
+      logger.error(`SMTP verification attempt ${attempt}/${retries} failed`, { error: error.message });
+      if (attempt < retries) await new Promise(r => setTimeout(r, 3000));
+    }
+  }
+
+  logger.warn('SMTP verification failed after retries — emails may fail at send time');
+};
+
+// Fire-and-forget so it never blocks server startup
+verifySMTP().catch(() => {});
+
+/**
+ * Check if email service is ready to send emails
+ */
+export const isEmailServiceReady = (): boolean => smtpConfigured && smtpReady;
+
+/**
+ * Check if SMTP is configured (even if not verified)
+ */
+export const isSmtpConfigured = (): boolean => smtpConfigured;
 
 interface EmailOptions {
   to: string;
   subject: string;
   html: string;
   from?: string;
+  critical?: boolean; // If true, throw error when SMTP not configured
 }
 
 /**
  * Send email using Nodemailer
  */
 export const sendEmail = async (options: EmailOptions): Promise<void> => {
+  if (!smtpConfigured) {
+    const errMsg = 'SMTP not configured — email service unavailable';
+    logger.warn(errMsg, { to: options.to, subject: options.subject });
+    if (options.critical) {
+      throw new Error(errMsg);
+    }
+    return;
+  }
+
   try {
+    const transport = getTransporter();
     const mailOptions = {
-      from: options.from || `"Spentiva" <${config?.SERVICES?.EMAIL?.NODEMAILER?.USER}>`,
+      from: options.from || `"Spentiva" <${smtpUser}>`,
       to: options.to,
       subject: options.subject,
       html: options.html,
     };
 
     await new Promise<void>((resolve, reject) => {
-      transporter.sendMail(mailOptions, (error, _success: any) => {
+      transport.sendMail(mailOptions, (error, _success: any) => {
         if (error) {
           logger.error('Failed to send email', { error: error.message, to: options.to });
           return reject(new Error(`Failed to send email: ${error.message}`));

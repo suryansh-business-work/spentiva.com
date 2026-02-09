@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Box, IconButton, Avatar, useTheme, Tooltip, Button } from '@mui/material';
+import { AppBar, Toolbar, Box, IconButton, Avatar, useTheme, Tooltip } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
@@ -45,22 +45,22 @@ const Header: React.FC<HeaderProps> = ({ onCreateTracker }) => {
 
           {/* Create Tracker Button — only visible on /trackers */}
           {onCreateTracker && isTrackersPage && (
-            <Button
-              onClick={onCreateTracker}
-              size="small"
-              variant="contained"
-              startIcon={<AddIcon sx={{ fontSize: 16 }} />}
-              sx={{
-                height: 32,
-                textTransform: 'none',
-                fontWeight: 600,
-                fontSize: '0.8rem',
-                borderRadius: 1.5,
-                px: 1.5,
-              }}
-            >
-              Create Tracker
-            </Button>
+            <Tooltip title="Create Tracker" arrow>
+              <IconButton
+                onClick={onCreateTracker}
+                size="small"
+                sx={{
+                  bgcolor: theme.palette.primary.main,
+                  color: theme.palette.primary.contrastText,
+                  borderRadius: 1.5,
+                  width: 32,
+                  height: 32,
+                  '&:hover': { bgcolor: theme.palette.primary.dark },
+                }}
+              >
+                <AddIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            </Tooltip>
           )}
 
           {/* Dark/Light Mode Toggle */}

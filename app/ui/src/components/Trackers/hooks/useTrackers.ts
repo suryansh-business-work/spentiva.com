@@ -91,6 +91,32 @@ export const useTrackers = () => {
     [loadTrackers]
   );
 
+  const requestDeleteOtp = useCallback(async (id: string) => {
+    try {
+      await postRequest(endpoints.trackers.deleteRequest(id), {});
+      return true;
+    } catch (error) {
+      console.error('Error requesting delete OTP:', error);
+      setSnackbar({ open: true, message: 'Failed to send verification code', severity: 'error' });
+      return false;
+    }
+  }, []);
+
+  const confirmDeleteWithOtp = useCallback(async (id: string, otp: string) => {
+    setDeleting(true);
+    try {
+      await postRequest(endpoints.trackers.deleteConfirm(id), { otp });
+      setSnackbar({ open: true, message: 'Tracker deleted successfully', severity: 'success' });
+      await loadTrackers();
+      return true;
+    } catch (error) {
+      console.error('Error confirming delete:', error);
+      return false;
+    } finally {
+      setDeleting(false);
+    }
+  }, [loadTrackers]);
+
   const closeSnackbar = useCallback(() => {
     setSnackbar(prev => ({ ...prev, open: false }));
   }, []);
@@ -109,6 +135,8 @@ export const useTrackers = () => {
     createTracker,
     updateTracker,
     deleteTracker,
+    requestDeleteOtp,
+    confirmDeleteWithOtp,
     closeSnackbar,
   };
 };

@@ -7,6 +7,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import SavingsIcon from '@mui/icons-material/Savings';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import { AnalyticsSummary } from '../../../types/analytics';
+import { getCurrencySymbol } from '../utils/currency';
 
 interface SummaryCardsProps {
   summary: AnalyticsSummary;
@@ -14,15 +15,6 @@ interface SummaryCardsProps {
   loading?: boolean;
 }
 
-const getCurrencySymbol = (currency: string) => {
-  const symbols: Record<string, string> = { INR: '₹', USD: '$', EUR: '€', GBP: '£' };
-  return symbols[currency] || currency;
-};
-
-/**
- * SummaryCards Component
- * Displays income, expenses, net balance, averages, savings rate, and transaction count
- */
 const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, currency = 'INR' }) => {
   const theme = useTheme();
   const sym = getCurrencySymbol(currency);

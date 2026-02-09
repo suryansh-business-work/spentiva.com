@@ -2,6 +2,21 @@ import categoryModels from '../category/category.models';
 import expenseModels from '../expense/expense.models';
 import TrackerModel from './tracker.models';
 import { logger } from '../../utils/logger';
+import crypto from 'crypto';
+
+/**
+ * In-memory OTP store for tracker deletion
+ * Key: `${userId}:${trackerId}`, Value: { otp, expiresAt }
+ */
+const deleteOtpStore = new Map<string, { otp: string; expiresAt: number }>();
+
+// Clean up expired OTPs every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, value] of deleteOtpStore) {
+    if (value.expiresAt < now) deleteOtpStore.delete(key);
+  }
+}, 5 * 60 * 1000);
 
 /**
  * Tracker Service - Business logic for tracker operations
@@ -270,7 +285,13 @@ class TrackerService {
    * Get all trackers for a user
    */
   async getAllTrackers(userId: string) {
-    const trackers = await TrackerModel.find({ userId }).sort({ createdAt: -1 });
+    // Get owned trackers + trackers shared with the user
+    const trackers = await TrackerModel.find({
+      $or: [
+        { userId },
+        { 'sharedWith.userId': userId, 'sharedWith.status': 'accepted' },
+      ],
+    }).sort({ createdAt: -1 });
 
     return trackers.map(tracker => ({
       id: tracker._id.toString(),
@@ -278,6 +299,9 @@ class TrackerService {
       type: tracker.type,
       description: tracker.description,
       currency: tracker.currency,
+      botImage: tracker.botImage,
+      isOwner: tracker.userId === userId,
+      sharedWith: tracker.sharedWith,
       createdAt: tracker.createdAt,
       updatedAt: tracker.updatedAt,
     }));
@@ -343,7 +367,13 @@ class TrackerService {
    * Get a single tracker by ID
    */
   async getTrackerById(userId: string, trackerId: string) {
-    const tracker = await TrackerModel.findOne({ _id: trackerId, userId });
+    const tracker = await TrackerModel.findOne({
+      _id: trackerId,
+      $or: [
+        { userId },
+        { 'sharedWith.userId': userId, 'sharedWith.status': 'accepted' },
+      ],
+    });
 
     if (!tracker) {
       throw new Error('Tracker not found');
@@ -355,6 +385,9 @@ class TrackerService {
       type: tracker.type,
       description: tracker.description,
       currency: tracker.currency,
+      botImage: tracker.botImage,
+      isOwner: tracker.userId === userId,
+      sharedWith: tracker.sharedWith,
       createdAt: tracker.createdAt,
       updatedAt: tracker.updatedAt,
     };
@@ -371,11 +404,20 @@ class TrackerService {
       type?: 'personal' | 'business';
       description?: string;
       currency?: 'INR' | 'USD' | 'EUR' | 'GBP';
+      botImage?: string;
     }
   ) {
+    // Build update object only with provided fields
+    const updateFields: Record<string, any> = {};
+    if (data.name !== undefined) updateFields.name = data.name;
+    if (data.type !== undefined) updateFields.type = data.type;
+    if (data.description !== undefined) updateFields.description = data.description;
+    if (data.currency !== undefined) updateFields.currency = data.currency;
+    if (data.botImage !== undefined) updateFields.botImage = data.botImage;
+
     const tracker = await TrackerModel.findOneAndUpdate(
       { _id: trackerId, userId },
-      { name: data.name, type: data.type, description: data.description, currency: data.currency },
+      updateFields,
       { new: true }
     );
 
@@ -404,6 +446,7 @@ class TrackerService {
       type: tracker.type,
       description: tracker.description,
       currency: tracker.currency,
+      botImage: tracker.botImage,
       createdAt: tracker.createdAt,
       updatedAt: tracker.updatedAt,
     };
@@ -439,6 +482,134 @@ class TrackerService {
       id: trackerId,
       message: 'Tracker and associated expenses deleted successfully',
     };
+  }
+
+  /**
+   * Share a tracker with another user by email
+   */
+  async shareTracker(
+    ownerId: string,
+    trackerId: string,
+    data: { email: string; role: 'viewer' | 'editor' }
+  ) {
+    const tracker = await TrackerModel.findOne({ _id: trackerId, userId: ownerId });
+    if (!tracker) {
+      throw new Error('Tracker not found');
+    }
+
+    // Check if already shared with this email
+    const existing = tracker.sharedWith.find(s => s.email === data.email);
+    if (existing) {
+      throw new Error('Tracker is already shared with this email');
+    }
+
+    tracker.sharedWith.push({
+      userId: '', // Will be populated when the user accepts
+      email: data.email,
+      role: data.role,
+      status: 'pending',
+      invitedAt: new Date(),
+    });
+
+    await tracker.save();
+
+    // Send invitation email (non-blocking)
+    try {
+      const { sendEmail } = await import('../../services/emailService');
+      await sendEmail({
+        to: data.email,
+        subject: `You've been invited to a Spentiva tracker: ${tracker.name}`,
+        html: `<p>You have been invited to collaborate on the tracker <strong>"${tracker.name}"</strong> as an <strong>${data.role}</strong>. Log in to Spentiva to accept.</p>`,
+      });
+    } catch (emailErr) {
+      logger.error('Failed to send share invite email', { trackerId, email: data.email, error: emailErr });
+    }
+
+    return { sharedWith: tracker.sharedWith };
+  }
+
+  /**
+   * Remove a shared user from a tracker
+   */
+  async removeSharedUser(ownerId: string, trackerId: string, email: string) {
+    const tracker = await TrackerModel.findOne({ _id: trackerId, userId: ownerId });
+    if (!tracker) {
+      throw new Error('Tracker not found');
+    }
+
+    const idx = tracker.sharedWith.findIndex(s => s.email === email);
+    if (idx === -1) {
+      throw new Error('User not found in shared list');
+    }
+
+    tracker.sharedWith.splice(idx, 1);
+    await tracker.save();
+
+    return { sharedWith: tracker.sharedWith };
+  }
+
+  /**
+   * Resend invitation email to a shared user
+   */
+  async resendShareInvite(ownerId: string, trackerId: string, email: string) {
+    const tracker = await TrackerModel.findOne({ _id: trackerId, userId: ownerId });
+    if (!tracker) {
+      throw new Error('Tracker not found');
+    }
+
+    const shared = tracker.sharedWith.find(s => s.email === email);
+    if (!shared) {
+      throw new Error('User not found in shared list');
+    }
+
+    // Re-send invitation email
+    try {
+      const { sendEmail } = await import('../../services/emailService');
+      await sendEmail({
+        to: email,
+        subject: `Reminder: You've been invited to a Spentiva tracker: ${tracker.name}`,
+        html: `<p>This is a reminder that you have been invited to collaborate on the tracker <strong>"${tracker.name}"</strong> as an <strong>${shared.role}</strong>. Log in to Spentiva to accept.</p>`,
+      });
+    } catch (emailErr) {
+      logger.error('Failed to resend share invite email', { trackerId, email, error: emailErr });
+    }
+
+    return { message: 'Invitation re-sent' };
+  }
+
+  /**
+   * Request OTP for tracker deletion — generates a 6-digit code and returns it.
+   * The controller is responsible for emailing it.
+   */
+  async requestDeleteOtp(userId: string, trackerId: string): Promise<{ otp: string; trackerName: string }> {
+    const tracker = await TrackerModel.findOne({ _id: trackerId, userId });
+    if (!tracker) throw new Error('Tracker not found');
+
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const key = `${userId}:${trackerId}`;
+
+    deleteOtpStore.set(key, { otp, expiresAt: Date.now() + 5 * 60 * 1000 });
+
+    logger.info('Delete OTP generated', { trackerId, userId });
+    return { otp, trackerName: tracker.name };
+  }
+
+  /**
+   * Verify OTP and delete the tracker if valid.
+   */
+  async confirmDeleteWithOtp(userId: string, trackerId: string, otp: string) {
+    const key = `${userId}:${trackerId}`;
+    const stored = deleteOtpStore.get(key);
+
+    if (!stored) throw new Error('No OTP requested or OTP expired. Please request a new one.');
+    if (stored.expiresAt < Date.now()) {
+      deleteOtpStore.delete(key);
+      throw new Error('OTP has expired. Please request a new one.');
+    }
+    if (stored.otp !== otp) throw new Error('Invalid OTP. Please try again.');
+
+    deleteOtpStore.delete(key);
+    return this.deleteTracker(userId, trackerId);
   }
 }
 

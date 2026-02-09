@@ -32,6 +32,8 @@ import analyticsRoutes from './apis/analytics/analytics.routes';
 import healthRoutes from './apis/health/health.routes';
 import paymentRoutes from './apis/payment/payment.routes';
 import refundRoutes from './apis/refund/refund.routes';
+import reportScheduleRoutes from './apis/report-schedule/report-schedule.routes';
+import { startReportCron } from './services/reportCron';
 
 const app = express();
 const PORT = config.PORT;
@@ -151,6 +153,9 @@ app.use('/v1/api/support', supportRoutes);
 app.use('/v1/api/payment', paymentRoutes);
 app.use('/v1/api/refund', refundRoutes);
 
+// Report Scheduling
+app.use('/v1/api/report-schedule', reportScheduleRoutes);
+
 // General API rate limiting (AFTER all specific routes)
 // This will only apply to routes not matched above
 app.use('/v1/api', apiLimiter);
@@ -178,4 +183,7 @@ app.listen(PORT, () => {
   console.log(`\n✅ Server running on http://localhost:${PORT}`);
   console.log(`📚 API Docs: http://localhost:${PORT}/api/docs`);
   console.log(`💚 Health Check: http://localhost:${PORT}/v1/api/health\n`);
+
+  // Start scheduled report cron
+  startReportCron();
 });

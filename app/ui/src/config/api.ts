@@ -19,7 +19,12 @@ export const endpoints = {
     create: `${getApiUrl()}/tracker/create`,
     update: (id: string) => `${getApiUrl()}/tracker/update/${id}`,
     delete: (id: string) => `${getApiUrl()}/tracker/delete/${id}`,
+    deleteRequest: (id: string) => `${getApiUrl()}/tracker/delete-request/${id}`,
+    deleteConfirm: (id: string) => `${getApiUrl()}/tracker/delete-confirm/${id}`,
     byId: (id: string) => `${getApiUrl()}/tracker/get/${id}`,
+    share: (id: string) => `${getApiUrl()}/tracker/share/${id}`,
+    unshare: (id: string) => `${getApiUrl()}/tracker/unshare/${id}`,
+    resendInvite: (id: string) => `${getApiUrl()}/tracker/resend-invite/${id}`,
   },
   categories: {
     getAll: (trackerId: string, type?: string) =>
@@ -98,5 +103,12 @@ export const endpoints = {
     getAll: `${getApiUrl()}/refund`,
     delete: (refundId: string) => `${getApiUrl()}/refund/${refundId}`,
     stats: `${getApiUrl()}/refund/stats`,
+  },
+  reportSchedule: {
+    create: `${getApiUrl()}/report-schedule/create`,
+    getAll: `${getApiUrl()}/report-schedule/all`,
+    byTracker: (trackerId: string) => `${getApiUrl()}/report-schedule/tracker/${trackerId}`,
+    update: (id: string) => `${getApiUrl()}/report-schedule/update/${id}`,
+    delete: (id: string) => `${getApiUrl()}/report-schedule/delete/${id}`,
   },
 };
