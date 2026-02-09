@@ -24,7 +24,12 @@ interface ChatInterfaceProps {
  * ChatInterface Component
  * Main chat interface for expense tracking with AI assistance
  */
-const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId, botImage, botName }) => {
+const ChatInterface: React.FC<ChatInterfaceProps> = ({
+  onExpenseAdded,
+  trackerId,
+  botImage,
+  botName,
+}) => {
   const { user } = useAuth();
   const theme = useTheme();
   const [input, setInput] = useState('');
@@ -35,7 +40,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
   const { messages, addUserMessage, addAssistantMessage, trackMessageUsage, checkUsageLimit } =
     useChatMessages(trackerId);
 
-  const { parseExpense, createExpense, addCategory, addSubcategory, categories } = useExpenseActions(trackerId);
+  const { parseExpense, createExpense, addCategory, addSubcategory, categories } =
+    useExpenseActions(trackerId);
 
   // State for add category dialog
   const [addCatDialogOpen, setAddCatDialogOpen] = useState(false);
@@ -153,23 +159,37 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
     setAddCatDialogOpen(true);
   }, []);
 
-  const handleAddMainCategory = useCallback(async (name: string, type: string) => {
-    try {
-      await addCategory(name, type);
-      addAssistantMessage(`✅ Category "${name}" added successfully! You can now try your message again.`);
-    } catch {
-      addAssistantMessage(`❌ Failed to add category "${name}". Please try again or add it from Settings.`);
-    }
-  }, [addCategory, addAssistantMessage]);
+  const handleAddMainCategory = useCallback(
+    async (name: string, type: string) => {
+      try {
+        await addCategory(name, type);
+        addAssistantMessage(
+          `✅ Category "${name}" added successfully! You can now try your message again.`
+        );
+      } catch {
+        addAssistantMessage(
+          `❌ Failed to add category "${name}". Please try again or add it from Settings.`
+        );
+      }
+    },
+    [addCategory, addAssistantMessage]
+  );
 
-  const handleAddSubCategory = useCallback(async (parentId: string, subName: string) => {
-    try {
-      await addSubcategory(parentId, subName);
-      addAssistantMessage(`✅ Subcategory "${subName}" added successfully! You can now try your message again.`);
-    } catch {
-      addAssistantMessage(`❌ Failed to add subcategory "${subName}". Please try again or add it from Settings.`);
-    }
-  }, [addSubcategory, addAssistantMessage]);
+  const handleAddSubCategory = useCallback(
+    async (parentId: string, subName: string) => {
+      try {
+        await addSubcategory(parentId, subName);
+        addAssistantMessage(
+          `✅ Subcategory "${subName}" added successfully! You can now try your message again.`
+        );
+      } catch {
+        addAssistantMessage(
+          `❌ Failed to add subcategory "${subName}". Please try again or add it from Settings.`
+        );
+      }
+    },
+    [addSubcategory, addAssistantMessage]
+  );
 
   /**
    * Auto-scroll when messages update
@@ -235,7 +255,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onExpenseAdded, trackerId
 
       {/* Quick action chips — shown when chat is empty or input is empty */}
       <QuickActionChips
-        onSelect={(prompt) => { setInput(prompt); }}
+        onSelect={prompt => {
+          setInput(prompt);
+        }}
         visible={!isLoading && !input.trim()}
       />
 

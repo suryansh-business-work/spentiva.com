@@ -62,9 +62,7 @@ const AddCategoryDialog: React.FC<AddCategoryDialogProps> = ({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle sx={{ pb: 1, fontSize: '1rem' }}>
-        Add "{categoryName}"
-      </DialogTitle>
+      <DialogTitle sx={{ pb: 1, fontSize: '1rem' }}>Add "{categoryName}"</DialogTitle>
       <DialogContent sx={{ pb: 1 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, mt: 1 }}>
           <ToggleButtonGroup
@@ -124,7 +122,9 @@ const AddCategoryDialog: React.FC<AddCategoryDialogProps> = ({
         </Box>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={onClose} size="small">Cancel</Button>
+        <Button onClick={onClose} size="small">
+          Cancel
+        </Button>
         <Button
           onClick={handleSave}
           variant="contained"

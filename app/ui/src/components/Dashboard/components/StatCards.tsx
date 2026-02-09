@@ -117,7 +117,9 @@ const StatCards: React.FC<StatCardsProps> = ({ summary }) => {
           }}
         >
           <CardContent sx={{ position: 'relative', zIndex: 1, p: { xs: 1.5, md: 2.5 } }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <Box
+              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
+            >
               <Typography
                 variant="subtitle2"
                 sx={{

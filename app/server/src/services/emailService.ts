@@ -22,7 +22,9 @@ const getTransporter = (): nodemailer.Transporter => {
   if (transporter) return transporter;
 
   if (!smtpConfigured) {
-    throw new Error('SMTP is not configured. Set NODEMAILER_HOST, NODEMAILER_USER, and NODEMAILER_PASS.');
+    throw new Error(
+      'SMTP is not configured. Set NODEMAILER_HOST, NODEMAILER_USER, and NODEMAILER_PASS.'
+    );
   }
 
   transporter = nodemailer.createTransport({
@@ -45,7 +47,10 @@ const getTransporter = (): nodemailer.Transporter => {
 // Verify SMTP connection on startup (non-blocking, retries once)
 const verifySMTP = async (retries = 2): Promise<void> => {
   if (!smtpConfigured) {
-    logger.warn('SMTP not configured — email features disabled', { host: smtpHost, user: smtpUser });
+    logger.warn('SMTP not configured — email features disabled', {
+      host: smtpHost,
+      user: smtpUser,
+    });
     return;
   }
 
@@ -58,7 +63,9 @@ const verifySMTP = async (retries = 2): Promise<void> => {
       logger.info('SMTP connection verified successfully');
       return;
     } catch (error: any) {
-      logger.error(`SMTP verification attempt ${attempt}/${retries} failed`, { error: error.message });
+      logger.error(`SMTP verification attempt ${attempt}/${retries} failed`, {
+        error: error.message,
+      });
       if (attempt < retries) await new Promise(r => setTimeout(r, 3000));
     }
   }
@@ -146,6 +153,17 @@ const compileMjmlTemplate = (templatePath: string, variables: Record<string, any
     logger.error('MJML template compilation failed', { templatePath, error: error.message });
     throw error;
   }
+};
+
+/**
+ * Compile MJML template by name (without path)
+ * @param templateName - Name of the template file (without .mjml extension)
+ * @param variables - Variables to replace in template
+ * @returns Compiled HTML string
+ */
+export const compileMjml = (templateName: string, variables: Record<string, any>): string => {
+  const templatePath = path.join(__dirname, `../templates/emails/${templateName}.mjml`);
+  return compileMjmlTemplate(templatePath, variables);
 };
 
 /**

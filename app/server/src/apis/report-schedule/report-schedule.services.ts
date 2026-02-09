@@ -5,7 +5,12 @@ class ReportScheduleService {
   /**
    * Compute next run date based on frequency
    */
-  private computeNextRun(frequency: string, hour: number, dayOfWeek?: number, dayOfMonth?: number): Date {
+  private computeNextRun(
+    frequency: string,
+    hour: number,
+    dayOfWeek?: number,
+    dayOfMonth?: number
+  ): Date {
     const now = new Date();
     const next = new Date();
     next.setMinutes(0, 0, 0);
@@ -30,10 +35,17 @@ class ReportScheduleService {
     // Only one schedule per tracker per user
     const existing = await ReportScheduleModel.findOne({ userId, trackerId: data.trackerId });
     if (existing) {
-      throw new Error('A report schedule already exists for this tracker. Update or delete it instead.');
+      throw new Error(
+        'A report schedule already exists for this tracker. Update or delete it instead.'
+      );
     }
 
-    const nextRunAt = this.computeNextRun(data.frequency, data.hour, data.dayOfWeek, data.dayOfMonth);
+    const nextRunAt = this.computeNextRun(
+      data.frequency,
+      data.hour,
+      data.dayOfWeek,
+      data.dayOfMonth
+    );
 
     const schedule = await ReportScheduleModel.create({
       userId,
@@ -49,7 +61,11 @@ class ReportScheduleService {
       nextRunAt,
     });
 
-    logger.info('Report schedule created', { scheduleId: schedule._id, userId, trackerId: data.trackerId });
+    logger.info('Report schedule created', {
+      scheduleId: schedule._id,
+      userId,
+      trackerId: data.trackerId,
+    });
     return schedule;
   }
 
@@ -70,7 +86,7 @@ class ReportScheduleService {
       schedule.frequency,
       schedule.hour,
       schedule.dayOfWeek,
-      schedule.dayOfMonth,
+      schedule.dayOfMonth
     );
     await schedule.save();
 
@@ -105,7 +121,7 @@ class ReportScheduleService {
       schedule.frequency,
       schedule.hour,
       schedule.dayOfWeek,
-      schedule.dayOfMonth,
+      schedule.dayOfMonth
     );
     await schedule.save();
   }

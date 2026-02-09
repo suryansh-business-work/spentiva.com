@@ -102,20 +102,23 @@ export const useTrackers = () => {
     }
   }, []);
 
-  const confirmDeleteWithOtp = useCallback(async (id: string, otp: string) => {
-    setDeleting(true);
-    try {
-      await postRequest(endpoints.trackers.deleteConfirm(id), { otp });
-      setSnackbar({ open: true, message: 'Tracker deleted successfully', severity: 'success' });
-      await loadTrackers();
-      return true;
-    } catch (error) {
-      console.error('Error confirming delete:', error);
-      return false;
-    } finally {
-      setDeleting(false);
-    }
-  }, [loadTrackers]);
+  const confirmDeleteWithOtp = useCallback(
+    async (id: string, otp: string) => {
+      setDeleting(true);
+      try {
+        await postRequest(endpoints.trackers.deleteConfirm(id), { otp });
+        setSnackbar({ open: true, message: 'Tracker deleted successfully', severity: 'success' });
+        await loadTrackers();
+        return true;
+      } catch (error) {
+        console.error('Error confirming delete:', error);
+        return false;
+      } finally {
+        setDeleting(false);
+      }
+    },
+    [loadTrackers]
+  );
 
   const closeSnackbar = useCallback(() => {
     setSnackbar(prev => ({ ...prev, open: false }));

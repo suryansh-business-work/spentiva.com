@@ -94,7 +94,10 @@ const ShareTrackerSection: React.FC<ShareTrackerSectionProps> = ({
 
   if (!isOwner) {
     return (
-      <Paper elevation={0} sx={{ p: 3, borderRadius: 2, border: `1px solid ${theme.palette.divider}` }}>
+      <Paper
+        elevation={0}
+        sx={{ p: 3, borderRadius: 2, border: `1px solid ${theme.palette.divider}` }}
+      >
         <Typography variant="body2" color="text.secondary">
           Only the tracker owner can manage sharing.
         </Typography>
@@ -127,7 +130,10 @@ interface ShareFormProps {
 }
 
 const ShareForm: React.FC<ShareFormProps> = ({ formik, loading, theme }) => (
-  <Paper elevation={0} sx={{ p: 2.5, borderRadius: 2, border: `1px solid ${theme.palette.divider}` }}>
+  <Paper
+    elevation={0}
+    sx={{ p: 2.5, borderRadius: 2, border: `1px solid ${theme.palette.divider}` }}
+  >
     <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 2 }}>
       Invite Collaborator
     </Typography>
@@ -194,7 +200,15 @@ const SharedUsersList: React.FC<SharedUsersListProps> = ({
 }) => {
   if (!sharedWith.length) {
     return (
-      <Paper elevation={0} sx={{ p: 3, borderRadius: 2, border: `1px solid ${theme.palette.divider}`, textAlign: 'center' }}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          borderRadius: 2,
+          border: `1px solid ${theme.palette.divider}`,
+          textAlign: 'center',
+        }}
+      >
         <Typography variant="body2" color="text.secondary">
           No collaborators yet. Invite someone above.
         </Typography>
@@ -203,12 +217,15 @@ const SharedUsersList: React.FC<SharedUsersListProps> = ({
   }
 
   return (
-    <Paper elevation={0} sx={{ p: 2.5, borderRadius: 2, border: `1px solid ${theme.palette.divider}` }}>
+    <Paper
+      elevation={0}
+      sx={{ p: 2.5, borderRadius: 2, border: `1px solid ${theme.palette.divider}` }}
+    >
       <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 2 }}>
         Shared With
       </Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-        {sharedWith.map((user) => (
+        {sharedWith.map(user => (
           <SharedUserRow
             key={user.email}
             user={user}
@@ -235,7 +252,12 @@ const statusColor: Record<string, 'warning' | 'success' | 'error'> = {
   rejected: 'error',
 };
 
-const SharedUserRow: React.FC<SharedUserRowProps> = ({ user, actionLoading, onRemove, onResend }) => (
+const SharedUserRow: React.FC<SharedUserRowProps> = ({
+  user,
+  actionLoading,
+  onRemove,
+  onResend,
+}) => (
   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
     <Box sx={{ flex: 1, minWidth: 0 }}>
       <Typography variant="body2" noWrap fontWeight={500}>
@@ -256,7 +278,11 @@ const SharedUserRow: React.FC<SharedUserRowProps> = ({ user, actionLoading, onRe
           onClick={() => onResend(user.email)}
           disabled={actionLoading === `resend-${user.email}`}
         >
-          {actionLoading === `resend-${user.email}` ? <CircularProgress size={16} /> : <RefreshIcon fontSize="small" />}
+          {actionLoading === `resend-${user.email}` ? (
+            <CircularProgress size={16} />
+          ) : (
+            <RefreshIcon fontSize="small" />
+          )}
         </IconButton>
       </Tooltip>
     )}
@@ -267,7 +293,11 @@ const SharedUserRow: React.FC<SharedUserRowProps> = ({ user, actionLoading, onRe
         onClick={() => onRemove(user.email)}
         disabled={actionLoading === user.email}
       >
-        {actionLoading === user.email ? <CircularProgress size={16} /> : <DeleteOutlineIcon fontSize="small" />}
+        {actionLoading === user.email ? (
+          <CircularProgress size={16} />
+        ) : (
+          <DeleteOutlineIcon fontSize="small" />
+        )}
       </IconButton>
     </Tooltip>
   </Box>

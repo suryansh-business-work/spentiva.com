@@ -227,7 +227,10 @@ const TransactionsFilters: React.FC<TransactionsFiltersProps> = ({
       </Box>
 
       {/* Active Filters Chips */}
-      {(categoryFilter !== 'all' || paymentFilter !== 'all' || typeFilter !== 'all' || searchTerm) && (
+      {(categoryFilter !== 'all' ||
+        paymentFilter !== 'all' ||
+        typeFilter !== 'all' ||
+        searchTerm) && (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2, alignItems: 'center' }}>
           <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>
             Active Filters:
@@ -313,11 +316,7 @@ const TransactionsFilters: React.FC<TransactionsFiltersProps> = ({
 
         <FormControl fullWidth size="small" sx={{ mb: 2 }}>
           <InputLabel>Type</InputLabel>
-          <Select
-            value={typeFilter}
-            onChange={e => onTypeChange(e.target.value)}
-            label="Type"
-          >
+          <Select value={typeFilter} onChange={e => onTypeChange(e.target.value)} label="Type">
             <MenuItem value="all">All Types</MenuItem>
             <MenuItem value="expense">Expense</MenuItem>
             <MenuItem value="income">Income</MenuItem>

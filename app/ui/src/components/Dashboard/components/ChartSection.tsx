@@ -82,12 +82,14 @@ const ChartSection: React.FC<ChartSectionProps> = ({
     'Dec',
   ];
   const monthMap = new Map<number, { expenses: number; income: number }>();
-  monthlyData.forEach((item: { month: number; expenses?: number; income?: number; total: number }) => {
-    monthMap.set(item.month, {
-      expenses: item.expenses ?? item.total ?? 0,
-      income: item.income ?? 0,
-    });
-  });
+  monthlyData.forEach(
+    (item: { month: number; expenses?: number; income?: number; total: number }) => {
+      monthMap.set(item.month, {
+        expenses: item.expenses ?? item.total ?? 0,
+        income: item.income ?? 0,
+      });
+    }
+  );
 
   const monthlyChartData = {
     labels: months,

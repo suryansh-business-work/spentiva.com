@@ -207,9 +207,20 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
                       )}
                       {isMobile && (
                         <Box sx={{ display: 'flex', gap: 0.5, mt: 0.5, flexWrap: 'wrap' }}>
-                          <Chip label={exp.category} size="small" variant="outlined" sx={{ height: 20, fontSize: '0.65rem' }} />
+                          <Chip
+                            label={exp.category}
+                            size="small"
+                            variant="outlined"
+                            sx={{ height: 20, fontSize: '0.65rem' }}
+                          />
                           {exp.createdByName && (
-                            <Chip label={exp.createdByName} size="small" color="info" variant="outlined" sx={{ height: 20, fontSize: '0.65rem' }} />
+                            <Chip
+                              label={exp.createdByName}
+                              size="small"
+                              color="info"
+                              variant="outlined"
+                              sx={{ height: 20, fontSize: '0.65rem' }}
+                            />
                           )}
                         </Box>
                       )}
@@ -217,7 +228,12 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
                   </TableCell>
                   {!isMobile && (
                     <TableCell>
-                      <Chip label={exp.category} size="small" variant="outlined" color="secondary" />
+                      <Chip
+                        label={exp.category}
+                        size="small"
+                        variant="outlined"
+                        color="secondary"
+                      />
                     </TableCell>
                   )}
                   {!isMobile && (
@@ -231,7 +247,8 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
                   <TableCell align="right">
                     {!isIncome && (
                       <Typography variant="body2" fontWeight={600} color="error.main">
-                        {currSym}{exp.amount.toLocaleString('en-IN')}
+                        {currSym}
+                        {exp.amount.toLocaleString('en-IN')}
                       </Typography>
                     )}
                   </TableCell>
@@ -239,13 +256,16 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
                   <TableCell align="right">
                     {isIncome && (
                       <Typography variant="body2" fontWeight={600} color="success.main">
-                        {currSym}{exp.amount.toLocaleString('en-IN')}
+                        {currSym}
+                        {exp.amount.toLocaleString('en-IN')}
                       </Typography>
                     )}
                   </TableCell>
                   {!isMobile && (
                     <TableCell>
-                      <Tooltip title={exp.lastUpdatedByName ? `Updated by ${exp.lastUpdatedByName}` : ''}>
+                      <Tooltip
+                        title={exp.lastUpdatedByName ? `Updated by ${exp.lastUpdatedByName}` : ''}
+                      >
                         <Typography variant="caption" color="text.secondary">
                           {exp.createdByName || '—'}
                         </Typography>
@@ -277,7 +297,7 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
           page={pagination.page - 1}
           rowsPerPage={pagination.limit}
           onPageChange={(_e, newPage) => onPageChange(newPage + 1)}
-          onRowsPerPageChange={(e) => onRowsPerPageChange(parseInt(e.target.value, 10))}
+          onRowsPerPageChange={e => onRowsPerPageChange(parseInt(e.target.value, 10))}
           rowsPerPageOptions={[10, 20, 50, 100]}
           labelRowsPerPage="Per page:"
           sx={{ borderTop: 1, borderColor: 'divider' }}

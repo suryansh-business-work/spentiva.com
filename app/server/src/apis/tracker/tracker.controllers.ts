@@ -165,7 +165,10 @@ export const removeSharedUserController = async (req: any, res: Response) => {
 
     return successResponse(res, result, 'User removed from tracker');
   } catch (error: any) {
-    if (error.message === 'Tracker not found' || error.message === 'User not found in shared list') {
+    if (
+      error.message === 'Tracker not found' ||
+      error.message === 'User not found in shared list'
+    ) {
       return badRequestResponse(res, null, error.message);
     }
     return errorResponse(res, error, 'Internal server error');
@@ -189,7 +192,10 @@ export const resendShareInviteController = async (req: any, res: Response) => {
 
     return successResponse(res, result, 'Invitation re-sent successfully');
   } catch (error: any) {
-    if (error.message === 'Tracker not found' || error.message === 'User not found in shared list') {
+    if (
+      error.message === 'Tracker not found' ||
+      error.message === 'User not found in shared list'
+    ) {
       return badRequestResponse(res, null, error.message);
     }
     return errorResponse(res, error, 'Internal server error');
@@ -208,7 +214,11 @@ export const requestDeleteOtpController = async (req: any, res: Response) => {
     // Check if email service is available before generating OTP
     const { sendEmail, isSmtpConfigured } = await import('../../services/emailService');
     if (!isSmtpConfigured()) {
-      return badRequestResponse(res, null, 'Email service is not configured. OTP verification is unavailable.');
+      return badRequestResponse(
+        res,
+        null,
+        'Email service is not configured. OTP verification is unavailable.'
+      );
     }
 
     const { otp, trackerName } = await TrackerService.requestDeleteOtp(userId, id);
@@ -255,7 +265,12 @@ export const confirmDeleteController = async (req: any, res: Response) => {
     const result = await TrackerService.confirmDeleteWithOtp(userId, id, otp.trim());
     return successResponse(res, result, result.message);
   } catch (error: any) {
-    const clientErrors = ['Tracker not found', 'Invalid OTP', 'OTP has expired', 'No OTP requested'];
+    const clientErrors = [
+      'Tracker not found',
+      'Invalid OTP',
+      'OTP has expired',
+      'No OTP requested',
+    ];
     if (clientErrors.some(msg => error.message?.includes(msg))) {
       return badRequestResponse(res, null, error.message);
     }

@@ -12,7 +12,10 @@ interface CategoryBreakdownListProps {
  * CategoryBreakdownList Component
  * Displays detailed breakdown of expenses by category
  */
-const CategoryBreakdownList: React.FC<CategoryBreakdownListProps> = ({ data, currency = 'INR' }) => {
+const CategoryBreakdownList: React.FC<CategoryBreakdownListProps> = ({
+  data,
+  currency = 'INR',
+}) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
 

@@ -78,7 +78,10 @@ const Billing: React.FC = () => {
       // Fetch trackers
       try {
         const trackersResponse = await getRequest(endpoints.trackers.getAll);
-        const data = parseResponseData<{ trackers?: Array<Record<string, unknown>> }>(trackersResponse, {});
+        const data = parseResponseData<{ trackers?: Array<Record<string, unknown>> }>(
+          trackersResponse,
+          {}
+        );
         const trackers = data?.trackers || [];
         setTrackerCount(Array.isArray(trackers) ? trackers.length : 0);
       } catch {

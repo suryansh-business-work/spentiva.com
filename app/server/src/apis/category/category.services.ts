@@ -51,7 +51,11 @@ export class CategoryService {
    */
   static async updateCategory(
     categoryId: string,
-    updates: { name?: string; type?: CategoryType; subcategories?: Array<{ id: string; name: string }> }
+    updates: {
+      name?: string;
+      type?: CategoryType;
+      subcategories?: Array<{ id: string; name: string }>;
+    }
   ) {
     const category = await CategoryModel.findByIdAndUpdate(categoryId, updates, {
       new: true,

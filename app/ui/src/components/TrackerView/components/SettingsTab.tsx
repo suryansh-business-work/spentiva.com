@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Tabs, Tab, useTheme } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
 import FaceIcon from '@mui/icons-material/Face';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CategoryIcon from '@mui/icons-material/Category';
@@ -11,6 +12,10 @@ import TrackerDetailsSection from './settings/TrackerDetailsSection';
 import ShareTrackerSection from './settings/ShareTrackerSection';
 import ReportScheduleSection from './settings/ReportScheduleSection';
 import { SharedUser } from '../../../types/tracker';
+
+// Sub-tab route names
+const SUBTAB_KEYS = ['bot-avatar', 'details', 'categories', 'share', 'reports'] as const;
+type SubTabKey = (typeof SUBTAB_KEYS)[number];
 
 interface SettingsTabProps {
   trackerId: string;
@@ -40,7 +45,33 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
   defaultSubTab = 0,
 }) => {
   const theme = useTheme();
-  const [subTab, setSubTab] = useState(defaultSubTab);
+  const navigate = useNavigate();
+  const { subtab } = useParams<{ subtab?: string }>();
+
+  // Determine initial sub-tab from URL or defaultSubTab
+  const getInitialSubTab = () => {
+    if (subtab) {
+      const index = SUBTAB_KEYS.indexOf(subtab as SubTabKey);
+      if (index !== -1) return index;
+    }
+    return defaultSubTab;
+  };
+
+  const [subTab, setSubTab] = useState(getInitialSubTab);
+
+  // Update sub-tab when URL changes
+  useEffect(() => {
+    const newSubTab = getInitialSubTab();
+    if (newSubTab !== subTab) {
+      setSubTab(newSubTab);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subtab]);
+
+  const handleSubTabChange = (_e: React.SyntheticEvent, newValue: number) => {
+    setSubTab(newValue);
+    navigate(`/tracker/${trackerId}/settings/${SUBTAB_KEYS[newValue]}`);
+  };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -48,7 +79,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
       <Box sx={{ borderBottom: 1, borderColor: 'divider', flexShrink: 0 }}>
         <Tabs
           value={subTab}
-          onChange={(_e, v) => setSubTab(v)}
+          onChange={handleSubTabChange}
           variant="scrollable"
           scrollButtons="auto"
           sx={{
@@ -65,10 +96,22 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
           }}
         >
           <Tab icon={<FaceIcon sx={{ fontSize: 16 }} />} label="Bot Avatar" iconPosition="start" />
-          <Tab icon={<InfoOutlinedIcon sx={{ fontSize: 16 }} />} label="Tracker Details" iconPosition="start" />
-          <Tab icon={<CategoryIcon sx={{ fontSize: 16 }} />} label="Categories & Payment Modes" iconPosition="start" />
+          <Tab
+            icon={<InfoOutlinedIcon sx={{ fontSize: 16 }} />}
+            label="Tracker Details"
+            iconPosition="start"
+          />
+          <Tab
+            icon={<CategoryIcon sx={{ fontSize: 16 }} />}
+            label="Categories & Payment Modes"
+            iconPosition="start"
+          />
           <Tab icon={<ShareIcon sx={{ fontSize: 16 }} />} label="Share" iconPosition="start" />
-          <Tab icon={<ScheduleSendIcon sx={{ fontSize: 16 }} />} label="Reports" iconPosition="start" />
+          <Tab
+            icon={<ScheduleSendIcon sx={{ fontSize: 16 }} />}
+            label="Reports"
+            iconPosition="start"
+          />
         </Tabs>
       </Box>
 
@@ -104,9 +147,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
             onSharedUsersChange={onSharedUsersChange || (() => {})}
           />
         )}
-        {subTab === 4 && (
-          <ReportScheduleSection trackerId={trackerId} trackerName={tracker.name} />
-        )}
+        {subTab === 4 && <ReportScheduleSection trackerId={trackerId} trackerName={tracker.name} />}
       </Box>
     </Box>
   );

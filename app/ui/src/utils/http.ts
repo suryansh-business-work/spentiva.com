@@ -46,7 +46,12 @@ const putRequest = async (url: string, data: any = {}) => {
   }
 };
 
-const getRequest = async (url: string, data: any = {}, authToken: string | null = null, extraHeaders: any = {}) => {
+const getRequest = async (
+  url: string,
+  data: any = {},
+  authToken: string | null = null,
+  extraHeaders: any = {}
+) => {
   const localToken = getAuthToken() || authToken;
   const headers: any = {
     ...extraHeaders,

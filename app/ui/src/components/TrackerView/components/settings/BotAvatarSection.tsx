@@ -83,11 +83,7 @@ const BotAvatarSection: React.FC<BotAvatarSectionProps> = ({
               '&:hover': { bgcolor: theme.palette.action.hover },
             }}
           >
-            {uploading ? (
-              <CircularProgress size={14} />
-            ) : (
-              <PhotoCameraIcon sx={{ fontSize: 16 }} />
-            )}
+            {uploading ? <CircularProgress size={14} /> : <PhotoCameraIcon sx={{ fontSize: 16 }} />}
             <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
           </IconButton>
         </Box>

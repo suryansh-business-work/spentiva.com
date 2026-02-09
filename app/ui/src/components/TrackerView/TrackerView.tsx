@@ -33,10 +33,9 @@ const TrackerView: React.FC = () => {
   const navigate = useNavigate();
   const [tracker, setTracker] = useState<Record<string, any> | null>(null);
   const [loading, setLoading] = useState(true);
-  const [settingsSubTab, setSettingsSubTab] = useState(0);
 
   const currentTab = tab || 'chat';
-  const tabValue = Math.max(0, TAB_KEYS.indexOf(currentTab as typeof TAB_KEYS[number]));
+  const tabValue = Math.max(0, TAB_KEYS.indexOf(currentTab as (typeof TAB_KEYS)[number]));
 
   useEffect(() => {
     if (trackerId) loadTracker();
@@ -58,11 +57,9 @@ const TrackerView: React.FC = () => {
   const handleTabChange = (newValue: number) => {
     // Index 4 = "Share" shortcut from mobile menu → open settings with Share sub-tab
     if (newValue === 4) {
-      setSettingsSubTab(2);
-      navigate(`/tracker/${trackerId}/settings`);
+      navigate(`/tracker/${trackerId}/settings/share`);
       return;
     }
-    setSettingsSubTab(0);
     navigate(`/tracker/${trackerId}/${TAB_KEYS[newValue]}`);
   };
 
@@ -79,7 +76,9 @@ const TrackerView: React.FC = () => {
     return (
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 4, textAlign: 'center' }}>
-          <Typography variant="h6" color="error">Tracker not found</Typography>
+          <Typography variant="h6" color="error">
+            Tracker not found
+          </Typography>
         </Paper>
       </Container>
     );
@@ -98,7 +97,11 @@ const TrackerView: React.FC = () => {
       {/* Tab content — each panel scrolls independently */}
       <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         <TabPanel value={tabValue} index={0}>
-          <ChatInterface trackerId={trackerId!} botImage={tracker?.botImage} botName={tracker?.name} />
+          <ChatInterface
+            trackerId={trackerId!}
+            botImage={tracker?.botImage}
+            botName={tracker?.name}
+          />
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
@@ -117,14 +120,15 @@ const TrackerView: React.FC = () => {
           <SettingsTab
             trackerId={trackerId!}
             tracker={tracker as any}
-            defaultSubTab={settingsSubTab}
             onEdit={() => window.dispatchEvent(new CustomEvent('editTracker', { detail: tracker }))}
-            onDelete={() => window.dispatchEvent(new CustomEvent('deleteTracker', { detail: tracker }))}
+            onDelete={() =>
+              window.dispatchEvent(new CustomEvent('deleteTracker', { detail: tracker }))
+            }
             onBotImageChange={(url: string) => {
-              setTracker(prev => prev ? { ...prev, botImage: url } : prev);
+              setTracker(prev => (prev ? { ...prev, botImage: url } : prev));
             }}
-            onSharedUsersChange={(users) => {
-              setTracker(prev => prev ? { ...prev, sharedWith: users } : prev);
+            onSharedUsersChange={users => {
+              setTracker(prev => (prev ? { ...prev, sharedWith: users } : prev));
             }}
           />
         </TabPanel>

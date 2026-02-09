@@ -17,7 +17,11 @@ const QUICK_ACTIONS: QuickAction[] = [
   { label: 'Add Expense', prompt: 'I spent ', icon: <AddIcon sx={{ fontSize: 16 }} /> },
   { label: 'Add Income', prompt: 'I received ', icon: <TrendingUpIcon sx={{ fontSize: 16 }} /> },
   { label: 'Food', prompt: 'Spent on food ', icon: <LocalDiningIcon sx={{ fontSize: 16 }} /> },
-  { label: 'Transport', prompt: 'Transport expense ', icon: <DirectionsBusIcon sx={{ fontSize: 16 }} /> },
+  {
+    label: 'Transport',
+    prompt: 'Transport expense ',
+    icon: <DirectionsBusIcon sx={{ fontSize: 16 }} />,
+  },
   { label: 'Bills', prompt: 'Paid for ', icon: <ReceiptIcon sx={{ fontSize: 16 }} /> },
   { label: 'Savings', prompt: 'Saved ', icon: <SavingsIcon sx={{ fontSize: 16 }} /> },
 ];
@@ -45,7 +49,7 @@ const QuickActionChips: React.FC<QuickActionChipsProps> = ({ onSelect, visible =
         scrollbarWidth: 'none',
       }}
     >
-      {QUICK_ACTIONS.map((action) => (
+      {QUICK_ACTIONS.map(action => (
         <Chip
           key={action.label}
           label={action.label}

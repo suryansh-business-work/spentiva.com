@@ -28,7 +28,7 @@ const CURRENCY_OPTIONS: { value: string; symbol: string; label: string }[] = [
 ];
 
 const CURRENCY_SYM: Record<string, string> = Object.fromEntries(
-  CURRENCY_OPTIONS.map(c => [c.value, c.symbol]),
+  CURRENCY_OPTIONS.map(c => [c.value, c.symbol])
 );
 
 interface Category {
@@ -77,13 +77,13 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
   const safeCategories = useMemo(() => (Array.isArray(categories) ? categories : []), [categories]);
   const safeIncomeCategories = useMemo(
     () => (Array.isArray(incomeCategories) ? incomeCategories : []),
-    [incomeCategories],
+    [incomeCategories]
   );
 
   /** Resolve which category list applies based on type */
   const activeCatList = useMemo(
     () => (type === 'income' ? safeIncomeCategories : safeCategories),
-    [type, safeCategories, safeIncomeCategories],
+    [type, safeCategories, safeIncomeCategories]
   );
 
   useEffect(() => {
@@ -124,7 +124,7 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({
       setSubcategory('');
       setAvailableSubcategories([]);
     },
-    [],
+    []
   );
 
   const handleSave = () => {

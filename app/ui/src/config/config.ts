@@ -16,7 +16,9 @@ const config = {
     API_KEY: import.meta.env.VITE_AUTH_API_KEY || 'exy_sWx0MMTQvtKSUcBaMY8TkeYiTsKkx3Pq',
     SERVER_URL: isLocalhost ? 'http://localhost:4002' : 'https://exyconn-auth-server.exyconn.com',
     AUTH_URL: isLocalhost ? 'http://localhost:4001' : 'https://auth.spentiva.com',
-    PROFILE_URL: isLocalhost ? 'http://localhost:4001/profile' : 'https://auth.spentiva.com/profile',
+    PROFILE_URL: isLocalhost
+      ? 'http://localhost:4001/profile'
+      : 'https://auth.spentiva.com/profile',
     LOGOUT_URL: isLocalhost ? 'http://localhost:4001/logout' : 'https://auth.spentiva.com/logout',
   },
 

@@ -1,19 +1,41 @@
 import React, { useState } from 'react';
 import {
-  Box, Paper, Typography, FormControl, Select, MenuItem,
-  useTheme, IconButton,
+  Box,
+  Paper,
+  Typography,
+  FormControl,
+  Select,
+  MenuItem,
+  useTheme,
+  IconButton,
 } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Line } from 'react-chartjs-2';
 import {
-  Chart as ChartJS, CategoryScale, LinearScale, LineElement,
-  PointElement, Title, Tooltip, Legend, Filler,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
 } from 'chart.js';
 import { MonthlyExpense } from '../../../types/analytics';
 import { getCurrencySymbol } from '../utils/currency';
 import MonthlyDetailsDialog from './MonthlyDetailsDialog';
 
-ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend, Filler);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 interface MonthlyExpensesChartProps {
   data: MonthlyExpense[];
@@ -27,7 +49,10 @@ interface MonthlyExpensesChartProps {
  * Displays line chart for monthly expense trends
  */
 const MonthlyExpensesChart: React.FC<MonthlyExpensesChartProps> = ({
-  data, selectedYear, onYearChange, currency = 'INR',
+  data,
+  selectedYear,
+  onYearChange,
+  currency = 'INR',
 }) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
@@ -37,7 +62,20 @@ const MonthlyExpensesChart: React.FC<MonthlyExpensesChartProps> = ({
   const textColor = isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)';
   const gridColor = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
 
-  const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const monthLabels = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
 
   const monthlyExpenses = Array(12).fill(0);
   const monthlyIncome = Array(12).fill(0);
@@ -71,20 +109,22 @@ const MonthlyExpensesChart: React.FC<MonthlyExpensesChartProps> = ({
         borderWidth: 3,
       },
       ...(hasIncome
-        ? [{
-            label: `Income ${selectedYear}`,
-            data: monthlyIncome,
-            borderColor: 'rgba(16, 185, 129, 1)',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-            tension: 0.4,
-            fill: true,
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            pointBackgroundColor: 'rgba(16, 185, 129, 1)',
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2,
-            borderWidth: 3,
-          }]
+        ? [
+            {
+              label: `Income ${selectedYear}`,
+              data: monthlyIncome,
+              borderColor: 'rgba(16, 185, 129, 1)',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              tension: 0.4,
+              fill: true,
+              pointRadius: 5,
+              pointHoverRadius: 7,
+              pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+              pointBorderColor: '#fff',
+              pointBorderWidth: 2,
+              borderWidth: 3,
+            },
+          ]
         : []),
     ],
   };
@@ -93,11 +133,17 @@ const MonthlyExpensesChart: React.FC<MonthlyExpensesChartProps> = ({
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'top' as const, labels: { color: textColor, font: { size: 12, weight: 500 as const }, padding: 15 } },
+      legend: {
+        position: 'top' as const,
+        labels: { color: textColor, font: { size: 12, weight: 500 as const }, padding: 15 },
+      },
       tooltip: {
         backgroundColor: isDarkMode ? 'rgba(0,0,0,0.9)' : 'rgba(255,255,255,0.95)',
-        titleColor: isDarkMode ? '#fff' : '#000', bodyColor: isDarkMode ? '#fff' : '#000',
-        borderColor: isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)', borderWidth: 1, padding: 12,
+        titleColor: isDarkMode ? '#fff' : '#000',
+        bodyColor: isDarkMode ? '#fff' : '#000',
+        borderColor: isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+        borderWidth: 1,
+        padding: 12,
         callbacks: { label: (ctx: any) => ` ${sym}${ctx.parsed.y?.toLocaleString('en-IN')}` },
       },
     },
@@ -105,7 +151,11 @@ const MonthlyExpensesChart: React.FC<MonthlyExpensesChartProps> = ({
       x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 } } },
       y: {
         grid: { color: gridColor },
-        ticks: { color: textColor, font: { size: 11 }, callback: (v: any) => sym + v.toLocaleString('en-IN') },
+        ticks: {
+          color: textColor,
+          font: { size: 11 },
+          callback: (v: any) => sym + v.toLocaleString('en-IN'),
+        },
       },
     },
   };
@@ -114,21 +164,50 @@ const MonthlyExpensesChart: React.FC<MonthlyExpensesChartProps> = ({
 
   return (
     <>
-      <Paper elevation={3}
-        sx={{ p: { xs: 2, md: 3 }, mb: 3, bgcolor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'background.paper', backdropFilter: 'blur(10px)' }}>
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 2, gap: 2 }}>
+      <Paper
+        elevation={3}
+        sx={{
+          p: { xs: 2, md: 3 },
+          mb: 3,
+          bgcolor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'background.paper',
+          backdropFilter: 'blur(10px)',
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            justifyContent: 'space-between',
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            mb: 2,
+            gap: 2,
+          }}
+        >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="h6" sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' }, fontWeight: 600, color: textColor }}>
+            <Typography
+              variant="h6"
+              sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' }, fontWeight: 600, color: textColor }}
+            >
               Income vs Expenses Trend
             </Typography>
-            <IconButton size="small" onClick={() => setOpenDialog(true)}
-              sx={{ color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)', '&:hover': { bgcolor: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' } }}>
+            <IconButton
+              size="small"
+              onClick={() => setOpenDialog(true)}
+              sx={{
+                color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
+                '&:hover': { bgcolor: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' },
+              }}
+            >
               <InfoOutlinedIcon fontSize="small" />
             </IconButton>
           </Box>
           <FormControl size="small" sx={{ minWidth: 120 }}>
             <Select value={selectedYear} onChange={e => onYearChange(Number(e.target.value))}>
-              {years.map(y => <MenuItem key={y} value={y}>{y}</MenuItem>)}
+              {years.map(y => (
+                <MenuItem key={y} value={y}>
+                  {y}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Box>

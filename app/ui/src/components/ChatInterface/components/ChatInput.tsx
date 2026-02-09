@@ -212,7 +212,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
               borderRadius: 3,
               py: 0.75,
               px: 1.5,
-              bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+              bgcolor:
+                theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
               border: `1px solid ${theme.palette.divider}`,
             }}
           >
@@ -237,7 +238,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 animation: `${pulse} 1.2s ease-in-out infinite`,
               }}
             />
-            <Typography variant="caption" color="error" sx={{ fontWeight: 600, fontSize: '0.7rem' }}>
+            <Typography
+              variant="caption"
+              color="error"
+              sx={{ fontWeight: 600, fontSize: '0.7rem' }}
+            >
               Listening…
             </Typography>
           </Box>
@@ -287,7 +292,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
               sx={{
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 3,
-                  bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                  bgcolor:
+                    theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
                 },
               }}
             />

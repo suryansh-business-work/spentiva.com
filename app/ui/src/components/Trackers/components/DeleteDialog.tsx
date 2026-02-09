@@ -56,15 +56,23 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
   };
 
   const handleConfirm = async () => {
-    if (otp.length !== 6) { setError('Enter the 6-digit code'); return; }
+    if (otp.length !== 6) {
+      setError('Enter the 6-digit code');
+      return;
+    }
     setError('');
     const ok = await onConfirm(otp);
     if (!ok) setError('Invalid or expired code. Please try again.');
   };
 
   return (
-    <Dialog open={open} onClose={onClose}
-      PaperProps={{ sx: { bgcolor: theme.palette.background.paper, borderRadius: 3, minWidth: 360 } }}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      PaperProps={{
+        sx: { bgcolor: theme.palette.background.paper, borderRadius: 3, minWidth: 360 },
+      }}
+    >
       <DialogTitle sx={{ color: theme.palette.text.primary }}>Delete Tracker</DialogTitle>
       <DialogContent>
         {step === 'confirm' ? (
@@ -79,38 +87,68 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
         ) : (
           <>
             <Typography sx={{ color: theme.palette.text.primary, mb: 2 }}>
-              A 6-digit verification code has been sent to your email. Enter it below to confirm deletion.
+              A 6-digit verification code has been sent to your email. Enter it below to confirm
+              deletion.
             </Typography>
             <TextField
               fullWidth
               label="Verification Code"
               value={otp}
-              onChange={(e) => { setOtp(e.target.value.replace(/\D/g, '').slice(0, 6)); setError(''); }}
-              inputProps={{ maxLength: 6, inputMode: 'numeric', style: { letterSpacing: 8, fontWeight: 700, fontSize: 22, textAlign: 'center' } }}
+              onChange={e => {
+                setOtp(e.target.value.replace(/\D/g, '').slice(0, 6));
+                setError('');
+              }}
+              inputProps={{
+                maxLength: 6,
+                inputMode: 'numeric',
+                style: { letterSpacing: 8, fontWeight: 700, fontSize: 22, textAlign: 'center' },
+              }}
               autoFocus
             />
           </>
         )}
-        {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {error}
+          </Alert>
+        )}
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={onClose} disabled={deleting || sending} sx={{ color: theme.palette.text.secondary }}>
+        <Button
+          onClick={onClose}
+          disabled={deleting || sending}
+          sx={{ color: theme.palette.text.secondary }}
+        >
           Cancel
         </Button>
         {step === 'confirm' ? (
           <Box>
-            <Button onClick={handleSendOtp} variant="contained" disabled={sending}
+            <Button
+              onClick={handleSendOtp}
+              variant="contained"
+              disabled={sending}
               startIcon={sending ? <CircularProgress size={18} color="inherit" /> : undefined}
-              sx={{ bgcolor: theme.palette.error.main, color: theme.palette.error.contrastText,
-                '&:hover': { bgcolor: theme.palette.error.dark } }}>
+              sx={{
+                bgcolor: theme.palette.error.main,
+                color: theme.palette.error.contrastText,
+                '&:hover': { bgcolor: theme.palette.error.dark },
+              }}
+            >
               {sending ? 'Sending...' : 'Send Code & Delete'}
             </Button>
           </Box>
         ) : (
-          <Button onClick={handleConfirm} variant="contained" disabled={deleting || otp.length !== 6}
+          <Button
+            onClick={handleConfirm}
+            variant="contained"
+            disabled={deleting || otp.length !== 6}
             startIcon={deleting ? <CircularProgress size={18} color="inherit" /> : undefined}
-            sx={{ bgcolor: theme.palette.error.main, color: theme.palette.error.contrastText,
-              '&:hover': { bgcolor: theme.palette.error.dark } }}>
+            sx={{
+              bgcolor: theme.palette.error.main,
+              color: theme.palette.error.contrastText,
+              '&:hover': { bgcolor: theme.palette.error.dark },
+            }}
+          >
             {deleting ? 'Deleting...' : 'Confirm Delete'}
           </Button>
         )}

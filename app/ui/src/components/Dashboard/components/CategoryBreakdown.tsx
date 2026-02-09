@@ -1,5 +1,14 @@
 import React from 'react';
-import { Box, Paper, Typography, Card, CardContent, Chip, useTheme, LinearProgress } from '@mui/material';
+import {
+  Box,
+  Paper,
+  Typography,
+  Card,
+  CardContent,
+  Chip,
+  useTheme,
+  LinearProgress,
+} from '@mui/material';
 
 interface CategoryBreakdownProps {
   categoryData: any[];

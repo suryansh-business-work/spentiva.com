@@ -402,32 +402,32 @@ username/spentiva-app-server:latest
 
 ### Server Secrets
 
-| Variable | Description | Required | Default |
-|---|---|---|---|
-| `PORT` | Server port | No | `5002` |
-| `NODE_ENV` | Environment mode | No | `development` |
-| `DBURL` | MongoDB connection string | **Yes** | — |
-| `JWT_SECRET` | JWT signing secret | **Yes** | — |
-| `JWT_EXPIRES_IN` | JWT token expiry | No | `7d` |
-| `ALLOWED_ORIGINS` | Comma-separated CORS origins | No | `http://localhost:5001,...` |
-| `OPENAI_API_KEY` | OpenAI API key | **Yes** | — |
-| `NODEMAILER_HOST` | SMTP host | No | `smtp.gmail.com` |
-| `NODEMAILER_PORT` | SMTP port | No | `587` |
-| `NODEMAILER_USER` | SMTP email address | **Yes** | — |
-| `NODEMAILER_PASS` | SMTP app password | **Yes** | — |
-| `IMAGEKIT_PUBLIC_KEY` | ImageKit public key | **Yes** | — |
-| `IMAGEKIT_PRIVATE_KEY` | ImageKit private key | **Yes** | — |
-| `IMAGEKIT_URL_ENDPOINT` | ImageKit URL endpoint | No | `https://ik.imagekit.io/esdata1` |
-| `AUTH_SERVICE_URL` | External auth service URL | No | `https://auth.exyconn.com` |
-| `AUTH_SECRET` | Auth service secret | **Yes** | — |
+| Variable                | Description                  | Required | Default                          |
+| ----------------------- | ---------------------------- | -------- | -------------------------------- |
+| `PORT`                  | Server port                  | No       | `5002`                           |
+| `NODE_ENV`              | Environment mode             | No       | `development`                    |
+| `DBURL`                 | MongoDB connection string    | **Yes**  | —                                |
+| `JWT_SECRET`            | JWT signing secret           | **Yes**  | —                                |
+| `JWT_EXPIRES_IN`        | JWT token expiry             | No       | `7d`                             |
+| `ALLOWED_ORIGINS`       | Comma-separated CORS origins | No       | `http://localhost:5001,...`      |
+| `OPENAI_API_KEY`        | OpenAI API key               | **Yes**  | —                                |
+| `NODEMAILER_HOST`       | SMTP host                    | No       | `smtp.gmail.com`                 |
+| `NODEMAILER_PORT`       | SMTP port                    | No       | `587`                            |
+| `NODEMAILER_USER`       | SMTP email address           | **Yes**  | —                                |
+| `NODEMAILER_PASS`       | SMTP app password            | **Yes**  | —                                |
+| `IMAGEKIT_PUBLIC_KEY`   | ImageKit public key          | **Yes**  | —                                |
+| `IMAGEKIT_PRIVATE_KEY`  | ImageKit private key         | **Yes**  | —                                |
+| `IMAGEKIT_URL_ENDPOINT` | ImageKit URL endpoint        | No       | `https://ik.imagekit.io/esdata1` |
+| `AUTH_SERVICE_URL`      | External auth service URL    | No       | `https://auth.exyconn.com`       |
+| `AUTH_SECRET`           | Auth service secret          | **Yes**  | —                                |
 
 ### UI Secrets (build-time via Vite)
 
-| Variable | Description | Required | Default |
-|---|---|---|---|
-| `VITE_AUTH_API_KEY` | Auth service API key | No | Embedded default |
-| `VITE_IMAGEKIT_PUBLIC_KEY` | ImageKit public key (client) | No | — |
-| `VITE_IMAGEKIT_URL_ENDPOINT` | ImageKit URL endpoint | No | `https://ik.imagekit.io/esdata1` |
+| Variable                     | Description                  | Required | Default                          |
+| ---------------------------- | ---------------------------- | -------- | -------------------------------- |
+| `VITE_AUTH_API_KEY`          | Auth service API key         | No       | Embedded default                 |
+| `VITE_IMAGEKIT_PUBLIC_KEY`   | ImageKit public key (client) | No       | —                                |
+| `VITE_IMAGEKIT_URL_ENDPOINT` | ImageKit URL endpoint        | No       | `https://ik.imagekit.io/esdata1` |
 
 ## 🔒 Security Features
 

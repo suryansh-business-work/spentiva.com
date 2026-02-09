@@ -80,11 +80,7 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({ expenses }) => {
           const isIncome = expense.type === 'income';
           const isTransfer = expense.type === 'transfer';
           const currSym = CURRENCY_SYMBOL[expense.currency || 'INR'] || '₹';
-          const amountColor = isIncome
-            ? 'success.main'
-            : isTransfer
-              ? 'info.main'
-              : 'error.main';
+          const amountColor = isIncome ? 'success.main' : isTransfer ? 'info.main' : 'error.main';
           const amountPrefix = isIncome ? '+' : isTransfer ? '' : '-';
 
           return (

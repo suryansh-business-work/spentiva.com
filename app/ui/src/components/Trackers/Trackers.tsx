@@ -13,7 +13,10 @@ import { endpoints } from '../../config/api';
 import { getRequest, postRequest } from '../../utils/http';
 import { parseResponseData } from '../../utils/response-parser';
 
-interface MonthlyStats { income: number; expense: number }
+interface MonthlyStats {
+  income: number;
+  expense: number;
+}
 
 const Trackers: React.FC = () => {
   const navigate = useNavigate();
@@ -21,8 +24,16 @@ const Trackers: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const {
-    trackers, loading, saving, deleting, snackbar,
-    createTracker, updateTracker, requestDeleteOtp, confirmDeleteWithOtp, closeSnackbar,
+    trackers,
+    loading,
+    saving,
+    deleting,
+    snackbar,
+    createTracker,
+    updateTracker,
+    requestDeleteOtp,
+    confirmDeleteWithOtp,
+    closeSnackbar,
   } = useTrackers();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -34,7 +45,11 @@ const Trackers: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [monthlyStats, setMonthlyStats] = useState<Record<string, MonthlyStats>>({});
   const [dialogInitialValues, setDialogInitialValues] = useState<TrackerFormData>({
-    name: '', type: 'personal', description: '', currency: 'INR', shareEmails: [],
+    name: '',
+    type: 'personal',
+    description: '',
+    currency: 'INR',
+    shareEmails: [],
   });
 
   // Fetch monthly stats for all trackers
@@ -42,17 +57,22 @@ const Trackers: React.FC = () => {
     if (!trackers.length) return;
     const results: Record<string, MonthlyStats> = {};
     await Promise.all(
-      trackers.map(async (t) => {
+      trackers.map(async t => {
         try {
           const res = await getRequest(endpoints.analytics.summary, {
-            trackerId: t.id, filter: 'thisMonth',
+            trackerId: t.id,
+            filter: 'thisMonth',
           });
-          const data = parseResponseData<{ stats?: { totalExpenses?: number; totalIncome?: number } }>(res, {});
+          const data = parseResponseData<{
+            stats?: { totalExpenses?: number; totalIncome?: number };
+          }>(res, {});
           results[t.id] = {
             expense: data?.stats?.totalExpenses || 0,
             income: data?.stats?.totalIncome || 0,
           };
-        } catch { /* ignore */ }
+        } catch {
+          /* ignore */
+        }
       })
     );
     setMonthlyStats(results);
@@ -74,13 +94,21 @@ const Trackers: React.FC = () => {
       setEditMode(true);
       setSelectedTracker(tracker);
       setDialogInitialValues({
-        name: tracker.name, type: tracker.type,
-        description: tracker.description || '', currency: tracker.currency,
+        name: tracker.name,
+        type: tracker.type,
+        description: tracker.description || '',
+        currency: tracker.currency,
       });
     } else {
       setEditMode(false);
       setSelectedTracker(null);
-      setDialogInitialValues({ name: '', type: 'personal', description: '', currency: 'INR', shareEmails: [] });
+      setDialogInitialValues({
+        name: '',
+        type: 'personal',
+        description: '',
+        currency: 'INR',
+        shareEmails: [],
+      });
     }
     setDialogOpen(true);
   }, []);
@@ -92,11 +120,35 @@ const Trackers: React.FC = () => {
     return () => window.removeEventListener('createTracker', handler);
   }, [handleOpenDialog]);
 
+  // Listen for edit tracker event from TrackerView
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const tracker = (e as CustomEvent).detail;
+      if (tracker) handleOpenDialog(tracker);
+    };
+    window.addEventListener('editTracker', handler);
+    return () => window.removeEventListener('editTracker', handler);
+  }, [handleOpenDialog]);
+
+  // Listen for delete tracker event from TrackerView
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const tracker = (e as CustomEvent).detail;
+      if (tracker) {
+        setSelectedTracker(tracker);
+        setDeleteDialogOpen(true);
+      }
+    };
+    window.addEventListener('deleteTracker', handler);
+    return () => window.removeEventListener('deleteTracker', handler);
+  }, []);
+
   const filteredTrackers = useMemo(() => {
     if (!searchTerm.trim()) return trackers;
     const term = searchTerm.toLowerCase();
     return trackers.filter(
-      t => t.name.toLowerCase().includes(term) ||
+      t =>
+        t.name.toLowerCase().includes(term) ||
         t.type.toLowerCase().includes(term) ||
         t.description?.toLowerCase().includes(term)
     );
@@ -104,20 +156,27 @@ const Trackers: React.FC = () => {
 
   const handleSave = async (values: TrackerFormData) => {
     const { shareEmails, ...trackerData } = values;
-    const success = editMode && selectedTracker
-      ? await updateTracker(selectedTracker.id, trackerData)
-      : await createTracker(trackerData);
+    const success =
+      editMode && selectedTracker
+        ? await updateTracker(selectedTracker.id, trackerData)
+        : await createTracker(trackerData);
     if (success) {
       // Send share invites for new tracker
       if (!editMode && shareEmails?.length) {
         const newTracker = trackers[trackers.length - 1];
         if (newTracker) {
           for (const email of shareEmails) {
-            try { await postRequest(endpoints.trackers.share(newTracker.id), { email, role: 'editor' }); } catch { /* silent */ }
+            try {
+              await postRequest(endpoints.trackers.share(newTracker.id), { email, role: 'editor' });
+            } catch {
+              /* silent */
+            }
           }
         }
       }
-      setDialogOpen(false); setEditMode(false); setSelectedTracker(null);
+      setDialogOpen(false);
+      setEditMode(false);
+      setSelectedTracker(null);
     }
   };
 
@@ -129,8 +188,13 @@ const Trackers: React.FC = () => {
   };
 
   const sidebarProps = {
-    trackers: filteredTrackers, loading, searchTerm, activeTrackerId,
-    monthlyStats, onSearchChange: setSearchTerm, onTrackerClick: handleTrackerClick,
+    trackers: filteredTrackers,
+    loading,
+    searchTerm,
+    activeTrackerId,
+    monthlyStats,
+    onSearchChange: setSearchTerm,
+    onTrackerClick: handleTrackerClick,
   };
 
   const dialogs = (
@@ -138,11 +202,21 @@ const Trackers: React.FC = () => {
       <TrackerActionsDrawer
         anchorEl={anchorEl}
         tracker={menuTracker}
-        onClose={() => { setAnchorEl(null); setMenuTracker(null); }}
+        onClose={() => {
+          setAnchorEl(null);
+          setMenuTracker(null);
+        }}
         onEdit={() => menuTracker && handleOpenDialog(menuTracker)}
-        onDelete={() => { if (menuTracker) { setSelectedTracker(menuTracker); setDeleteDialogOpen(true); } }}
+        onDelete={() => {
+          if (menuTracker) {
+            setSelectedTracker(menuTracker);
+            setDeleteDialogOpen(true);
+          }
+        }}
         onSettings={() => menuTracker && navigate(`/tracker/${menuTracker.id}/settings`)}
-        onAddToHome={() => { if (menuTracker) window.open(`/tracker/${menuTracker.id}`, '_blank'); }}
+        onAddToHome={() => {
+          if (menuTracker) window.open(`/tracker/${menuTracker.id}`, '_blank');
+        }}
         getCurrencySymbol={getCurrencySymbol}
       />
       <CreateEditDialog
@@ -169,9 +243,15 @@ const Trackers: React.FC = () => {
         }}
         deleting={deleting}
       />
-      <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={closeSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert severity={snackbar.severity} onClose={closeSnackbar}>{snackbar.message}</Alert>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={closeSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity={snackbar.severity} onClose={closeSnackbar}>
+          {snackbar.message}
+        </Alert>
       </Snackbar>
     </>
   );
@@ -190,23 +270,36 @@ const Trackers: React.FC = () => {
   return (
     <>
       <Box sx={{ display: 'flex', height: 'calc(100vh - 54px)', overflow: 'hidden' }}>
-        <Box sx={{
-          width: 320, minWidth: 280, maxWidth: 360,
-          borderRight: `1px solid ${theme.palette.divider}`,
-          display: 'flex', flexDirection: 'column', flexShrink: 0,
-        }}>
+        <Box
+          sx={{
+            width: 320,
+            minWidth: 280,
+            maxWidth: 360,
+            borderRight: `1px solid ${theme.palette.divider}`,
+            display: 'flex',
+            flexDirection: 'column',
+            flexShrink: 0,
+          }}
+        >
           <TrackerListSidebar {...sidebarProps} />
         </Box>
         <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           {activeTrackerId ? (
             <TrackerView />
           ) : (
-            <Box sx={{
-              flex: 1, display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center',
-              bgcolor: theme.palette.mode === 'dark' ? 'background.default' : '#f0f2f5',
-            }}>
-              <ChatBubbleOutlineIcon sx={{ fontSize: 64, color: 'text.disabled', mb: 2, opacity: 0.5 }} />
+            <Box
+              sx={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                bgcolor: theme.palette.mode === 'dark' ? 'background.default' : '#f0f2f5',
+              }}
+            >
+              <ChatBubbleOutlineIcon
+                sx={{ fontSize: 64, color: 'text.disabled', mb: 2, opacity: 0.5 }}
+              />
               <Typography variant="h6" color="text.secondary" fontWeight={500}>
                 Select a tracker to start
               </Typography>

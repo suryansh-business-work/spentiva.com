@@ -47,9 +47,10 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, currency = 'INR' }
       value: `${netBalance >= 0 ? '+' : '-'}${sym}${Math.abs(netBalance).toLocaleString('en-IN')}`,
       chip: `${txnCount} transactions`,
       icon: <AccountBalanceWalletIcon sx={{ fontSize: 24, opacity: 0.8 }} />,
-      gradient: netBalance >= 0
-        ? `linear-gradient(135deg, ${theme.palette.info.main} 0%, ${theme.palette.info.dark} 100%)`
-        : `linear-gradient(135deg, ${theme.palette.warning.main} 0%, ${theme.palette.warning.dark} 100%)`,
+      gradient:
+        netBalance >= 0
+          ? `linear-gradient(135deg, ${theme.palette.info.main} 0%, ${theme.palette.info.dark} 100%)`
+          : `linear-gradient(135deg, ${theme.palette.warning.main} 0%, ${theme.palette.warning.dark} 100%)`,
     },
     {
       title: 'Avg Expense',
@@ -63,11 +64,12 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, currency = 'INR' }
       value: `${savingsRate.toFixed(1)}%`,
       chip: savingsRate >= 0 ? 'saving' : 'overspending',
       icon: <SavingsIcon sx={{ fontSize: 24, opacity: 0.8 }} />,
-      gradient: savingsRate >= 20
-        ? 'linear-gradient(135deg, #43a047 0%, #2e7d32 100%)'
-        : savingsRate >= 0
-          ? 'linear-gradient(135deg, #fb8c00 0%, #ef6c00 100%)'
-          : 'linear-gradient(135deg, #e53935 0%, #c62828 100%)',
+      gradient:
+        savingsRate >= 20
+          ? 'linear-gradient(135deg, #43a047 0%, #2e7d32 100%)'
+          : savingsRate >= 0
+            ? 'linear-gradient(135deg, #fb8c00 0%, #ef6c00 100%)'
+            : 'linear-gradient(135deg, #e53935 0%, #c62828 100%)',
     },
     {
       title: 'Transactions',
@@ -100,19 +102,42 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, currency = 'INR' }
           }}
         >
           <CardContent sx={{ position: 'relative', zIndex: 1, p: { xs: 1.5, md: 2 } }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <Typography variant="subtitle2" sx={{ opacity: 0.9, mb: 0.5, fontSize: { xs: '0.7rem', md: '0.8rem' }, fontWeight: 500 }}>
+            <Box
+              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
+            >
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  opacity: 0.9,
+                  mb: 0.5,
+                  fontSize: { xs: '0.7rem', md: '0.8rem' },
+                  fontWeight: 500,
+                }}
+              >
                 {card.title}
               </Typography>
               {card.icon}
             </Box>
-            <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, fontSize: { xs: '1.1rem', sm: '1.5rem', md: '2rem' } }}>
+            <Typography
+              variant="h4"
+              sx={{
+                fontWeight: 700,
+                mb: 0.5,
+                fontSize: { xs: '1.1rem', sm: '1.5rem', md: '2rem' },
+              }}
+            >
               {card.value}
             </Typography>
             <Chip
               label={card.chip}
               size="small"
-              sx={{ height: 18, fontSize: '0.6rem', backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff', fontWeight: 600 }}
+              sx={{
+                height: 18,
+                fontSize: '0.6rem',
+                backgroundColor: 'rgba(255,255,255,0.2)',
+                color: '#fff',
+                fontWeight: 600,
+              }}
             />
           </CardContent>
         </Card>

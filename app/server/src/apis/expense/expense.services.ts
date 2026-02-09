@@ -16,7 +16,12 @@ export class ExpenseService {
   /**
    * Get all expenses with optional filtering
    */
-  static async getAllExpenses(filters: { trackerId?: string; userId?: string; limit?: number; page?: number }) {
+  static async getAllExpenses(filters: {
+    trackerId?: string;
+    userId?: string;
+    limit?: number;
+    page?: number;
+  }) {
     const { trackerId, userId, limit = 20, page = 1 } = filters;
     const query: any = {};
 

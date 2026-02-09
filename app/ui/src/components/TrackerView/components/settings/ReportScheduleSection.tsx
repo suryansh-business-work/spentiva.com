@@ -37,12 +37,17 @@ interface Schedule {
 
 const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-const ReportScheduleSection: React.FC<ReportScheduleSectionProps> = ({ trackerId, trackerName }) => {
+const ReportScheduleSection: React.FC<ReportScheduleSectionProps> = ({
+  trackerId,
+  trackerName,
+}) => {
   const theme = useTheme();
   const [schedule, setSchedule] = useState<Schedule | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [feedback, setFeedback] = useState<{ msg: string; severity: 'success' | 'error' } | null>(null);
+  const [feedback, setFeedback] = useState<{ msg: string; severity: 'success' | 'error' } | null>(
+    null
+  );
 
   // Form state
   const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
@@ -63,10 +68,16 @@ const ReportScheduleSection: React.FC<ReportScheduleSectionProps> = ({ trackerId
         setDayOfMonth(s.dayOfMonth ?? 1);
         setHour(s.hour);
       }
-    } catch { /* silent */ } finally { setLoading(false); }
+    } catch {
+      /* silent */
+    } finally {
+      setLoading(false);
+    }
   }, [trackerId]);
 
-  useEffect(() => { loadSchedule(); }, [loadSchedule]);
+  useEffect(() => {
+    loadSchedule();
+  }, [loadSchedule]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -90,7 +101,9 @@ const ReportScheduleSection: React.FC<ReportScheduleSectionProps> = ({ trackerId
       await loadSchedule();
     } catch {
       setFeedback({ msg: 'Failed to save schedule', severity: 'error' });
-    } finally { setSaving(false); }
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleToggle = async (enabled: boolean) => {
@@ -101,7 +114,9 @@ const ReportScheduleSection: React.FC<ReportScheduleSectionProps> = ({ trackerId
       await loadSchedule();
     } catch {
       setFeedback({ msg: 'Failed to toggle schedule', severity: 'error' });
-    } finally { setSaving(false); }
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDelete = async () => {
@@ -113,7 +128,9 @@ const ReportScheduleSection: React.FC<ReportScheduleSectionProps> = ({ trackerId
       setFeedback({ msg: 'Schedule removed', severity: 'success' });
     } catch {
       setFeedback({ msg: 'Failed to delete schedule', severity: 'error' });
-    } finally { setSaving(false); }
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) return <Skeleton variant="rectangular" height={160} sx={{ borderRadius: 2 }} />;
@@ -122,16 +139,27 @@ const ReportScheduleSection: React.FC<ReportScheduleSectionProps> = ({ trackerId
     <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
         <ScheduleSendIcon color="primary" />
-        <Typography variant="subtitle1" fontWeight={600}>Scheduled Reports</Typography>
+        <Typography variant="subtitle1" fontWeight={600}>
+          Scheduled Reports
+        </Typography>
         {schedule && (
-          <Switch size="small" checked={schedule.enabled} onChange={(_, v) => handleToggle(v)} sx={{ ml: 'auto' }} />
+          <Switch
+            size="small"
+            checked={schedule.enabled}
+            onChange={(_, v) => handleToggle(v)}
+            sx={{ ml: 'auto' }}
+          />
         )}
       </Box>
 
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
         <FormControl size="small" sx={{ minWidth: 130 }}>
           <InputLabel>Frequency</InputLabel>
-          <Select value={frequency} label="Frequency" onChange={(e) => setFrequency(e.target.value as any)}>
+          <Select
+            value={frequency}
+            label="Frequency"
+            onChange={e => setFrequency(e.target.value as any)}
+          >
             <MenuItem value="daily">Daily</MenuItem>
             <MenuItem value="weekly">Weekly</MenuItem>
             <MenuItem value="monthly">Monthly</MenuItem>
@@ -141,8 +169,16 @@ const ReportScheduleSection: React.FC<ReportScheduleSectionProps> = ({ trackerId
         {frequency === 'weekly' && (
           <FormControl size="small" sx={{ minWidth: 130 }}>
             <InputLabel>Day</InputLabel>
-            <Select value={dayOfWeek} label="Day" onChange={(e) => setDayOfWeek(Number(e.target.value))}>
-              {DAYS_OF_WEEK.map((d, i) => <MenuItem key={i} value={i}>{d}</MenuItem>)}
+            <Select
+              value={dayOfWeek}
+              label="Day"
+              onChange={e => setDayOfWeek(Number(e.target.value))}
+            >
+              {DAYS_OF_WEEK.map((d, i) => (
+                <MenuItem key={i} value={i}>
+                  {d}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         )}
@@ -150,9 +186,15 @@ const ReportScheduleSection: React.FC<ReportScheduleSectionProps> = ({ trackerId
         {frequency === 'monthly' && (
           <FormControl size="small" sx={{ minWidth: 100 }}>
             <InputLabel>Day</InputLabel>
-            <Select value={dayOfMonth} label="Day" onChange={(e) => setDayOfMonth(Number(e.target.value))}>
+            <Select
+              value={dayOfMonth}
+              label="Day"
+              onChange={e => setDayOfMonth(Number(e.target.value))}
+            >
               {Array.from({ length: 28 }, (_, i) => (
-                <MenuItem key={i + 1} value={i + 1}>{i + 1}</MenuItem>
+                <MenuItem key={i + 1} value={i + 1}>
+                  {i + 1}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -160,7 +202,7 @@ const ReportScheduleSection: React.FC<ReportScheduleSectionProps> = ({ trackerId
 
         <FormControl size="small" sx={{ minWidth: 100 }}>
           <InputLabel>Time</InputLabel>
-          <Select value={hour} label="Time" onChange={(e) => setHour(Number(e.target.value))}>
+          <Select value={hour} label="Time" onChange={e => setHour(Number(e.target.value))}>
             {Array.from({ length: 24 }, (_, i) => (
               <MenuItem key={i} value={i}>{`${i.toString().padStart(2, '0')}:00`}</MenuItem>
             ))}
@@ -169,24 +211,42 @@ const ReportScheduleSection: React.FC<ReportScheduleSectionProps> = ({ trackerId
       </Box>
 
       <Box sx={{ display: 'flex', gap: 1 }}>
-        <Button variant="contained" size="small" onClick={handleSave} disabled={saving}
-          startIcon={saving ? <CircularProgress size={16} color="inherit" /> : undefined}>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={handleSave}
+          disabled={saving}
+          startIcon={saving ? <CircularProgress size={16} color="inherit" /> : undefined}
+        >
           {schedule ? 'Update' : 'Create'} Schedule
         </Button>
         {schedule && (
-          <Button variant="outlined" size="small" color="error" onClick={handleDelete} disabled={saving}>
+          <Button
+            variant="outlined"
+            size="small"
+            color="error"
+            onClick={handleDelete}
+            disabled={saving}
+          >
             Remove
           </Button>
         )}
       </Box>
 
       {schedule?.nextRunAt && (
-        <Typography variant="caption" sx={{ display: 'block', mt: 1, color: theme.palette.text.secondary }}>
+        <Typography
+          variant="caption"
+          sx={{ display: 'block', mt: 1, color: theme.palette.text.secondary }}
+        >
           Next report: {new Date(schedule.nextRunAt).toLocaleString()}
         </Typography>
       )}
 
-      {feedback && <Alert severity={feedback.severity} sx={{ mt: 1.5 }} onClose={() => setFeedback(null)}>{feedback.msg}</Alert>}
+      {feedback && (
+        <Alert severity={feedback.severity} sx={{ mt: 1.5 }} onClose={() => setFeedback(null)}>
+          {feedback.msg}
+        </Alert>
+      )}
     </Paper>
   );
 };

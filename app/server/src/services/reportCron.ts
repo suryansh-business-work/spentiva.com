@@ -18,14 +18,16 @@ const getCurrencySymbol = (currency: string): string => {
   return symbols[currency] || currency;
 };
 
-const getFilterForFrequency = (
-  frequency: string
-): DateFilter => {
+const getFilterForFrequency = (frequency: string): DateFilter => {
   switch (frequency) {
-    case 'daily': return DateFilter.TODAY;
-    case 'weekly': return DateFilter.LAST_7_DAYS;
-    case 'monthly': return DateFilter.THIS_MONTH;
-    default: return DateFilter.THIS_MONTH;
+    case 'daily':
+      return DateFilter.TODAY;
+    case 'weekly':
+      return DateFilter.LAST_7_DAYS;
+    case 'monthly':
+      return DateFilter.THIS_MONTH;
+    default:
+      return DateFilter.THIS_MONTH;
   }
 };
 
@@ -34,7 +36,7 @@ const buildReportHtml = (
   frequency: string,
   summary: any,
   categories: any[],
-  currency: string,
+  currency: string
 ): string => {
   const sym = getCurrencySymbol(currency);
   const totalExpenses = summary?.totalExpenses ?? 0;
@@ -72,7 +74,9 @@ const buildReportHtml = (
         </tr>
       </table>
 
-      ${categories.length > 0 ? `
+      ${
+        categories.length > 0
+          ? `
         <h3 style="color:#333;margin-bottom:8px;">Top Categories</h3>
         <table style="width:100%;border-collapse:collapse;">
           <thead>
@@ -84,7 +88,9 @@ const buildReportHtml = (
           </thead>
           <tbody>${categoryRows}</tbody>
         </table>
-      ` : '<p style="color:#999;">No transactions in this period.</p>'}
+      `
+          : '<p style="color:#999;">No transactions in this period.</p>'
+      }
 
       <p style="margin-top:24px;color:#999;font-size:12px;">
         This is an automated report from Spentiva. You can manage your report schedules in the app settings.
@@ -107,7 +113,7 @@ const processSchedule = async (schedule: any): Promise<void> => {
       schedule.frequency,
       summary || {},
       categories || [],
-      'INR',
+      'INR'
     );
 
     await sendEmail({
@@ -117,7 +123,10 @@ const processSchedule = async (schedule: any): Promise<void> => {
     });
 
     await ReportScheduleService.markSent(schedule._id.toString());
-    logger.info('Scheduled report sent', { scheduleId: schedule._id, tracker: schedule.trackerName });
+    logger.info('Scheduled report sent', {
+      scheduleId: schedule._id,
+      tracker: schedule.trackerName,
+    });
   } catch (error: any) {
     logger.error('Failed to send scheduled report', {
       scheduleId: schedule._id,

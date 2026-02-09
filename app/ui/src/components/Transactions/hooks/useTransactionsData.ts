@@ -58,34 +58,37 @@ export const useTransactionsData = ({
     severity: 'success' as 'success' | 'error',
   });
 
-  const loadExpenses = useCallback(async (page: number, limit: number) => {
-    setLoading(true);
-    try {
-      const response = await getRequest(endpoints.expenses.all, {
-        trackerId,
-        limit: limit.toString(),
-        page: page.toString(),
-      });
-      const data = parseResponseData<any>(response, {});
-      const fetchedExpenses = data?.expenses || [];
-      const paginationData = data?.pagination;
-
-      setExpenses(fetchedExpenses);
-      if (paginationData) {
-        setPagination({
-          page: paginationData.page,
-          limit: paginationData.limit,
-          total: paginationData.total,
-          totalPages: paginationData.totalPages,
+  const loadExpenses = useCallback(
+    async (page: number, limit: number) => {
+      setLoading(true);
+      try {
+        const response = await getRequest(endpoints.expenses.all, {
+          trackerId,
+          limit: limit.toString(),
+          page: page.toString(),
         });
+        const data = parseResponseData<any>(response, {});
+        const fetchedExpenses = data?.expenses || [];
+        const paginationData = data?.pagination;
+
+        setExpenses(fetchedExpenses);
+        if (paginationData) {
+          setPagination({
+            page: paginationData.page,
+            limit: paginationData.limit,
+            total: paginationData.total,
+            totalPages: paginationData.totalPages,
+          });
+        }
+      } catch (error) {
+        console.error('Error loading expenses:', error);
+        setSnackbar({ open: true, message: 'Failed to load expenses', severity: 'error' });
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error loading expenses:', error);
-      setSnackbar({ open: true, message: 'Failed to load expenses', severity: 'error' });
-    } finally {
-      setLoading(false);
-    }
-  }, [trackerId]);
+    },
+    [trackerId]
+  );
 
   const loadCategories = useCallback(async () => {
     if (!trackerId) return;
@@ -98,9 +101,23 @@ export const useTransactionsData = ({
       const expenseCats = parseResponseData<any>(expenseRes, {})?.categories || [];
       const incomeCats = parseResponseData<any>(incomeRes, {})?.categories || [];
       const creditCats = parseResponseData<any>(creditRes, {})?.categories || [];
-      setCategories(expenseCats.map((c: any) => ({ id: c._id, name: c.name, subcategories: c.subcategories || [] })));
-      setIncomeCategories(incomeCats.map((c: any) => ({ id: c._id, name: c.name, subcategories: c.subcategories || [] })));
-      setCreditSources(creditCats.flatMap((c: any) => c.subcategories?.map((s: any) => s.name) || []));
+      setCategories(
+        expenseCats.map((c: any) => ({
+          id: c._id,
+          name: c.name,
+          subcategories: c.subcategories || [],
+        }))
+      );
+      setIncomeCategories(
+        incomeCats.map((c: any) => ({
+          id: c._id,
+          name: c.name,
+          subcategories: c.subcategories || [],
+        }))
+      );
+      setCreditSources(
+        creditCats.flatMap((c: any) => c.subcategories?.map((s: any) => s.name) || [])
+      );
     } catch (error) {
       console.error('Error loading categories:', error);
     }

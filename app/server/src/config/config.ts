@@ -36,8 +36,11 @@ const config = {
   /** CORS */
   ALLOWED_ORIGINS: optionalEnv(
     'ALLOWED_ORIGINS',
-    'http://localhost:5001,https://app.spentiva.com,https://spentiva.com',
+    'http://localhost:5001,https://app.spentiva.com,https://spentiva.com'
   ).split(','),
+
+  /** App URL for email links */
+  APP_URL: optionalEnv('APP_URL', 'http://localhost:5001'),
 
   /** OpenAI */
   OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',

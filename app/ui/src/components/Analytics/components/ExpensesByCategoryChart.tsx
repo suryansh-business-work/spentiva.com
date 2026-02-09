@@ -3,8 +3,14 @@ import { Box, Paper, Typography, useTheme, IconButton } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Bar, Pie } from 'react-chartjs-2';
 import {
-  Chart as ChartJS, CategoryScale, LinearScale, BarElement,
-  ArcElement, Title, Tooltip, Legend,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
 } from 'chart.js';
 import { CategoryExpense } from '../../../types/analytics';
 import { getCurrencySymbol } from '../utils/currency';
@@ -34,7 +40,10 @@ const categoryColors = [
  * ExpensesByCategoryChart Component
  * Displays Bar and Pie charts for category distribution
  */
-const ExpensesByCategoryChart: React.FC<ExpensesByCategoryChartProps> = ({ data, currency = 'INR' }) => {
+const ExpensesByCategoryChart: React.FC<ExpensesByCategoryChartProps> = ({
+  data,
+  currency = 'INR',
+}) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
   const [openDialog, setOpenDialog] = useState(false);
@@ -47,20 +56,35 @@ const ExpensesByCategoryChart: React.FC<ExpensesByCategoryChartProps> = ({ data,
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'top' as const, labels: { color: textColor, font: { size: 12, weight: 500 as const }, padding: 15 } },
+      legend: {
+        position: 'top' as const,
+        labels: { color: textColor, font: { size: 12, weight: 500 as const }, padding: 15 },
+      },
       tooltip: {
         backgroundColor: isDarkMode ? 'rgba(0,0,0,0.9)' : 'rgba(255,255,255,0.95)',
-        titleColor: isDarkMode ? '#fff' : '#000', bodyColor: isDarkMode ? '#fff' : '#000',
-        borderColor: isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)', borderWidth: 1, padding: 12,
+        titleColor: isDarkMode ? '#fff' : '#000',
+        bodyColor: isDarkMode ? '#fff' : '#000',
+        borderColor: isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+        borderWidth: 1,
+        padding: 12,
         callbacks: {
           label: (ctx: any) => ` ${sym}${(ctx.parsed.y ?? ctx.parsed)?.toLocaleString('en-IN')}`,
         },
       },
     },
-    scales: isBar ? {
-      x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 } } },
-      y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 }, callback: (v: any) => sym + v.toLocaleString('en-IN') } },
-    } : undefined,
+    scales: isBar
+      ? {
+          x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 } } },
+          y: {
+            grid: { color: gridColor },
+            ticks: {
+              color: textColor,
+              font: { size: 11 },
+              callback: (v: any) => sym + v.toLocaleString('en-IN'),
+            },
+          },
+        }
+      : undefined,
   });
 
   const barChartData = {
@@ -192,7 +216,12 @@ const ExpensesByCategoryChart: React.FC<ExpensesByCategoryChartProps> = ({ data,
         </Paper>
       </Box>
 
-      <CategoryDetailsDialog open={openDialog} onClose={() => setOpenDialog(false)} data={data} currency={currency} />
+      <CategoryDetailsDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        data={data}
+        currency={currency}
+      />
     </>
   );
 };

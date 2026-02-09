@@ -68,7 +68,9 @@ const AppContent = () => {
 
   if (authLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -78,29 +80,57 @@ const AppContent = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100dvh', overflow: 'hidden' }}>
-          {isAuthenticated && <Header onCreateTracker={() => {
-              window.dispatchEvent(new CustomEvent('createTracker'));
-            }} />}
+        <Box
+          sx={{ display: 'flex', flexDirection: 'column', height: '100dvh', overflow: 'hidden' }}
+        >
+          {isAuthenticated && (
+            <Header
+              onCreateTracker={() => {
+                window.dispatchEvent(new CustomEvent('createTracker'));
+              }}
+            />
+          )}
           <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
             <Routes>
-              <Route path="/" element={isAuthenticated ? <Navigate to="/trackers" replace /> : <RedirectToAuth />} />
+              <Route
+                path="/"
+                element={isAuthenticated ? <Navigate to="/trackers" replace /> : <RedirectToAuth />}
+              />
               <Route path="/login" element={<RedirectToAuth />} />
               <Route path="/signup" element={<RedirectToAuth />} />
               <Route path="/forgot-password" element={<RedirectToAuth />} />
               <Route path="/reset-password" element={<RedirectToAuth />} />
 
               {/* Tracker routes with clean tab paths */}
-              <Route path="/trackers" element={isAuthenticated ? <Trackers /> : <RedirectToAuth />} />
-              <Route path="/tracker/:trackerId" element={isAuthenticated ? <Trackers /> : <RedirectToAuth />} />
-              <Route path="/tracker/:trackerId/:tab" element={isAuthenticated ? <Trackers /> : <RedirectToAuth />} />
+              <Route
+                path="/trackers"
+                element={isAuthenticated ? <Trackers /> : <RedirectToAuth />}
+              />
+              <Route
+                path="/tracker/:trackerId"
+                element={isAuthenticated ? <Trackers /> : <RedirectToAuth />}
+              />
+              <Route
+                path="/tracker/:trackerId/:tab"
+                element={isAuthenticated ? <Trackers /> : <RedirectToAuth />}
+              />
+              <Route
+                path="/tracker/:trackerId/:tab/:subtab"
+                element={isAuthenticated ? <Trackers /> : <RedirectToAuth />}
+              />
 
               <Route path="/profile" element={<RedirectToProfile />} />
               <Route path="/usage" element={isAuthenticated ? <Usage /> : <RedirectToAuth />} />
               <Route path="/billing" element={isAuthenticated ? <Billing /> : <RedirectToAuth />} />
-              <Route path="/upcoming-features" element={isAuthenticated ? <UpcomingFeatures /> : <RedirectToAuth />} />
+              <Route
+                path="/upcoming-features"
+                element={isAuthenticated ? <UpcomingFeatures /> : <RedirectToAuth />}
+              />
               <Route path="/policy" element={<Policy />} />
-              <Route path="/admin/*" element={isAuthenticated ? <RedirectToAdmin /> : <RedirectToAuth />} />
+              <Route
+                path="/admin/*"
+                element={isAuthenticated ? <RedirectToAdmin /> : <RedirectToAuth />}
+              />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Box>

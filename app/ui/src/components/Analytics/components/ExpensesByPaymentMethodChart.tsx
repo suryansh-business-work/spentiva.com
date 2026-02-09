@@ -26,7 +26,10 @@ const paymentMethodColors = [
  * ExpensesByPaymentMethodChart Component
  * Displays pie chart for payment method distribution
  */
-const ExpensesByPaymentMethodChart: React.FC<ExpensesByPaymentMethodChartProps> = ({ data, currency = 'INR' }) => {
+const ExpensesByPaymentMethodChart: React.FC<ExpensesByPaymentMethodChartProps> = ({
+  data,
+  currency = 'INR',
+}) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
   const [openDialog, setOpenDialog] = useState(false);
@@ -126,7 +129,12 @@ const ExpensesByPaymentMethodChart: React.FC<ExpensesByPaymentMethodChartProps> 
         </Box>
       </Paper>
 
-      <PaymentMethodDetailsDialog open={openDialog} onClose={() => setOpenDialog(false)} data={data} currency={currency} />
+      <PaymentMethodDetailsDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        data={data}
+        currency={currency}
+      />
     </>
   );
 };

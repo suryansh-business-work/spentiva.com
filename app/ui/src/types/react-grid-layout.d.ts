@@ -33,7 +33,12 @@ declare module 'react-grid-layout' {
     isResizable?: boolean;
     onLayoutChange?: (currentLayout: Layout[], allLayouts: Layouts) => void;
     onBreakpointChange?: (breakpoint: string, cols: number) => void;
-    onWidthChange?: (width: number, margin: [number, number], cols: number, containerPadding: [number, number] | null) => void;
+    onWidthChange?: (
+      width: number,
+      margin: [number, number],
+      cols: number,
+      containerPadding: [number, number] | null
+    ) => void;
     draggableHandle?: string;
     draggableCancel?: string;
     containerPadding?: [number, number] | null;
@@ -65,7 +70,12 @@ declare module 'react-grid-layout' {
     layouts?: Layouts;
     onBreakpointChange?: (breakpoint: string, cols: number) => void;
     onLayoutChange?: (layout: Layout[], layouts: Layouts) => void;
-    onWidthChange?: (width: number, margin: [number, number], cols: number, containerPadding: [number, number] | null) => void;
+    onWidthChange?: (
+      width: number,
+      margin: [number, number],
+      cols: number,
+      containerPadding: [number, number] | null
+    ) => void;
   }): {
     layout: Layout[];
     layouts: Layouts;

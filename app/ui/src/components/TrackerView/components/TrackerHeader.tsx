@@ -126,7 +126,7 @@ const TrackerHeader: React.FC<TrackerHeaderProps> = ({
           </Tabs>
           <IconButton
             size="small"
-            onClick={(e) => setMenuAnchor(e.currentTarget)}
+            onClick={e => setMenuAnchor(e.currentTarget)}
             sx={{
               color: tabValue >= 2 ? accentColor : theme.palette.text.secondary,
               ml: 0.5,
@@ -140,22 +140,22 @@ const TrackerHeader: React.FC<TrackerHeaderProps> = ({
             onClose={() => setMenuAnchor(null)}
             slotProps={{ paper: { sx: { minWidth: 180 } } }}
           >
-            <MenuItem
-              selected={tabValue === 2}
-              onClick={() => handleMenuItemClick(2)}
-            >
-              <ListItemIcon><ReceiptLongIcon fontSize="small" /></ListItemIcon>
+            <MenuItem selected={tabValue === 2} onClick={() => handleMenuItemClick(2)}>
+              <ListItemIcon>
+                <ReceiptLongIcon fontSize="small" />
+              </ListItemIcon>
               <ListItemText>Transactions</ListItemText>
             </MenuItem>
-            <MenuItem
-              selected={tabValue === 3}
-              onClick={() => handleMenuItemClick(3)}
-            >
-              <ListItemIcon><SettingsIcon fontSize="small" /></ListItemIcon>
+            <MenuItem selected={tabValue === 3} onClick={() => handleMenuItemClick(3)}>
+              <ListItemIcon>
+                <SettingsIcon fontSize="small" />
+              </ListItemIcon>
               <ListItemText>Settings</ListItemText>
             </MenuItem>
             <MenuItem onClick={handleShareClick}>
-              <ListItemIcon><ShareIcon fontSize="small" /></ListItemIcon>
+              <ListItemIcon>
+                <ShareIcon fontSize="small" />
+              </ListItemIcon>
               <ListItemText>Share</ListItemText>
             </MenuItem>
           </Menu>

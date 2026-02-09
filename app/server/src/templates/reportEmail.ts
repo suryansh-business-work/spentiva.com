@@ -33,7 +33,8 @@ export const generateReportEmail = (data: ReportData): string => {
   const incomeCats = data.categoryData.filter(c => c.type === 'income');
   const netBalance = data.netBalance ?? data.totalIncome - data.totalExpenses;
   const sym = getCurrencySymbol(data.currency);
-  const savingsRate = data.totalIncome > 0 ? ((data.totalIncome - data.totalExpenses) / data.totalIncome) * 100 : 0;
+  const savingsRate =
+    data.totalIncome > 0 ? ((data.totalIncome - data.totalExpenses) / data.totalIncome) * 100 : 0;
   const topExpenseCat = expenseCats.length > 0 ? expenseCats[0] : null;
 
   const mjml = `
@@ -111,16 +112,19 @@ export const generateReportEmail = (data: ReportData): string => {
             <mj-raw>
               <div class="insight-box ${savingsRate < 0 ? 'insight-warn' : ''}">
                 <span style="font-size:13px;color:#374151;">
-                  ${savingsRate >= 20
-                    ? `Great job! You saved <strong>${savingsRate.toFixed(1)}%</strong> of your income this period.`
-                    : savingsRate >= 0
-                      ? `You saved <strong>${savingsRate.toFixed(1)}%</strong> of your income. Try to aim for 20%+.`
-                      : `You overspent by <strong>${sym}${Math.abs(netBalance).toLocaleString('en-IN')}</strong> this period. Consider reviewing your expenses.`
+                  ${
+                    savingsRate >= 20
+                      ? `Great job! You saved <strong>${savingsRate.toFixed(1)}%</strong> of your income this period.`
+                      : savingsRate >= 0
+                        ? `You saved <strong>${savingsRate.toFixed(1)}%</strong> of your income. Try to aim for 20%+.`
+                        : `You overspent by <strong>${sym}${Math.abs(netBalance).toLocaleString('en-IN')}</strong> this period. Consider reviewing your expenses.`
                   }
                 </span>
               </div>
             </mj-raw>
-            ${topExpenseCat ? `
+            ${
+              topExpenseCat
+                ? `
             <mj-raw>
               <div style="margin-top: 8px; background: #fef2f2; border-left: 4px solid #ef4444; padding: 12px 16px; border-radius: 0 8px 8px 0;">
                 <span style="font-size:13px;color:#374151;">
@@ -129,7 +133,9 @@ export const generateReportEmail = (data: ReportData): string => {
                 </span>
               </div>
             </mj-raw>
-            ` : ''}
+            `
+                : ''
+            }
             <mj-raw>
               <div style="margin-top: 8px; background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 12px 16px; border-radius: 0 8px 8px 0;">
                 <span style="font-size:13px;color:#374151;">
@@ -141,7 +147,9 @@ export const generateReportEmail = (data: ReportData): string => {
         </mj-section>
 
         <!-- Expense Category Breakdown -->
-        ${expenseCats.length > 0 ? `
+        ${
+          expenseCats.length > 0
+            ? `
         <mj-section background-color="#ffffff" padding="25px 40px 8px">
           <mj-column>
             <mj-text font-size="15px" font-weight="700" color="#dc2626">
@@ -153,7 +161,8 @@ export const generateReportEmail = (data: ReportData): string => {
         ${expenseCats
           .slice(0, 8)
           .map((category, index) => {
-            const percentage = data.totalExpenses > 0 ? (category.total / data.totalExpenses) * 100 : 0;
+            const percentage =
+              data.totalExpenses > 0 ? (category.total / data.totalExpenses) * 100 : 0;
             return `
             <mj-section background-color="#ffffff" padding="${index === 0 ? '12px 40px 4px' : '4px 40px'}">
               <mj-column width="60%">
@@ -174,10 +183,14 @@ export const generateReportEmail = (data: ReportData): string => {
             </mj-section>`;
           })
           .join('')}
-        ` : ''}
+        `
+            : ''
+        }
 
         <!-- Income Category Breakdown -->
-        ${incomeCats.length > 0 ? `
+        ${
+          incomeCats.length > 0
+            ? `
         <mj-section background-color="#ffffff" padding="25px 40px 8px">
           <mj-column>
             <mj-text font-size="15px" font-weight="700" color="#16a34a">
@@ -210,10 +223,14 @@ export const generateReportEmail = (data: ReportData): string => {
             </mj-section>`;
           })
           .join('')}
-        ` : ''}
+        `
+            : ''
+        }
 
         <!-- Monthly Trend -->
-        ${data.monthlyData.length > 0 ? `
+        ${
+          data.monthlyData.length > 0
+            ? `
         <mj-section background-color="#ffffff" padding="25px 40px 12px">
           <mj-column>
             <mj-text font-size="15px" font-weight="700" color="#111827">
@@ -234,7 +251,20 @@ export const generateReportEmail = (data: ReportData): string => {
               ${data.monthlyData
                 .filter(m => (m.expenses ?? m.total ?? 0) > 0 || (m.income ?? 0) > 0)
                 .map(month => {
-                  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                  const monthNames = [
+                    'Jan',
+                    'Feb',
+                    'Mar',
+                    'Apr',
+                    'May',
+                    'Jun',
+                    'Jul',
+                    'Aug',
+                    'Sep',
+                    'Oct',
+                    'Nov',
+                    'Dec',
+                  ];
                   const exp = month.expenses ?? month.total ?? 0;
                   const inc = month.income ?? 0;
                   const net = inc - exp;
@@ -250,7 +280,9 @@ export const generateReportEmail = (data: ReportData): string => {
             </mj-table>
           </mj-column>
         </mj-section>
-        ` : ''}
+        `
+            : ''
+        }
 
         <!-- CTA -->
         <mj-section background-color="#ffffff" padding="20px 40px 30px">

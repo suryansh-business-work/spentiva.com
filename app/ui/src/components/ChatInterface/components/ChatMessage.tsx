@@ -23,7 +23,14 @@ interface ChatMessageProps {
  * ChatMessage Component
  * Displays a single chat message with avatar and content (WhatsApp-style)
  */
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userName, botImage, botName, onAddCategory }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({
+  message,
+  userPhotoUrl,
+  userName,
+  botImage,
+  botName,
+  onAddCategory,
+}) => {
   const isUser = message.role === 'user';
   const theme = useTheme();
 
@@ -83,7 +90,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, userPhotoUrl, userNa
             : `0 2px 8px ${theme.palette.primary.main}40`,
         }}
       >
-        {isUser ? getAvatarContent() : (botName ? botName.charAt(0).toUpperCase() : <SmartToyIcon />)}
+        {isUser ? getAvatarContent() : botName ? botName.charAt(0).toUpperCase() : <SmartToyIcon />}
       </Avatar>
 
       {/* Message Content */}

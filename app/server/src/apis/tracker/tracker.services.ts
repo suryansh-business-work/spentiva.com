@@ -11,12 +11,15 @@ import crypto from 'crypto';
 const deleteOtpStore = new Map<string, { otp: string; expiresAt: number }>();
 
 // Clean up expired OTPs every 5 minutes
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, value] of deleteOtpStore) {
-    if (value.expiresAt < now) deleteOtpStore.delete(key);
-  }
-}, 5 * 60 * 1000);
+setInterval(
+  () => {
+    const now = Date.now();
+    for (const [key, value] of deleteOtpStore) {
+      if (value.expiresAt < now) deleteOtpStore.delete(key);
+    }
+  },
+  5 * 60 * 1000
+);
 
 /**
  * Tracker Service - Business logic for tracker operations
@@ -287,10 +290,7 @@ class TrackerService {
   async getAllTrackers(userId: string) {
     // Get owned trackers + trackers shared with the user
     const trackers = await TrackerModel.find({
-      $or: [
-        { userId },
-        { 'sharedWith.userId': userId, 'sharedWith.status': 'accepted' },
-      ],
+      $or: [{ userId }, { 'sharedWith.userId': userId, 'sharedWith.status': 'accepted' }],
     }).sort({ createdAt: -1 });
 
     return trackers.map(tracker => ({
@@ -369,10 +369,7 @@ class TrackerService {
   async getTrackerById(userId: string, trackerId: string) {
     const tracker = await TrackerModel.findOne({
       _id: trackerId,
-      $or: [
-        { userId },
-        { 'sharedWith.userId': userId, 'sharedWith.status': 'accepted' },
-      ],
+      $or: [{ userId }, { 'sharedWith.userId': userId, 'sharedWith.status': 'accepted' }],
     });
 
     if (!tracker) {
@@ -415,11 +412,9 @@ class TrackerService {
     if (data.currency !== undefined) updateFields.currency = data.currency;
     if (data.botImage !== undefined) updateFields.botImage = data.botImage;
 
-    const tracker = await TrackerModel.findOneAndUpdate(
-      { _id: trackerId, userId },
-      updateFields,
-      { new: true }
-    );
+    const tracker = await TrackerModel.findOneAndUpdate({ _id: trackerId, userId }, updateFields, {
+      new: true,
+    });
 
     if (!tracker) {
       throw new Error('Tracker not found');
@@ -515,14 +510,37 @@ class TrackerService {
 
     // Send invitation email (non-blocking)
     try {
-      const { sendEmail } = await import('../../services/emailService');
+      const { sendEmail, compileMjml } = await import('../../services/emailService');
+      const config = await import('../../config/config');
+
+      // Determine role permission text
+      const rolePermission =
+        data.role === 'editor'
+          ? 'Full editing and management permissions'
+          : 'View-only access to tracker data';
+
+      // Create accept URL
+      const acceptUrl = `${config.default.APP_URL}/trackers?accept=${trackerId}&email=${encodeURIComponent(data.email)}`;
+
+      const html = compileMjml('tracker-invitation', {
+        trackerName: tracker.name,
+        trackerType: tracker.type || 'Expense Tracker',
+        role: data.role.toUpperCase(),
+        rolePermission,
+        acceptUrl,
+      });
+
       await sendEmail({
         to: data.email,
-        subject: `You've been invited to a Spentiva tracker: ${tracker.name}`,
-        html: `<p>You have been invited to collaborate on the tracker <strong>"${tracker.name}"</strong> as an <strong>${data.role}</strong>. Log in to Spentiva to accept.</p>`,
+        subject: `You've been invited to collaborate on "${tracker.name}" - Spentiva`,
+        html,
       });
     } catch (emailErr) {
-      logger.error('Failed to send share invite email', { trackerId, email: data.email, error: emailErr });
+      logger.error('Failed to send share invite email', {
+        trackerId,
+        email: data.email,
+        error: emailErr,
+      });
     }
 
     return { sharedWith: tracker.sharedWith };
@@ -564,11 +582,30 @@ class TrackerService {
 
     // Re-send invitation email
     try {
-      const { sendEmail } = await import('../../services/emailService');
+      const { sendEmail, compileMjml } = await import('../../services/emailService');
+      const config = await import('../../config/config');
+
+      // Determine role permission text
+      const rolePermission =
+        shared.role === 'editor'
+          ? 'Full editing and management permissions'
+          : 'View-only access to tracker data';
+
+      // Create accept URL
+      const acceptUrl = `${config.default.APP_URL}/trackers?accept=${trackerId}&email=${encodeURIComponent(email)}`;
+
+      const html = compileMjml('tracker-invitation', {
+        trackerName: tracker.name,
+        trackerType: tracker.type || 'Expense Tracker',
+        role: shared.role.toUpperCase(),
+        rolePermission,
+        acceptUrl,
+      });
+
       await sendEmail({
         to: email,
-        subject: `Reminder: You've been invited to a Spentiva tracker: ${tracker.name}`,
-        html: `<p>This is a reminder that you have been invited to collaborate on the tracker <strong>"${tracker.name}"</strong> as an <strong>${shared.role}</strong>. Log in to Spentiva to accept.</p>`,
+        subject: `Reminder: You've been invited to collaborate on "${tracker.name}" - Spentiva`,
+        html,
       });
     } catch (emailErr) {
       logger.error('Failed to resend share invite email', { trackerId, email, error: emailErr });
@@ -581,7 +618,10 @@ class TrackerService {
    * Request OTP for tracker deletion — generates a 6-digit code and returns it.
    * The controller is responsible for emailing it.
    */
-  async requestDeleteOtp(userId: string, trackerId: string): Promise<{ otp: string; trackerName: string }> {
+  async requestDeleteOtp(
+    userId: string,
+    trackerId: string
+  ): Promise<{ otp: string; trackerName: string }> {
     const tracker = await TrackerModel.findOne({ _id: trackerId, userId });
     if (!tracker) throw new Error('Tracker not found');
 

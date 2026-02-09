@@ -238,10 +238,19 @@ export const getAllExpensesController = async (req: any, res: Response) => {
       updatedAt: expense.updatedAt,
     }));
 
-    return successResponse(res, {
-      expenses: formattedExpenses,
-      pagination: { page: pageNum, limit: limitNum, total, totalPages: Math.ceil(total / limitNum) },
-    }, 'Expenses retrieved successfully');
+    return successResponse(
+      res,
+      {
+        expenses: formattedExpenses,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total,
+          totalPages: Math.ceil(total / limitNum),
+        },
+      },
+      'Expenses retrieved successfully'
+    );
   } catch (error: any) {
     console.error('Error fetching expenses:', error);
     return errorResponse(res, error, 'Internal server error');
@@ -291,14 +300,33 @@ export const getExpenseByIdController = async (req: any, res: Response) => {
 export const updateExpenseController = async (req: any, res: Response) => {
   try {
     const { id } = req.params;
-    const { amount, category, subcategory, categoryId, paymentMethod, creditFrom, currency, description, timestamp, type } =
-      req.body;
+    const {
+      amount,
+      category,
+      subcategory,
+      categoryId,
+      paymentMethod,
+      creditFrom,
+      currency,
+      description,
+      timestamp,
+      type,
+    } = req.body;
     const userId = req.user?.userId;
 
     const expense = await ExpenseService.updateExpense(
       id,
       {
-        type, amount, category, subcategory, categoryId, paymentMethod, creditFrom, currency, description, timestamp,
+        type,
+        amount,
+        category,
+        subcategory,
+        categoryId,
+        paymentMethod,
+        creditFrom,
+        currency,
+        description,
+        timestamp,
         lastUpdatedBy: userId,
         lastUpdatedByName: req.user?.name || req.user?.firstName || 'Unknown',
       },

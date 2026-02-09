@@ -7,13 +7,25 @@ import { logger } from '../utils/logger';
 // Prefer the configured key from `config`, but fall back to process.env
 const OPENAI_KEY = config.OPENAI_API_KEY || process.env.OPENAI_API_KEY;
 if (!OPENAI_KEY) {
-  logger.warn('OpenAI API key is not set in config or process.env. OpenAI features will be disabled.');
+  logger.warn(
+    'OpenAI API key is not set in config or process.env. OpenAI features will be disabled.'
+  );
 }
 const openai = OPENAI_KEY ? new OpenAI({ apiKey: OPENAI_KEY }) : null;
 
 interface CategoriesMap {
-  expense: Array<{ name: string; _id?: string; id?: string; subcategories?: Array<{ name: string }> }>;
-  income: Array<{ name: string; _id?: string; id?: string; subcategories?: Array<{ name: string }> }>;
+  expense: Array<{
+    name: string;
+    _id?: string;
+    id?: string;
+    subcategories?: Array<{ name: string }>;
+  }>;
+  income: Array<{
+    name: string;
+    _id?: string;
+    id?: string;
+    subcategories?: Array<{ name: string }>;
+  }>;
   debitModes: string[];
   creditModes: string[];
 }
@@ -192,7 +204,12 @@ ERROR FORMAT (only if you cannot parse amount):
     trackerCurrency?: string
   ): Promise<
     | { expenses: ParsedExpense[]; usage: OpenAIUsage | undefined }
-    | { error: string; message?: string; missingCategories?: string[]; usage?: OpenAIUsage | undefined }
+    | {
+        error: string;
+        message?: string;
+        missingCategories?: string[];
+        usage?: OpenAIUsage | undefined;
+      }
   > {
     if (!openai) {
       return {
@@ -263,7 +280,10 @@ ERROR FORMAT (only if you cannot parse amount):
       const completion = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: this.buildSystemPrompt(categoriesMap, trackerCurrency || 'INR') },
+          {
+            role: 'system',
+            content: this.buildSystemPrompt(categoriesMap, trackerCurrency || 'INR'),
+          },
           { role: 'user', content: userMessage },
         ],
         temperature: 0.3,
@@ -307,8 +327,7 @@ ERROR FORMAT (only if you cannot parse amount):
         const txnType = txn.type || 'expense';
 
         // Choose category pool based on type
-        const categoryPool =
-          txnType === 'income' ? categoriesMap.income : categoriesMap.expense;
+        const categoryPool = txnType === 'income' ? categoriesMap.income : categoriesMap.expense;
 
         // Find the category ID
         const categoryEntry = categoryPool.find(cat => cat.name === txn.category);
@@ -343,8 +362,12 @@ ERROR FORMAT (only if you cannot parse amount):
           category: txn.category,
           subcategory: txn.subcategory,
           categoryId: (categoryEntry._id || categoryEntry.id || '').toString(),
-          paymentMethod: txnType === 'expense' ? (txn.paymentMethod || 'User not provided payment method') : undefined,
-          creditFrom: txnType === 'income' ? (txn.creditFrom || 'User not provided credit source') : undefined,
+          paymentMethod:
+            txnType === 'expense'
+              ? txn.paymentMethod || 'User not provided payment method'
+              : undefined,
+          creditFrom:
+            txnType === 'income' ? txn.creditFrom || 'User not provided credit source' : undefined,
           currency: txn.currency || 'INR',
           description: txn.description,
           timestamp: new Date(),
