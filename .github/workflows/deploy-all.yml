@@ -87,7 +87,30 @@ jobs:
             docker run -d --name spentiva-app-ui --restart unless-stopped --network spentiva-network -p 5001:80 -e NODE_ENV=production ${{ secrets.DOCKERHUB_USERNAME }}/spentiva-app-ui:latest
 
             echo "🚀 Starting App Server (5002)..."
-            docker run -d --name spentiva-app-server --restart unless-stopped --network spentiva-network -p 5002:5002 --env-file -e NODE_ENV=production -e PORT=5002 ${{ secrets.DOCKERHUB_USERNAME }}/spentiva-app-server:latest
+            docker run -d \
+              --name spentiva-app-server \
+              --restart unless-stopped \
+              --network spentiva-network \
+              -p 5002:5002 \
+              -e NODE_ENV=production \
+              -e PORT=5002 \
+              -e DBURL=${{ secrets.DBURL }} \
+              -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+              -e JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }} \
+              -e ALLOWED_ORIGINS=${{ secrets.ALLOWED_ORIGINS }} \
+              -e APP_URL=${{ secrets.APP_URL }} \
+              -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
+              -e NODEMAILER_HOST=${{ secrets.NODEMAILER_HOST }} \
+              -e NODEMAILER_PORT=${{ secrets.NODEMAILER_PORT }} \
+              -e NODEMAILER_USER=${{ secrets.NODEMAILER_USER }} \
+              -e NODEMAILER_PASS=${{ secrets.NODEMAILER_PASS }} \
+              -e IMAGEKIT_PUBLIC_KEY=${{ secrets.IMAGEKIT_PUBLIC_KEY }} \
+              -e IMAGEKIT_PRIVATE_KEY=${{ secrets.IMAGEKIT_PRIVATE_KEY }} \
+              -e IMAGEKIT_URL_ENDPOINT=${{ secrets.IMAGEKIT_URL_ENDPOINT }} \
+              -e AUTH_SERVICE_URL=${{ secrets.AUTH_SERVICE_URL }} \
+              -e AUTH_SECRET=${{ secrets.AUTH_SECRET }} \
+              -e LOG_LEVEL=${{ secrets.LOG_LEVEL }} \
+              ${{ secrets.DOCKERHUB_USERNAME }}/spentiva-app-server:latest
 
             echo "⏳ Waiting for services..."
             sleep 10
