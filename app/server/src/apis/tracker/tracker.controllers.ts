@@ -220,9 +220,7 @@ export const respondToInviteController = async (req: any, res: Response) => {
     return successResponse(
       res,
       result,
-      response === 'accepted'
-        ? `You have joined "${result.trackerName}"`
-        : 'Invitation declined'
+      response === 'accepted' ? `You have joined "${result.trackerName}"` : 'Invitation declined'
     );
   } catch (error: any) {
     const clientErrors = ['Invitation not found', 'not invited', 'already'];

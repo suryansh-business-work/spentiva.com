@@ -1,3 +1,4 @@
+import cron from 'node-cron';
 import categoryModels from '../category/category.models';
 import expenseModels from '../expense/expense.models';
 import TrackerModel from './tracker.models';
@@ -10,16 +11,13 @@ import crypto from 'crypto';
  */
 const deleteOtpStore = new Map<string, { otp: string; expiresAt: number }>();
 
-// Clean up expired OTPs every 5 minutes
-setInterval(
-  () => {
-    const now = Date.now();
-    for (const [key, value] of deleteOtpStore) {
-      if (value.expiresAt < now) deleteOtpStore.delete(key);
-    }
-  },
-  5 * 60 * 1000
-);
+// Clean up expired OTPs every 5 minutes using cron job
+cron.schedule('*/5 * * * *', () => {
+  const now = Date.now();
+  for (const [key, value] of deleteOtpStore) {
+    if (value.expiresAt < now) deleteOtpStore.delete(key);
+  }
+});
 
 /**
  * Tracker Service - Business logic for tracker operations

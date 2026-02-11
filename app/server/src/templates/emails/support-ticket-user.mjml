@@ -1,7 +1,10 @@
 <mjml>
   <mj-head>
     <mj-title>Support Ticket Created - Spentiva</mj-title>
-    <mj-font name="Inter" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+    <mj-font
+      name="Inter"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
     <mj-attributes>
       <mj-all font-family="Inter, Arial, sans-serif" />
       <mj-text font-size="14px" color="#334155" line-height="1.6" />
@@ -10,7 +13,11 @@
   </mj-head>
   <mj-body background-color="#f8fafc">
     <!-- Header -->
-    <mj-section background-color="#ffffff" padding="28px 24px 20px" border-bottom="2px solid #10b981">
+    <mj-section
+      background-color="#ffffff"
+      padding="28px 24px 20px"
+      border-bottom="2px solid #10b981"
+    >
       <mj-column>
         <mj-text font-size="22px" font-weight="700" color="#0f172a" letter-spacing="-0.3px">
           Spentiva
@@ -30,36 +37,63 @@
         </mj-text>
 
         <!-- Ticket Details -->
-        <mj-wrapper background-color="#f8fafc" padding="20px 24px" border-radius="6px" border="1px solid #e2e8f0">
+        <mj-wrapper
+          background-color="#f8fafc"
+          padding="20px 24px"
+          border-radius="6px"
+          border="1px solid #e2e8f0"
+        >
           <mj-section background-color="transparent" padding="0">
             <mj-column>
-              <mj-text font-size="11px" color="#64748b" font-weight="600" letter-spacing="0.8px" padding-bottom="4px">
+              <mj-text
+                font-size="11px"
+                color="#64748b"
+                font-weight="600"
+                letter-spacing="0.8px"
+                padding-bottom="4px"
+              >
                 TICKET ID
               </mj-text>
               <mj-text font-size="16px" font-weight="700" color="#0f172a" padding-bottom="16px">
                 {{ ticketId }}
               </mj-text>
 
-              <mj-text font-size="11px" color="#64748b" font-weight="600" letter-spacing="0.8px" padding-bottom="4px">
+              <mj-text
+                font-size="11px"
+                color="#64748b"
+                font-weight="600"
+                letter-spacing="0.8px"
+                padding-bottom="4px"
+              >
                 TYPE
               </mj-text>
               <mj-text font-size="14px" font-weight="600" color="#334155" padding-bottom="16px">
                 {{ ticketType }}
               </mj-text>
 
-              <mj-text font-size="11px" color="#64748b" font-weight="600" letter-spacing="0.8px" padding-bottom="4px">
+              <mj-text
+                font-size="11px"
+                color="#64748b"
+                font-weight="600"
+                letter-spacing="0.8px"
+                padding-bottom="4px"
+              >
                 SUBJECT
               </mj-text>
               <mj-text font-size="14px" font-weight="600" color="#334155" padding-bottom="16px">
                 {{ subject }}
               </mj-text>
 
-              <mj-text font-size="11px" color="#64748b" font-weight="600" letter-spacing="0.8px" padding-bottom="4px">
+              <mj-text
+                font-size="11px"
+                color="#64748b"
+                font-weight="600"
+                letter-spacing="0.8px"
+                padding-bottom="4px"
+              >
                 STATUS
               </mj-text>
-              <mj-text font-size="14px" font-weight="600" color="#10b981">
-                Open
-              </mj-text>
+              <mj-text font-size="14px" font-weight="600" color="#10b981"> Open </mj-text>
             </mj-column>
           </mj-section>
         </mj-wrapper>

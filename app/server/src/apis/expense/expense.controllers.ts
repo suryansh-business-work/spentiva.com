@@ -215,9 +215,7 @@ export const createExpenseController = async (req: any, res: Response) => {
                 timestamp: expense.timestamp || expense.createdAt,
               },
               { id: trackerId, name: tracker.name }
-            ).catch(err =>
-              logger.error('Transaction notification failed', { error: err.message })
-            );
+            ).catch(err => logger.error('Transaction notification failed', { error: err.message }));
           }
         } catch (err: any) {
           logger.error('Error sending transaction notifications', { error: err.message });

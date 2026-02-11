@@ -1,7 +1,10 @@
 <mjml>
   <mj-head>
     <mj-title>Tracker Invitation - Spentiva</mj-title>
-    <mj-font name="Inter" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+    <mj-font
+      name="Inter"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
     <mj-attributes>
       <mj-all font-family="Inter, Arial, sans-serif" />
       <mj-text font-size="14px" color="#334155" line-height="1.6" />
@@ -10,7 +13,11 @@
   </mj-head>
   <mj-body background-color="#f8fafc">
     <!-- Header -->
-    <mj-section background-color="#ffffff" padding="28px 24px 20px" border-bottom="2px solid #10b981">
+    <mj-section
+      background-color="#ffffff"
+      padding="28px 24px 20px"
+      border-bottom="2px solid #10b981"
+    >
       <mj-column>
         <mj-text font-size="22px" font-weight="700" color="#0f172a" letter-spacing="-0.3px">
           Spentiva
@@ -21,27 +28,36 @@
     <!-- Main Content -->
     <mj-section background-color="#ffffff" padding="32px 28px">
       <mj-column>
-        <mj-text font-size="15px" color="#475569" padding-bottom="16px">
-          Hello,
-        </mj-text>
+        <mj-text font-size="15px" color="#475569" padding-bottom="16px"> Hello, </mj-text>
 
         <mj-text font-size="15px" color="#334155" line-height="1.7" padding-bottom="24px">
           You've been invited to collaborate on a tracker in Spentiva.
         </mj-text>
 
         <!-- Tracker Info -->
-        <mj-wrapper background-color="#f8fafc" padding="20px 24px" border-radius="6px" border="1px solid #e2e8f0">
+        <mj-wrapper
+          background-color="#f8fafc"
+          padding="20px 24px"
+          border-radius="6px"
+          border="1px solid #e2e8f0"
+        >
           <mj-section background-color="transparent" padding="0">
             <mj-column>
-              <mj-text font-size="11px" color="#64748b" font-weight="600" letter-spacing="0.8px" padding-bottom="6px">
+              <mj-text
+                font-size="11px"
+                color="#64748b"
+                font-weight="600"
+                letter-spacing="0.8px"
+                padding-bottom="6px"
+              >
                 TRACKER
               </mj-text>
               <mj-text font-size="18px" font-weight="700" color="#0f172a" padding-bottom="12px">
                 {{ trackerName }}
               </mj-text>
               <mj-text font-size="13px" color="#64748b" padding-bottom="0">
-                Type: <strong style="color:#334155">{{ trackerType }}</strong> &nbsp;&middot;&nbsp;
-                Role: <strong style="color:#334155">{{ role }}</strong>
+                Type: <strong style="color: #334155">{{ trackerType }}</strong> &nbsp;&middot;&nbsp;
+                Role: <strong style="color: #334155">{{ role }}</strong>
               </mj-text>
             </mj-column>
           </mj-section>
@@ -75,14 +91,18 @@
 
         <mj-text align="center" font-size="12px" color="#94a3b8" padding="12px 20px 0 20px">
           Or copy this link:
-          <a href="{{ acceptUrl }}" style="color:#10b981;text-decoration:none;word-break:break-all">{{ acceptUrl }}</a>
+          <a
+            href="{{ acceptUrl }}"
+            style="color: #10b981; text-decoration: none; word-break: break-all"
+            >{{ acceptUrl }}</a
+          >
         </mj-text>
 
         <mj-divider border-color="#e2e8f0" border-width="1px" padding="28px 0 20px 0" />
 
         <mj-text font-size="12px" color="#94a3b8" line-height="1.6">
-          If you didn't expect this invitation, you can safely ignore this email.
-          The invitation will remain pending until you accept or the tracker owner removes it.
+          If you didn't expect this invitation, you can safely ignore this email. The invitation
+          will remain pending until you accept or the tracker owner removes it.
         </mj-text>
       </mj-column>
     </mj-section>

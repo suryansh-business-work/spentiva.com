@@ -25,7 +25,7 @@ export const authenticateMiddleware = (req: any, res: any, next: any) => {
           success: false,
           message: 'Token expired',
           error: 'TOKEN_EXPIRED',
-          data: null
+          data: null,
         });
       }
       return errorResponse(res, err, 'Invalid or expired token');

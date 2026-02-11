@@ -1,3 +1,4 @@
+import cron from 'node-cron';
 import ReportScheduleService from '../apis/report-schedule/report-schedule.services';
 import { AnalyticsService } from '../apis/analytics/analytics.services';
 import { DateFilter } from '../apis/analytics/analytics.validators';
@@ -7,10 +8,9 @@ import { logger } from '../utils/logger';
 /**
  * Report Cron Runner
  * Checks for due report schedules every minute and sends email reports.
- * Uses setInterval instead of node-cron to avoid an extra dependency.
+ * Uses node-cron for reliable cron-based scheduling.
  */
 
-const INTERVAL_MS = 60 * 1000; // 1 minute
 let running = false;
 
 const getCurrencySymbol = (currency: string): string => {
@@ -155,8 +155,15 @@ const tick = async (): Promise<void> => {
 };
 
 export const startReportCron = (): void => {
-  logger.info('Report scheduler started (checking every 60s)');
-  setInterval(tick, INTERVAL_MS);
-  // Run once immediately after a short delay to catch any overdue
-  setTimeout(tick, 5000);
+  logger.info('Report scheduler started (running every minute via cron)');
+
+  // Schedule cron job to run every minute
+  cron.schedule('* * * * *', async () => {
+    await tick();
+  });
+
+  // Run once immediately to catch any overdue schedules
+  tick().catch((error: any) => {
+    logger.error('Initial report cron execution error', { error: error.message });
+  });
 };

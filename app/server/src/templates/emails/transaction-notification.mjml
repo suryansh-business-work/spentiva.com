@@ -32,25 +32,29 @@
     <mj-section padding="0 24px 16px" background-color="#ffffff">
       <mj-column>
         <mj-table css-class="transaction-table" cellpadding="8" border="none" width="100%">
-          <tr style="border-bottom:1px solid #e2e8f0">
-            <td style="padding:10px 12px;color:#64748b;font-size:13px;width:35%">Amount</td>
-            <td style="padding:10px 12px;font-size:16px;font-weight:700;color:{{ amountColor }}">{{ currencySymbol }}{{ amount }}</td>
+          <tr style="border-bottom: 1px solid #e2e8f0">
+            <td style="padding: 10px 12px; color: #64748b; font-size: 13px; width: 35%">Amount</td>
+            <td style="padding:10px 12px;font-size:16px;font-weight:700;color:{{ amountColor }}">
+              {{ currencySymbol }}{{ amount }}
+            </td>
           </tr>
-          <tr style="border-bottom:1px solid #e2e8f0">
-            <td style="padding:10px 12px;color:#64748b;font-size:13px">Category</td>
-            <td style="padding:10px 12px;font-size:14px;color:#0f172a;font-weight:500">{{ category }} / {{ subcategory }}</td>
+          <tr style="border-bottom: 1px solid #e2e8f0">
+            <td style="padding: 10px 12px; color: #64748b; font-size: 13px">Category</td>
+            <td style="padding: 10px 12px; font-size: 14px; color: #0f172a; font-weight: 500">
+              {{ category }} / {{ subcategory }}
+            </td>
           </tr>
-          <tr style="border-bottom:1px solid #e2e8f0">
-            <td style="padding:10px 12px;color:#64748b;font-size:13px">Payment</td>
-            <td style="padding:10px 12px;font-size:14px;color:#0f172a">{{ paymentMethod }}</td>
+          <tr style="border-bottom: 1px solid #e2e8f0">
+            <td style="padding: 10px 12px; color: #64748b; font-size: 13px">Payment</td>
+            <td style="padding: 10px 12px; font-size: 14px; color: #0f172a">{{ paymentMethod }}</td>
           </tr>
-          <tr style="border-bottom:1px solid #e2e8f0">
-            <td style="padding:10px 12px;color:#64748b;font-size:13px">Added by</td>
-            <td style="padding:10px 12px;font-size:14px;color:#0f172a">{{ createdByName }}</td>
+          <tr style="border-bottom: 1px solid #e2e8f0">
+            <td style="padding: 10px 12px; color: #64748b; font-size: 13px">Added by</td>
+            <td style="padding: 10px 12px; font-size: 14px; color: #0f172a">{{ createdByName }}</td>
           </tr>
           <tr>
-            <td style="padding:10px 12px;color:#64748b;font-size:13px">Date</td>
-            <td style="padding:10px 12px;font-size:14px;color:#0f172a">{{ date }}</td>
+            <td style="padding: 10px 12px; color: #64748b; font-size: 13px">Date</td>
+            <td style="padding: 10px 12px; font-size: 14px; color: #0f172a">{{ date }}</td>
           </tr>
         </mj-table>
       </mj-column>
@@ -61,7 +65,13 @@
     <mj-section padding="0 24px 16px" background-color="#ffffff">
       <mj-column>
         <mj-text font-size="13px" color="#64748b" padding-bottom="4px">Note</mj-text>
-        <mj-text font-size="14px" color="#334155" padding="8px 12px" background-color="#f1f5f9" border-radius="6px">
+        <mj-text
+          font-size="14px"
+          color="#334155"
+          padding="8px 12px"
+          background-color="#f1f5f9"
+          border-radius="6px"
+        >
           {{ description }}
         </mj-text>
       </mj-column>
