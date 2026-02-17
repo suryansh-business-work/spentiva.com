@@ -7,7 +7,7 @@ on:
 
 jobs:
   check-ssh:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Test SSH Connection
         uses: appleboy/ssh-action@v1.0.3
