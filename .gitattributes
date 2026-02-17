@@ -1,0 +1,5 @@
+# Enforce LF line endings for shell scripts and CI/CD files
+*.yml eol=lf
+*.yaml eol=lf
+*.sh eol=lf
+Dockerfile eol=lf
