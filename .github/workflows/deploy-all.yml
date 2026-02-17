@@ -10,7 +10,7 @@ on:
 
 jobs:
   deploy-all:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: 📢 Slack - Full Deployment Started
         run: |
