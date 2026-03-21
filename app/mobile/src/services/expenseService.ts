@@ -11,12 +11,12 @@ export const expenseService = {
     if (params?.limit) query.set('limit', String(params.limit));
     if (params?.sort) query.set('sort', params.sort);
     const qs = query.toString();
-    const url = `${EXPENSES.ALL(trackerId)}${qs ? `?${qs}` : ''}`;
+    const url = `${EXPENSES.ALL(trackerId)}${qs ? `&${qs}` : ''}`;
     return http.get<PaginatedResponse<Expense>['data']>(url);
   },
 
-  getById: (trackerId: string, id: string) =>
-    http.get<Expense>(EXPENSES.BY_ID(trackerId, id)),
+  getById: (id: string) =>
+    http.get<Expense>(EXPENSES.BY_ID(id)),
 
   create: (data: {
     trackerId: string;

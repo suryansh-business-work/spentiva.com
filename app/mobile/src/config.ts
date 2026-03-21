@@ -1,12 +1,10 @@
-import Constants from 'expo-constants';
-
 const ENV = {
   development: {
-    API_URL: 'http://localhost:5002',
+    API_URL: 'http://10.0.2.2:5002',
     IMAGEKIT_URL_ENDPOINT: 'https://ik.imagekit.io/esdata1',
   },
   production: {
-    API_URL: 'https://api.spentiva.com',
+    API_URL: 'https://server.spentiva.com',
     IMAGEKIT_URL_ENDPOINT: 'https://ik.imagekit.io/esdata1',
   },
 } as const;
@@ -14,9 +12,8 @@ const ENV = {
 type Environment = keyof typeof ENV;
 
 const getEnvironment = (): Environment => {
-  const channel = Constants.expoConfig?.extra?.eas?.channel;
-  if (channel === 'production') return 'production';
-  return 'development';
+  if (__DEV__) return 'development';
+  return 'production';
 };
 
 const config = {
@@ -35,58 +32,59 @@ const config = {
   /** API endpoints by feature */
   ENDPOINTS: {
     TRACKERS: {
-      GET_ALL: '/api/tracker',
-      CREATE: '/api/tracker',
-      UPDATE: (id: string) => `/api/tracker/${id}`,
-      DELETE: (id: string) => `/api/tracker/${id}`,
-      SHARE: (id: string) => `/api/tracker/${id}/share`,
-      UNSHARE: (id: string) => `/api/tracker/${id}/unshare`,
+      GET_ALL: '/v1/api/tracker/all',
+      CREATE: '/v1/api/tracker/create',
+      GET_BY_ID: (id: string) => `/v1/api/tracker/get/${id}`,
+      UPDATE: (id: string) => `/v1/api/tracker/update/${id}`,
+      DELETE: (id: string) => `/v1/api/tracker/delete/${id}`,
+      SHARE: (id: string) => `/v1/api/tracker/share/${id}`,
+      UNSHARE: (id: string) => `/v1/api/tracker/unshare/${id}`,
     },
     CATEGORIES: {
-      GET_ALL: (trackerId: string) => `/api/category/${trackerId}`,
-      CREATE: '/api/category',
-      UPDATE: (id: string) => `/api/category/${id}`,
-      DELETE: (id: string) => `/api/category/${id}`,
+      GET_ALL: (trackerId: string) => `/v1/api/category/all?trackerId=${trackerId}`,
+      CREATE: '/v1/api/category/create',
+      UPDATE: (id: string) => `/v1/api/category/${id}`,
+      DELETE: (id: string) => `/v1/api/category/${id}`,
     },
     EXPENSES: {
-      ALL: (trackerId: string) => `/api/expense/${trackerId}`,
-      BY_ID: (trackerId: string, id: string) => `/api/expense/${trackerId}/${id}`,
-      PARSE: '/api/expense/parse',
-      CREATE: '/api/expense',
-      UPDATE: (id: string) => `/api/expense/${id}`,
-      DELETE: (id: string) => `/api/expense/${id}`,
-      BULK_DELETE: '/api/expense/bulk-delete',
+      ALL: (trackerId: string) => `/v1/api/expense/all?trackerId=${trackerId}`,
+      BY_ID: (id: string) => `/v1/api/expense/${id}`,
+      PARSE: '/v1/api/expense/parse',
+      CREATE: '/v1/api/expense/create',
+      UPDATE: (id: string) => `/v1/api/expense/${id}`,
+      DELETE: (id: string) => `/v1/api/expense/${id}`,
+      BULK_DELETE: '/v1/api/expense/bulk-delete',
     },
     ANALYTICS: {
-      SUMMARY: (trackerId: string) => `/api/analytics/${trackerId}/summary`,
-      BY_CATEGORY: (trackerId: string) => `/api/analytics/${trackerId}/by-category`,
-      BY_MONTH: (trackerId: string) => `/api/analytics/${trackerId}/by-month`,
-      BY_PAYMENT_METHOD: (trackerId: string) => `/api/analytics/${trackerId}/by-payment-method`,
-      TOTAL: (trackerId: string) => `/api/analytics/${trackerId}/total`,
-      EMAIL_REPORT: (trackerId: string) => `/api/analytics/${trackerId}/email-report`,
+      SUMMARY: (trackerId: string) => `/v1/api/analytics/summary?trackerId=${trackerId}`,
+      BY_CATEGORY: (trackerId: string) => `/v1/api/analytics/by-category?trackerId=${trackerId}`,
+      BY_MONTH: (trackerId: string) => `/v1/api/analytics/by-month?trackerId=${trackerId}`,
+      BY_PAYMENT_METHOD: (trackerId: string) => `/v1/api/analytics/by-expense-from?trackerId=${trackerId}`,
+      TOTAL: (trackerId: string) => `/v1/api/analytics/total?trackerId=${trackerId}`,
+      EMAIL_REPORT: (trackerId: string) => `/v1/api/analytics/email-report?trackerId=${trackerId}`,
     },
     USAGE: {
-      OVERVIEW: '/api/usage/overview',
-      GRAPHS: '/api/usage/graphs',
+      OVERVIEW: '/v1/api/usage/overview',
+      GRAPHS: '/v1/api/usage/graphs',
     },
     SUPPORT: {
-      CREATE: '/api/support',
-      GET_ALL: '/api/support',
-      GET_BY_ID: (id: string) => `/api/support/${id}`,
-      UPDATE_STATUS: (id: string) => `/api/support/${id}/status`,
+      CREATE: '/v1/api/support/tickets',
+      GET_ALL: '/v1/api/support/tickets',
+      GET_BY_ID: (id: string) => `/v1/api/support/tickets/${id}`,
+      UPDATE_STATUS: (id: string) => `/v1/api/support/tickets/${id}/status`,
     },
     PAYMENT: {
-      CREATE: '/api/payment',
-      GET_BY_ID: (id: string) => `/api/payment/${id}`,
-      GET_USER_PAYMENTS: (userId: string) => `/api/payment/user/${userId}`,
-      UPDATE_STATE: (id: string) => `/api/payment/${id}/state`,
-      STATS: '/api/payment/statistics',
+      CREATE: '/v1/api/payment',
+      GET_BY_ID: (id: string) => `/v1/api/payment/${id}`,
+      GET_USER_PAYMENTS: (userId: string) => `/v1/api/payment/user/${userId}`,
+      UPDATE_STATE: (id: string) => `/v1/api/payment/${id}/state`,
+      STATS: '/v1/api/payment/stats',
     },
     REFUND: {
-      CREATE: '/api/refund',
-      GET_BY_ID: (id: string) => `/api/refund/${id}`,
-      GET_USER_REFUNDS: (userId: string) => `/api/refund/user/${userId}`,
-      UPDATE_STATUS: (id: string) => `/api/refund/${id}/status`,
+      CREATE: '/v1/api/refund',
+      GET_BY_ID: (id: string) => `/v1/api/refund/${id}`,
+      GET_USER_REFUNDS: (userId: string) => `/v1/api/refund/user/${userId}`,
+      UPDATE_STATUS: (id: string) => `/v1/api/refund/${id}/status`,
     },
   },
 
