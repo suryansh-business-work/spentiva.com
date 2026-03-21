@@ -1,6 +1,8 @@
+import { Platform } from 'react-native';
+
 const ENV = {
   development: {
-    API_URL: 'http://10.0.2.2:5002',
+    API_URL: Platform.OS === 'web' ? 'http://localhost:5002' : 'http://10.0.2.2:5002',
     IMAGEKIT_URL_ENDPOINT: 'https://ik.imagekit.io/esdata1',
   },
   production: {
