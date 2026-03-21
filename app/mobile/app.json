@@ -31,10 +31,13 @@
       },
       "package": "com.spentiva.app",
       "permissions": [
-        "CAMERA",
-        "READ_CONTACTS",
-        "ACCESS_FINE_LOCATION",
-        "VIBRATE"
+        "android.permission.CAMERA",
+        "android.permission.READ_CONTACTS",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.VIBRATE",
+        "android.permission.WRITE_CONTACTS",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "plugins": [
@@ -48,8 +51,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "your-project-id"
+        "projectId": "45b2854b-f1a3-47a3-b59d-0bafad22c246"
       }
-    }
+    },
+    "owner": "suryansh879"
   }
 }
