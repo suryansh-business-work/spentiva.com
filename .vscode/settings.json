@@ -2,7 +2,15 @@
   "workbench.colorCustomizations": {
     "activityBar.background": "#153407",
     "titleBar.activeBackground": "#1D490A",
-    "titleBar.activeForeground": "#F3FDEE"
+    "titleBar.activeForeground": "#F3FDEE",
+    "titleBar.inactiveBackground": "#153407",
+    "titleBar.inactiveForeground": "#F3FDEE",
+    "statusBar.background": "#153407",
+    "statusBar.foreground": "#F3FDEE",
+    "statusBar.debuggingBackground": "#153407",
+    "statusBar.debuggingForeground": "#F3FDEE",
+    "statusBar.noFolderBackground": "#153407",
+    "statusBar.noFolderForeground": "#F3FDEE"
   },
   "terminal.integrated.defaultProfile.windows": "Git Bash",
   "editor.tabSize": 2,

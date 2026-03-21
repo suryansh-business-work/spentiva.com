@@ -22,6 +22,4 @@ export default {
     },
   },
   IMAGEKIT: config.IMAGEKIT,
-  AUTH_SERVICE_URL: config.AUTH_SERVICE_URL,
-  AUTH_SECRET: config.AUTH_SECRET,
 };

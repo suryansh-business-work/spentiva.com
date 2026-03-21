@@ -81,8 +81,6 @@ jobs:
               -e "IMAGEKIT_PUBLIC_KEY=${{ secrets.IMAGEKIT_PUBLIC_KEY }}" \
               -e "IMAGEKIT_PRIVATE_KEY=${{ secrets.IMAGEKIT_PRIVATE_KEY }}" \
               -e "IMAGEKIT_URL_ENDPOINT=${{ secrets.IMAGEKIT_URL_ENDPOINT }}" \
-              -e "AUTH_SERVICE_URL=${{ secrets.AUTH_SERVICE_URL }}" \
-              -e "AUTH_SECRET=${{ secrets.AUTH_SECRET }}" \
               -e "LOG_LEVEL=${{ secrets.LOG_LEVEL }}" \
               ${{ secrets.DOCKERHUB_USERNAME }}/spentiva-app-server:latest
 

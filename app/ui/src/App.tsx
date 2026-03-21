@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline, Box, CircularProgress } from '@mui/material';
 import Header from './components/Header/Header';
@@ -9,64 +9,21 @@ import UpcomingFeatures from './pages/UpcomingFeatures';
 import Integrations from './pages/Integrations';
 import Policy from './pages/Policy';
 import NotFound from './pages/NotFound';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+import ForgotPassword from './pages/auth/ForgotPassword';
 import { ThemeModeProvider, useThemeMode } from './contexts/ThemeContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { TokenExpiredProvider, useTokenExpired } from './contexts/TokenExpiredContext';
 import { requestNotificationPermission } from './services/notificationService';
 import { themeConfig, getDarkModeConfig } from './theme/palette';
-import { AUTH_CONFIG } from './config/auth-config';
 import { setTokenExpiredCallback } from './utils/axiosSetup';
 // Import axios setup to initialize interceptors
 import './utils/axiosSetup';
 
-const RedirectToAuth = () => {
-  useEffect(() => {
-    window.location.href = AUTH_CONFIG.authUrl;
-  }, []);
-  return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-      <CircularProgress />
-    </Box>
-  );
-};
-
-// Redirect to external profile page
-const RedirectToProfile = () => {
-  useEffect(() => {
-    window.location.href = AUTH_CONFIG.profileUrl;
-  }, []);
-  return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-      <CircularProgress />
-    </Box>
-  );
-};
-
-const RedirectToAdmin = () => {
-  const { user } = useAuth();
-
-  useEffect(() => {
-    // Check roleSlug from user context (backed by localStorage)
-    if (user?.roleSlug === 'admin') {
-      window.location.href = AUTH_CONFIG.authUrl + '/admin';
-    }
-  }, [user?.roleSlug]);
-
-  // If not admin, redirect to home
-  if (!user || user.roleSlug !== 'admin') {
-    return <Navigate to="/trackers" replace />;
-  }
-
-  return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-      <CircularProgress />
-    </Box>
-  );
-};
-
 const AppContent = () => {
   const { isDarkMode } = useThemeMode();
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading, refreshUser } = useAuth();
   const { showTokenExpiredModal } = useTokenExpired();
 
   const theme = useMemo(
@@ -78,10 +35,14 @@ const AppContent = () => {
     [isDarkMode]
   );
 
+  const handleAuthSuccess = useCallback(() => {
+    refreshUser().then(() => {
+      window.location.href = '/trackers';
+    });
+  }, [refreshUser]);
+
   useEffect(() => {
-    // Request notification permission
     requestNotificationPermission();
-    // Setup token expired callback for axios interceptor
     setTokenExpiredCallback(showTokenExpiredModal);
   }, [showTokenExpiredModal]);
 
@@ -113,47 +74,82 @@ const AppContent = () => {
             <Routes>
               <Route
                 path="/"
-                element={isAuthenticated ? <Navigate to="/trackers" replace /> : <RedirectToAuth />}
+                element={
+                  isAuthenticated ? (
+                    <Navigate to="/trackers" replace />
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
               />
-              <Route path="/login" element={<RedirectToAuth />} />
-              <Route path="/signup" element={<RedirectToAuth />} />
-              <Route path="/forgot-password" element={<RedirectToAuth />} />
-              <Route path="/reset-password" element={<RedirectToAuth />} />
+              <Route
+                path="/login"
+                element={
+                  isAuthenticated ? (
+                    <Navigate to="/trackers" replace />
+                  ) : (
+                    <Login onLoginSuccess={handleAuthSuccess} />
+                  )
+                }
+              />
+              <Route
+                path="/signup"
+                element={
+                  isAuthenticated ? (
+                    <Navigate to="/trackers" replace />
+                  ) : (
+                    <Register onRegisterSuccess={handleAuthSuccess} />
+                  )
+                }
+              />
+              <Route
+                path="/forgot-password"
+                element={
+                  isAuthenticated ? (
+                    <Navigate to="/trackers" replace />
+                  ) : (
+                    <ForgotPassword />
+                  )
+                }
+              />
 
               {/* Tracker routes with clean tab paths */}
               <Route
                 path="/trackers"
-                element={isAuthenticated ? <Trackers /> : <RedirectToAuth />}
+                element={isAuthenticated ? <Trackers /> : <Navigate to="/login" replace />}
               />
               <Route
                 path="/tracker/:trackerId"
-                element={isAuthenticated ? <Trackers /> : <RedirectToAuth />}
+                element={isAuthenticated ? <Trackers /> : <Navigate to="/login" replace />}
               />
               <Route
                 path="/tracker/:trackerId/:tab"
-                element={isAuthenticated ? <Trackers /> : <RedirectToAuth />}
+                element={isAuthenticated ? <Trackers /> : <Navigate to="/login" replace />}
               />
               <Route
                 path="/tracker/:trackerId/:tab/:subtab"
-                element={isAuthenticated ? <Trackers /> : <RedirectToAuth />}
+                element={isAuthenticated ? <Trackers /> : <Navigate to="/login" replace />}
               />
 
-              <Route path="/profile" element={<RedirectToProfile />} />
-              <Route path="/usage" element={isAuthenticated ? <Usage /> : <RedirectToAuth />} />
-              <Route path="/billing" element={isAuthenticated ? <Billing /> : <RedirectToAuth />} />
+              <Route
+                path="/usage"
+                element={isAuthenticated ? <Usage /> : <Navigate to="/login" replace />}
+              />
+              <Route
+                path="/billing"
+                element={isAuthenticated ? <Billing /> : <Navigate to="/login" replace />}
+              />
               <Route
                 path="/upcoming-features"
-                element={isAuthenticated ? <UpcomingFeatures /> : <RedirectToAuth />}
+                element={
+                  isAuthenticated ? <UpcomingFeatures /> : <Navigate to="/login" replace />
+                }
               />
               <Route
                 path="/integrations"
-                element={isAuthenticated ? <Integrations /> : <RedirectToAuth />}
+                element={isAuthenticated ? <Integrations /> : <Navigate to="/login" replace />}
               />
               <Route path="/policy" element={<Policy />} />
-              <Route
-                path="/admin/*"
-                element={isAuthenticated ? <RedirectToAdmin /> : <RedirectToAuth />}
-              />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Box>

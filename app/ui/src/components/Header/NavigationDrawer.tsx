@@ -20,7 +20,7 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { useAuth } from '../../contexts/AuthContext';
-import { AUTH_CONFIG, isAdmin } from '../../config/auth-config';
+import { isAdmin } from '../../config/auth-config';
 
 interface NavigationDrawerProps {
   open: boolean;
@@ -42,7 +42,7 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, onClose }) =>
       { text: 'Privacy & Policy', icon: <ShieldIcon />, path: '/policy' },
     ];
     // Show Admin Panel if user has admin role
-    if (isAdmin() || user?.roleSlug === 'admin') {
+    if (isAdmin(user?.role)) {
       items.unshift({
         text: 'Admin Panel',
         icon: <AdminPanelSettingsIcon />,
@@ -50,7 +50,7 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, onClose }) =>
       });
     }
     return items;
-  }, [user?.roleSlug]);
+  }, [user?.role]);
 
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -58,8 +58,9 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, onClose }) =>
   };
 
   const handleLogout = () => {
-    // Logout function now handles both clearing state and redirecting to auth.spentiva.com/logout
     logout();
+    // Navigate to login after logout
+    window.location.href = '/login';
   };
 
   return (
@@ -78,8 +79,8 @@ const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, onClose }) =>
         {/* Profile Section */}
         <Box
           onClick={() => {
-            // Redirect to external profile
-            window.location.href = AUTH_CONFIG.profileUrl;
+            navigate('/profile');
+            onClose();
           }}
           sx={{
             p: 2,

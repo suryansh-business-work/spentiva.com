@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "Spentiva",
+    "slug": "spentiva",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0D9488"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.spentiva.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Spentiva needs camera access to capture receipts.",
+        "NSPhotoLibraryUsageDescription": "Spentiva needs photo library access to attach receipt images.",
+        "NSContactsUsageDescription": "Spentiva needs contacts access to share trackers.",
+        "NSLocationWhenInUseUsageDescription": "Spentiva uses location to auto-tag expenses."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0D9488"
+      },
+      "package": "com.spentiva.app",
+      "permissions": [
+        "CAMERA",
+        "READ_CONTACTS",
+        "ACCESS_FINE_LOCATION",
+        "VIBRATE"
+      ]
+    },
+    "plugins": [
+      "expo-font",
+      "expo-notifications",
+      "expo-contacts",
+      "expo-location",
+      "expo-image-picker",
+      "@react-native-community/datetimepicker",
+      "expo-video"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id"
+      }
+    }
+  }
+}

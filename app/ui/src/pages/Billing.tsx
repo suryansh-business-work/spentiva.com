@@ -72,7 +72,7 @@ const Billing: React.FC = () => {
       setLoading(true);
 
       // Use user from AuthContext — auth server doesn't return accountType, derive from role
-      const accountType: PlanType = user?.roleSlug === 'admin' ? 'businesspro' : 'free';
+      const accountType: PlanType = user?.role === 'admin' ? 'businesspro' : 'free';
       setCurrentPlan(accountType);
 
       // Fetch trackers

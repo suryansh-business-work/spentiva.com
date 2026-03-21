@@ -14,10 +14,7 @@ export const authenticateMiddleware = (req: any, res: any, next: any) => {
     return errorResponse(res, null, 'Access token required');
   }
 
-  // Hardcoded secret as per user request
-  const JWT_SECRET = 'eee13e58-8471-4356-9eef-6e7fba646fd2';
-
-  jwt.verify(token, JWT_SECRET, (err: any, decoded: any) => {
+  jwt.verify(token, config.JWT_SECRET, (err: any, decoded: any) => {
     if (err) {
       // Check if token is expired
       if (err.name === 'TokenExpiredError') {

@@ -18,7 +18,7 @@ import { requestLogger } from './middleware/request-logger';
 import { apiLimiter, authLimiter, otpLimiter, aiLimiter } from './middleware/rate-limit';
 
 // Modular API Routes
-// Auth is now handled by external server (auth.spentiva.com)
+import authRoutes from './apis/auth/auth.routes';
 import trackerRoutes from './apis/tracker/tracker.routes';
 import categoryRoutes from './apis/category/category.routes';
 import expenseRoutes from './apis/expense/expense.routes';
@@ -28,7 +28,6 @@ import imagekitUploadRoutes from './apis/file-upload/imagekit-file-upload/imagek
 import uploadRoutes from './apis/file-upload/local-upload/upload.routes';
 import supportRoutes from './apis/support/support.routes';
 import analyticsRoutes from './apis/analytics/analytics.routes';
-// Admin module removed - user management is now handled by external auth server
 import healthRoutes from './apis/health/health.routes';
 import paymentRoutes from './apis/payment/payment.routes';
 import refundRoutes from './apis/refund/refund.routes';
@@ -123,8 +122,8 @@ app.get('/', (req, res) => {
   );
 });
 
-// Auth is now handled by external server (auth.spentiva.com)
-// All authentication routes have been removed
+// Auth Routes
+app.use('/v1/api/auth', authRoutes);
 
 // AI Endpoints (with moderate rate limiting)
 app.use('/v1/api/expense/parse', aiLimiter);
@@ -143,8 +142,7 @@ app.use('/v1/api', uploadRoutes);
 // Analytics
 app.use('/v1/api/analytics', analyticsRoutes);
 
-// Admin Panel - Removed (user management is now handled by external auth server)
-// app.use('/v1/api/admin', adminRoutes);
+// Admin Panel - TODO: Add admin routes when needed
 
 // Support Tickets
 app.use('/v1/api/support', supportRoutes);

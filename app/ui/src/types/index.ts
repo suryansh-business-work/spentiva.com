@@ -44,15 +44,13 @@ export interface ParsedExpense {
 }
 export interface User {
   id: string;
+  _id?: string;
   email: string;
   firstName: string;
   lastName: string;
   profilePicture?: string;
   isVerified: boolean;
-  mfaEnabled: boolean;
-  provider: string;
-  role?: string;
-  roleSlug?: string; // Role slug from external auth (e.g., 'admin', 'user')
+  role: string;
   createdAt: string;
   lastLoginAt?: string;
   lastLoginIp?: string;

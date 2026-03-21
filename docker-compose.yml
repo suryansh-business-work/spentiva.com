@@ -6,7 +6,7 @@
 #   - Website:         5000 -> spentiva.com
 #   - App UI:          5001 -> app.spentiva.com
 #   - App Server:      5002 -> server.spentiva.com
-#   - Auth (shared):   4001 -> auth.spentiva.com (uses exyconn-auth)
+#   - Auth:            Built-in (self-hosted JWT auth)
 # =============================================================================
 
 services:
@@ -84,9 +84,7 @@ services:
       - IMAGEKIT_PUBLIC_KEY=${IMAGEKIT_PUBLIC_KEY}
       - IMAGEKIT_PRIVATE_KEY=${IMAGEKIT_PRIVATE_KEY}
       - IMAGEKIT_URL_ENDPOINT=${IMAGEKIT_URL_ENDPOINT:-https://ik.imagekit.io/esdata1}
-      # Auth
-      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL:-https://auth.exyconn.com}
-      - AUTH_SECRET=${AUTH_SECRET}
+      # Logging
     networks:
       - spentiva-network
     logging:

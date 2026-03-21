@@ -60,10 +60,6 @@ const config = {
     PRIVATE_KEY: requireEnv('IMAGEKIT_PRIVATE_KEY', ''),
     URL_ENDPOINT: optionalEnv('IMAGEKIT_URL_ENDPOINT', 'https://ik.imagekit.io/esdata1'),
   },
-
-  /** External Auth Service */
-  AUTH_SERVICE_URL: optionalEnv('AUTH_SERVICE_URL', 'https://auth.exyconn.com'),
-  AUTH_SECRET: requireEnv('AUTH_SECRET', 'dev-auth-secret'),
 } as const;
 
 export default config;

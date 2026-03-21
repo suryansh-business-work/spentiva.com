@@ -1,5 +1,3 @@
-import { getAuthEndpoint } from './auth-config';
-
 export const getApiUrl = () => {
   if (import.meta.env.MODE === 'development') {
     return 'http://localhost:8002/v1/api';
@@ -10,9 +8,12 @@ export const getApiUrl = () => {
 // All endpoint URLs organized by domain
 export const endpoints = {
   auth: {
-    // External auth server endpoints (from auth-config)
-    me: getAuthEndpoint('me'),
-    role: getAuthEndpoint('role'),
+    login: `${getApiUrl()}/auth/login`,
+    register: `${getApiUrl()}/auth/register`,
+    me: `${getApiUrl()}/auth/me`,
+    profile: `${getApiUrl()}/auth/profile`,
+    forgotPassword: `${getApiUrl()}/auth/forgot-password`,
+    resetPassword: `${getApiUrl()}/auth/reset-password`,
   },
   trackers: {
     getAll: `${getApiUrl()}/tracker/all`,
