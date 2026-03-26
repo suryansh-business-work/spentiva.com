@@ -3,7 +3,6 @@ import { render } from '@testing-library/react-native';
 import { PaperProvider } from 'react-native-paper';
 import { lightTheme } from '@/theme';
 import { FormInput } from '@/components/FormInput';
-import { Text } from 'react-native';
 
 // Mock TextInput to avoid Animated renderer version mismatch
 jest.mock('react-native-paper', () => {

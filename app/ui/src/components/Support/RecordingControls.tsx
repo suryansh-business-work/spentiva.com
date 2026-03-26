@@ -4,6 +4,7 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import { compressImage, compressBlob } from '../../utils/imageCompressor';
 
 interface RecordingControlsProps {
   onAddAttachment: (file: File, type: 'image' | 'video' | 'screenshot', preview?: string) => void;
@@ -32,18 +33,19 @@ const RecordingControls: React.FC<RecordingControlsProps> = ({
     return typeMap[type] < maxPerType;
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     const remaining = maxPerType - counts.images;
-    files.slice(0, remaining).forEach(file => {
+    for (const file of files.slice(0, remaining)) {
       if (file.type.startsWith('image/')) {
+        const compressed = await compressImage(file);
         const reader = new FileReader();
         reader.onload = () => {
-          onAddAttachment(file, 'image', reader.result as string);
+          onAddAttachment(compressed, 'image', reader.result as string);
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(compressed);
       }
-    });
+    }
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -69,10 +71,11 @@ const RecordingControls: React.FC<RecordingControlsProps> = ({
       canvas.getContext('2d')?.drawImage(video, 0, 0);
       stream.getTracks().forEach(track => track.stop());
 
-      canvas.toBlob(blob => {
+      canvas.toBlob(async blob => {
         if (blob) {
-          const file = new File([blob], `screenshot-${Date.now()}.png`, { type: 'image/png' });
-          onAddAttachment(file, 'screenshot', canvas.toDataURL());
+          const file = await compressBlob(blob, `screenshot-${Date.now()}.png`);
+          const previewUrl = URL.createObjectURL(file);
+          onAddAttachment(file, 'screenshot', previewUrl);
         }
       });
     } catch (err) {

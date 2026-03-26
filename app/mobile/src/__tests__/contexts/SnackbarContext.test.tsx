@@ -3,7 +3,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { SnackbarProvider, useSnackbar } from '@/contexts/SnackbarContext';
 import { PaperProvider } from 'react-native-paper';
 import { lightTheme } from '@/theme';
-import { Text, Pressable, View } from 'react-native';
+import { Text, Pressable } from 'react-native';
 
 // Mock Snackbar to avoid Animated renderer version mismatch
 jest.mock('react-native-paper', () => {

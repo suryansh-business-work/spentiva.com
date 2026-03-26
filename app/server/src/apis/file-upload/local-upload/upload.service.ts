@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { FileUploadModel, IFileUpload } from './upload.models';
+import { isImageFile, processImageBuffer } from '../../../utils/image-processor';
 
 /**
  * Upload Service
@@ -48,8 +49,17 @@ class UploadService {
       const filePath = path.join(userDir, savedName);
       const fileUrl = `${baseUrl}/uploads/${userId}/${savedName}`;
 
+      // Process image if needed (resize large images)
+      let fileBuffer = file.buffer;
+      let fileMimeType = file.mimetype;
+      if (isImageFile(file.mimetype)) {
+        const processed = await processImageBuffer(file.buffer, file.mimetype);
+        fileBuffer = processed.buffer;
+        fileMimeType = processed.mimetype;
+      }
+
       // Save file to disk
-      fs.writeFileSync(filePath, file.buffer);
+      fs.writeFileSync(filePath, fileBuffer);
 
       // Save metadata to database
       const fileRecord = new FileUploadModel({
@@ -58,8 +68,8 @@ class UploadService {
         savedName,
         filePath,
         fileUrl,
-        size: file.size,
-        mimeType: file.mimetype,
+        size: fileBuffer.length,
+        mimeType: fileMimeType,
       });
 
       await fileRecord.save();

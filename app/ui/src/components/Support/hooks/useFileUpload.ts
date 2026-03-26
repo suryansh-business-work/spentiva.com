@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FileUploadResponse, UploadedFileData } from '../../../types/fileUpload.types';
 import { endpoints } from '../../../config/api';
 import axios from 'axios';
+import { compressImage } from '../../../utils/imageCompressor';
 
 interface UseFileUploadResult {
   uploadFile: (
@@ -24,8 +25,9 @@ export const useFileUpload = (): UseFileUploadResult => {
       setUploading(true);
       setError(null);
 
+      const processedFile = file.type.startsWith('image/') ? await compressImage(file) : file;
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', processedFile);
 
       const token = localStorage.getItem('authToken');
 

@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { errorResponse, successResponseArr } from '../../../utils/response-object';
 import imagekitService from './imagekit.service';
 import { convertWebMToMP4, isWebMFile } from '../../../utils/video-converter';
+import { isImageFile, processImageBuffer } from '../../../utils/image-processor';
 
 /**
  * ImageKit Upload Controller
@@ -68,9 +69,25 @@ const imageKitUpload = async (req: any, res: Response) => {
       })
     );
 
+    // Resize images that exceed max dimensions
+    const finalFiles = await Promise.all(
+      processedFiles.map(async (file: any) => {
+        if (isImageFile(file.mimetype)) {
+          const processed = await processImageBuffer(file.buffer, file.mimetype);
+          return {
+            ...file,
+            buffer: processed.buffer,
+            mimetype: processed.mimetype,
+            size: processed.buffer.length,
+          };
+        }
+        return file;
+      })
+    );
+
     // Handle single file upload
-    if (processedFiles.length === 1) {
-      const file = processedFiles[0];
+    if (finalFiles.length === 1) {
+      const file = finalFiles[0];
       const fileName = file.originalname;
       const fileBuffer = file.buffer;
 
@@ -105,8 +122,8 @@ const imageKitUpload = async (req: any, res: Response) => {
     }
 
     // Handle multiple file uploads
-    console.log(`Uploading ${processedFiles.length} files`);
-    const fileArray = processedFiles.map((file: any) => ({
+    console.log(`Uploading ${finalFiles.length} files`);
+    const fileArray = finalFiles.map((file: any) => ({
       name: file.originalname,
       data: file.buffer,
     }));

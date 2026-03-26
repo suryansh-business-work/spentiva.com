@@ -12,6 +12,7 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import { endpoints } from '../../../../config/api';
 import { postRequest, putRequest } from '../../../../utils/http';
 import { parseResponseData } from '../../../../utils/response-parser';
+import { compressImage } from '../../../../utils/imageCompressor';
 
 interface BotAvatarSectionProps {
   trackerId: string;
@@ -35,8 +36,9 @@ const BotAvatarSection: React.FC<BotAvatarSectionProps> = ({
 
     setUploading(true);
     try {
+      const compressed = await compressImage(file);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', compressed);
       formData.append('folder', `trackers/${trackerId}`);
       const res = await postRequest(endpoints.imagekit.upload, formData);
       const data = parseResponseData<any[]>(res, []);

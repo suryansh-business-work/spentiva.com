@@ -1,6 +1,9 @@
 import { useState, useCallback } from 'react';
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { logger } from '@/utils/logger';
+
+const MAX_DIMENSION = 1920;
 
 interface ImageAsset {
   uri: string;
@@ -9,6 +12,25 @@ interface ImageAsset {
   type?: string;
   fileName?: string;
 }
+
+const resizeIfNeeded = async (uri: string, width: number, height: number) => {
+  if (width <= MAX_DIMENSION && height <= MAX_DIMENSION) {
+    return { uri, width, height };
+  }
+
+  const resize =
+    width > height
+      ? { width: MAX_DIMENSION }
+      : { height: MAX_DIMENSION };
+
+  const result = await ImageManipulator.manipulateAsync(
+    uri,
+    [{ resize }],
+    { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+  );
+
+  return { uri: result.uri, width: result.width, height: result.height };
+};
 
 export const useImagePicker = () => {
   const [image, setImage] = useState<ImageAsset | null>(null);
@@ -30,12 +52,14 @@ export const useImagePicker = () => {
       });
 
       if (!result.canceled && result.assets[0]) {
+        const raw = result.assets[0];
+        const resized = await resizeIfNeeded(raw.uri, raw.width, raw.height);
         const asset: ImageAsset = {
-          uri: result.assets[0].uri,
-          width: result.assets[0].width,
-          height: result.assets[0].height,
-          type: result.assets[0].mimeType,
-          fileName: result.assets[0].fileName ?? undefined,
+          uri: resized.uri,
+          width: resized.width,
+          height: resized.height,
+          type: raw.mimeType,
+          fileName: raw.fileName ?? undefined,
         };
         setImage(asset);
         return asset;
@@ -64,12 +88,14 @@ export const useImagePicker = () => {
       });
 
       if (!result.canceled && result.assets[0]) {
+        const raw = result.assets[0];
+        const resized = await resizeIfNeeded(raw.uri, raw.width, raw.height);
         const asset: ImageAsset = {
-          uri: result.assets[0].uri,
-          width: result.assets[0].width,
-          height: result.assets[0].height,
-          type: result.assets[0].mimeType,
-          fileName: result.assets[0].fileName ?? undefined,
+          uri: resized.uri,
+          width: resized.width,
+          height: resized.height,
+          type: raw.mimeType,
+          fileName: raw.fileName ?? undefined,
         };
         setImage(asset);
         return asset;
