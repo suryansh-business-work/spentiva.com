@@ -21,20 +21,15 @@ const Logo: React.FC<LogoProps> = ({
     const iconSize = width || 36;
     return (
       <Box
+        component="img"
+        src="/spentiva-logo.png"
+        alt="Spentiva"
         sx={{
           width: iconSize,
           height: iconSize,
-          borderRadius: 2,
-          background: '#14B8A6',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          objectFit: 'contain',
         }}
-      >
-        <Typography sx={{ color: 'white', fontWeight: 700, fontSize: `${iconSize * 0.6}px` }}>
-          S
-        </Typography>
-      </Box>
+      />
     );
   }
 
@@ -51,19 +46,16 @@ const Logo: React.FC<LogoProps> = ({
         }}
       >
         <Box
+          component="img"
+          src="/spentiva-logo.png"
+          alt="Spentiva"
           sx={{
             width: 36,
             height: 36,
-            borderRadius: 2,
-            background: '#14B8A6',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            objectFit: 'contain',
             flexShrink: 0,
           }}
-        >
-          <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '1.3rem' }}>S</Typography>
-        </Box>
+        />
         <Box>
           <Typography
             sx={{
@@ -102,18 +94,15 @@ const Logo: React.FC<LogoProps> = ({
     <Box sx={{ mb: showSubtitle ? 5 : 3 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <Box
+          component="img"
+          src="/spentiva-logo.png"
+          alt="Spentiva"
           sx={{
             width: 36,
             height: 36,
-            borderRadius: 2,
-            background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            objectFit: 'contain',
           }}
-        >
-          <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '1.3rem' }}>S</Typography>
-        </Box>
+        />
         <Box>
           <Typography
             sx={{

@@ -14,7 +14,7 @@ const Logo: React.FC<LogoProps> = ({ width = 120, height = 40 }) => {
   return (
     <Box
       component="img"
-      src="https://spentiva.com/logo.svg"
+      src="/spentiva-logo.png"
       alt="Spentiva"
       sx={{
         width: width,

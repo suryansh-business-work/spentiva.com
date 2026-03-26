@@ -14,6 +14,7 @@ export const noContentResponse = (res: any, data: any, message = 'No data found'
     data: data,
     status: statusMessage.NO_CONTENT,
     statusCode: statusCode.NO_CONTENT,
+    timestamp: new Date().toISOString(),
   });
 };
 
@@ -30,6 +31,7 @@ export const successResponse = (res: any, data: any, message = 'Operation Succes
     data: data,
     status: statusMessage.SUCCESS,
     statusCode: statusCode.SUCCESS,
+    timestamp: new Date().toISOString(),
   });
 };
 
@@ -54,6 +56,7 @@ export const successResponseArr = (
     paginationData: paginationData,
     status: statusMessage.SUCCESS,
     statusCode: statusCode.SUCCESS,
+    timestamp: new Date().toISOString(),
   });
 };
 
@@ -72,6 +75,7 @@ export const errorResponse = (res: any, error: any, message = 'Something went wr
     data: error,
     status: statusMessage.ERROR,
     statusCode: statusCode.ERROR,
+    timestamp: new Date().toISOString(),
   };
 
   return res.status(statusCode.ERROR).json(response);
@@ -91,6 +95,7 @@ export const badRequestResponse = (res: any, data: any, message = 'Bad request')
     data: data,
     status: statusMessage.BAD_REQUEST,
     statusCode: statusCode.BAD_REQUEST,
+    timestamp: new Date().toISOString(),
   });
 };
 

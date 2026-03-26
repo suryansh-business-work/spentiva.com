@@ -18,8 +18,11 @@
       padding="28px 24px 20px"
       border-bottom="2px solid #10b981"
     >
+      <mj-column width="50px">
+        <mj-image src="https://spentiva.com/spentiva-logo.png" alt="Spentiva" width="40px" height="40px" padding="0" />
+      </mj-column>
       <mj-column>
-        <mj-text font-size="22px" font-weight="700" color="#0f172a" letter-spacing="-0.3px">
+        <mj-text font-size="22px" font-weight="700" color="#0f172a" letter-spacing="-0.3px" padding-top="6px">
           Spentiva
         </mj-text>
       </mj-column>

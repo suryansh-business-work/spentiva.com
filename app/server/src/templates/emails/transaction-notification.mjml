@@ -8,11 +8,18 @@
   <mj-body background-color="#f8fafc">
     <!-- Header -->
     <mj-section padding="24px 24px 16px" background-color="#ffffff">
+      <mj-column width="50px">
+        <mj-image src="https://spentiva.com/spentiva-logo.png" alt="Spentiva" width="36px" height="36px" padding="0" />
+      </mj-column>
       <mj-column>
-        <mj-text font-size="20px" font-weight="700" color="#0f172a" align="center">
+        <mj-text font-size="20px" font-weight="700" color="#0f172a" padding-top="4px">
           Spentiva
         </mj-text>
-        <mj-divider border-color="#10b981" border-width="2px" padding="8px 0 0" />
+      </mj-column>
+    </mj-section>
+    <mj-section padding="0 24px">
+      <mj-column>
+        <mj-divider border-color="#10b981" border-width="2px" padding="0" />
       </mj-column>
     </mj-section>
 
