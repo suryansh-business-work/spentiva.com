@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
+import { Text, TextInput, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -31,6 +31,7 @@ export const LoginScreen: React.FC = () => {
   const navigation = useNavigation<LoginNav>();
   const login = useAuthStore((s) => s.login);
   const { showSnackbar } = useSnackbar();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = useCallback(
     async (values: LoginValues) => {
@@ -90,7 +91,8 @@ export const LoginScreen: React.FC = () => {
                   onBlur={handleBlur('password')}
                   error={errors.password}
                   touched={touched.password}
-                  secureTextEntry
+                  secureTextEntry={!showPassword}
+                  right={<TextInput.Icon icon={showPassword ? 'eye-off' : 'eye'} onPress={() => setShowPassword((p) => !p)} />}
                 />
                 <AppButton
                   title="Sign In"

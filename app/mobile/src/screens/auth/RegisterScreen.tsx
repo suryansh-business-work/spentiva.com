@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
+import { Text, TextInput, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -38,6 +38,8 @@ export const RegisterScreen: React.FC = () => {
   const navigation = useNavigation<RegisterNav>();
   const login = useAuthStore((s) => s.login);
   const { showSnackbar } = useSnackbar();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleRegister = useCallback(
     async (values: RegisterValues) => {
@@ -119,7 +121,8 @@ export const RegisterScreen: React.FC = () => {
                     onBlur={handleBlur('password')}
                     error={errors.password}
                     touched={touched.password}
-                    secureTextEntry
+                    secureTextEntry={!showPassword}
+                    right={<TextInput.Icon icon={showPassword ? 'eye-off' : 'eye'} onPress={() => setShowPassword((p) => !p)} />}
                   />
                   <FormInput
                     label="Confirm Password"
@@ -128,7 +131,8 @@ export const RegisterScreen: React.FC = () => {
                     onBlur={handleBlur('confirmPassword')}
                     error={errors.confirmPassword}
                     touched={touched.confirmPassword}
-                    secureTextEntry
+                    secureTextEntry={!showConfirmPassword}
+                    right={<TextInput.Icon icon={showConfirmPassword ? 'eye-off' : 'eye'} onPress={() => setShowConfirmPassword((p) => !p)} />}
                   />
                   <AppButton
                     title="Create Account"
