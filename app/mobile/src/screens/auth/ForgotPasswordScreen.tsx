@@ -28,7 +28,7 @@ export const ForgotPasswordScreen: React.FC = () => {
     async (values: { email: string }) => {
       await http.post(config.AUTH.FORGOT_PASSWORD, { email: values.email });
       showSnackbar('If an account exists, a reset link has been sent.', 'success');
-      navigation.navigate('Login');
+      navigation.navigate('ResetPassword');
     },
     [showSnackbar, navigation]
   );

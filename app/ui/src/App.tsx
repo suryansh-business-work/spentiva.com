@@ -12,6 +12,7 @@ import NotFound from './pages/NotFound';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
 import { ThemeModeProvider, useThemeMode } from './contexts/ThemeContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { TokenExpiredProvider, useTokenExpired } from './contexts/TokenExpiredContext';
@@ -109,6 +110,16 @@ const AppContent = () => {
                     <Navigate to="/trackers" replace />
                   ) : (
                     <ForgotPassword />
+                  )
+                }
+              />
+              <Route
+                path="/reset-password"
+                element={
+                  isAuthenticated ? (
+                    <Navigate to="/trackers" replace />
+                  ) : (
+                    <ResetPassword />
                   )
                 }
               />

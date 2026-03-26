@@ -170,8 +170,7 @@ export const compileMjml = (templateName: string, variables: Record<string, any>
  * Send welcome email to new users
  */
 export const sendWelcomeEmail = async (to: string, name: string): Promise<void> => {
-  const templatePath = path.join(__dirname, '../templates/emails/signup.mjml');
-  const html = compileMjmlTemplate(templatePath, { name });
+  const html = compileMjml('signup', { name, appUrl: config.APP_URL });
 
   await sendEmail({
     to,
@@ -181,35 +180,15 @@ export const sendWelcomeEmail = async (to: string, name: string): Promise<void> 
 };
 
 /**
- * Send OTP for email verification or password reset
- */
-export const sendOtpEmail = async (
-  to: string,
-  name: string,
-  otp: string,
-  type: 'verification' | 'reset'
-): Promise<void> => {
-  const subject =
-    type === 'verification' ? 'Verify Your Email - Spentiva' : 'Reset Your Password - Spentiva';
-
-  const templateFile = type === 'verification' ? 'signup-otp.mjml' : 'forgot-password.mjml';
-  const templatePath = path.join(__dirname, `../templates/emails/${templateFile}`);
-  const html = compileMjmlTemplate(templatePath, { name, otp });
-
-  await sendEmail({ to, subject, html });
-};
-
-/**
- * Send password reset link email
+ * Send password reset email with token
  */
 export const sendPasswordResetEmail = async (
   to: string,
   name: string,
   resetToken: string
 ): Promise<void> => {
-  const templatePath = path.join(__dirname, '../templates/emails/forgot-password.mjml');
-  const resetUrl = `https://app.spentiva.com/reset-password?token=${resetToken}&email=${encodeURIComponent(to)}`;
-  const html = compileMjmlTemplate(templatePath, { name, resetUrl, otp: resetToken });
+  const resetUrl = `${config.APP_URL}/reset-password?token=${resetToken}`;
+  const html = compileMjml('forgot-password', { name, otp: resetToken, resetUrl });
 
   await sendEmail({
     to,
@@ -219,59 +198,46 @@ export const sendPasswordResetEmail = async (
 };
 
 /**
- * Send login notification email
+ * Send recent login notification email
  */
-export const sendLoginNotificationEmail = async (
+export const sendRecentLoginEmail = async (
   to: string,
   name: string,
-  loginInfo: {
-    timestamp: Date;
-    device?: string;
-    location?: string;
-  }
+  loginTime: string,
+  ipAddress: string
 ): Promise<void> => {
-  const templatePath = path.join(__dirname, '../templates/emails/login.mjml');
-  const html = compileMjmlTemplate(templatePath, {
+  const html = compileMjml('recent-login', {
     name,
-    timestamp: loginInfo.timestamp.toLocaleString(),
-    device: loginInfo.device || 'Unknown Device',
+    loginTime,
+    ipAddress,
+    appUrl: config.APP_URL,
   });
 
   await sendEmail({
     to,
-    subject: 'New Login to Your Spentiva Account',
+    subject: 'New Login to Your Account - Spentiva',
     html,
   });
 };
 
 /**
- * Send password reset success confirmation
+ * Send profile update notification email
  */
-export const sendPasswordResetSuccessEmail = async (to: string, name: string): Promise<void> => {
-  const templatePath = path.join(__dirname, '../templates/emails/reset-password-success.mjml');
-  const html = compileMjmlTemplate(templatePath, {
+export const sendProfileUpdateEmail = async (
+  to: string,
+  name: string,
+  changes: string
+): Promise<void> => {
+  const html = compileMjml('profile-update', {
     name,
-    email: to,
-    timestamp: new Date().toLocaleString(),
+    changes,
+    updatedAt: new Date().toLocaleString('en-IN', { dateStyle: 'long', timeStyle: 'short' }),
+    appUrl: config.APP_URL,
   });
 
   await sendEmail({
     to,
-    subject: 'Password Reset Successful - Spentiva',
-    html,
-  });
-};
-
-/**
- * Send signup OTP email
- */
-export const sendSignupOtpEmail = async (to: string, otp: string): Promise<void> => {
-  const templatePath = path.join(__dirname, '../templates/emails/signup-otp.mjml');
-  const html = compileMjmlTemplate(templatePath, { otp });
-
-  await sendEmail({
-    to,
-    subject: 'Verify Your Email - Spentiva',
+    subject: 'Profile Updated - Spentiva',
     html,
   });
 };
@@ -401,11 +367,9 @@ export const sendTransactionNotificationEmail = async (
 export default {
   sendEmail,
   sendWelcomeEmail,
-  sendOtpEmail,
-  sendSignupOtpEmail,
   sendPasswordResetEmail,
-  sendLoginNotificationEmail,
-  sendPasswordResetSuccessEmail,
+  sendRecentLoginEmail,
+  sendProfileUpdateEmail,
   sendSupportTicketUserEmail,
   sendSupportTicketAgentEmail,
   sendTransactionNotificationEmail,

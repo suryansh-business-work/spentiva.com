@@ -1,28 +1,49 @@
 import React from 'react';
 import { Box, Typography, Paper, Link as MuiLink } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import ForgotPasswordForm from './ForgotPasswordForm';
+import ResetPasswordForm from './ResetPasswordForm';
 import { postRequest } from '../../../utils/http';
 import { endpoints } from '../../../config/api';
 
-const schema = Yup.object().shape({
-  email: Yup.string().email('Invalid email').required('Email is required'),
+const resetPasswordSchema = Yup.object().shape({
+  token: Yup.string().required('Reset token is required'),
+  password: Yup.string()
+    .min(8, 'Min 8 characters')
+    .matches(/[A-Z]/, 'Must contain uppercase letter')
+    .matches(/[a-z]/, 'Must contain lowercase letter')
+    .matches(/[0-9]/, 'Must contain a number')
+    .required('Password is required'),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password')], 'Passwords must match')
+    .required('Confirm password is required'),
 });
 
-const ForgotPassword: React.FC = () => {
+interface ResetPasswordValues {
+  token: string;
+  password: string;
+  confirmPassword: string;
+}
+
+const ResetPassword: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [error, setError] = React.useState('');
   const [success, setSuccess] = React.useState(false);
 
-  const handleSubmit = async (values: { email: string }) => {
+  const tokenFromUrl = searchParams.get('token') || '';
+
+  const handleSubmit = async (values: ResetPasswordValues) => {
     setError('');
     try {
-      await postRequest(endpoints.auth.forgotPassword, values);
+      await postRequest(endpoints.auth.resetPassword, {
+        token: values.token,
+        password: values.password,
+      });
       setSuccess(true);
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Something went wrong');
+      setError(err?.response?.data?.message || 'Failed to reset password');
     }
   };
 
@@ -52,7 +73,7 @@ const ForgotPassword: React.FC = () => {
           Reset Password
         </Typography>
         <Typography variant="body2" color="text.secondary" mb={3}>
-          Enter your email to receive a reset link
+          Enter your reset token and new password
         </Typography>
 
         {error && (
@@ -64,28 +85,32 @@ const ForgotPassword: React.FC = () => {
         {success ? (
           <Box>
             <Typography variant="body2" color="success.main" mb={2}>
-              If an account with that email exists, a password reset link has been sent.
+              Your password has been reset successfully.
             </Typography>
             <MuiLink
               component="button"
               type="button"
               variant="body2"
-              onClick={() => navigate('/reset-password')}
+              onClick={() => navigate('/login')}
               sx={{ cursor: 'pointer' }}
             >
-              Enter Reset Token
+              Go to Sign In
             </MuiLink>
           </Box>
         ) : (
           <>
             <Formik
-              initialValues={{ email: '' }}
-              validationSchema={schema}
+              initialValues={{
+                token: tokenFromUrl,
+                password: '',
+                confirmPassword: '',
+              }}
+              validationSchema={resetPasswordSchema}
               onSubmit={handleSubmit}
             >
               {(formikProps) => (
                 <Form>
-                  <ForgotPasswordForm {...formikProps} />
+                  <ResetPasswordForm {...formikProps} />
                 </Form>
               )}
             </Formik>
@@ -108,4 +133,4 @@ const ForgotPassword: React.FC = () => {
   );
 };
 
-export default ForgotPassword;
+export default ResetPassword;

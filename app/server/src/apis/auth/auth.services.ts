@@ -5,6 +5,12 @@ import mongoose from 'mongoose';
 import User, { IUser } from './auth.models';
 import config from '../../config/config';
 import { logger } from '../../utils/logger';
+import {
+  sendWelcomeEmail,
+  sendPasswordResetEmail,
+  sendRecentLoginEmail,
+  sendProfileUpdateEmail,
+} from '../../services/emailService';
 
 const SALT_ROUNDS = 12;
 
@@ -50,6 +56,11 @@ export class AuthService {
 
     logger.info('User registered', { userId: user._id, email: user.email });
 
+    // Send welcome email (non-blocking)
+    sendWelcomeEmail(user.email, user.firstName).catch((err) => {
+      logger.error('Failed to send welcome email', { error: err.message, email: user.email });
+    });
+
     return { user: userObj as IUser, token };
   }
 
@@ -83,6 +94,12 @@ export class AuthService {
 
     logger.info('User logged in', { userId: user._id, email: user.email });
 
+    // Send recent login notification email (non-blocking)
+    const loginTime = new Date().toLocaleString('en-IN', { dateStyle: 'long', timeStyle: 'short' });
+    sendRecentLoginEmail(user.email, user.firstName, loginTime, ip || 'Unknown').catch((err) => {
+      logger.error('Failed to send login notification email', { error: err.message, email: user.email });
+    });
+
     return { user: userObj as IUser, token };
   }
 
@@ -94,7 +111,21 @@ export class AuthService {
     userId: string,
     data: { firstName?: string; lastName?: string; profilePicture?: string }
   ): Promise<IUser | null> {
-    return User.findByIdAndUpdate(userId, { $set: data }, { new: true });
+    const user = await User.findByIdAndUpdate(userId, { $set: data }, { new: true });
+
+    // Send profile update notification (non-blocking)
+    if (user) {
+      const changesList = Object.keys(data)
+        .filter((key) => data[key as keyof typeof data] !== undefined)
+        .map((key) => key.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase()))
+        .join(', ');
+
+      sendProfileUpdateEmail(user.email, user.firstName, changesList).catch((err) => {
+        logger.error('Failed to send profile update email', { error: err.message });
+      });
+    }
+
+    return user;
   }
 
   static async generateResetToken(email: string): Promise<string | null> {
@@ -113,6 +144,11 @@ export class AuthService {
     });
 
     logger.info('Password reset token generated', { userId: user._id });
+
+    // Send password reset email (non-blocking)
+    sendPasswordResetEmail(user.email, user.firstName, resetToken).catch((err) => {
+      logger.error('Failed to send password reset email', { error: err.message, email: user.email });
+    });
 
     return resetToken;
   }

@@ -2,8 +2,9 @@ import cron from 'node-cron';
 import ReportScheduleService from '../apis/report-schedule/report-schedule.services';
 import { AnalyticsService } from '../apis/analytics/analytics.services';
 import { DateFilter } from '../apis/analytics/analytics.validators';
-import { sendEmail } from './emailService';
+import { sendEmail, compileMjml } from './emailService';
 import { logger } from '../utils/logger';
+import config from '../config/config';
 
 /**
  * Report Cron Runner
@@ -55,48 +56,41 @@ const buildReportHtml = (
     )
     .join('');
 
-  return `
-    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;">
-      <h2 style="color:#1976d2;margin-bottom:4px;">📊 ${trackerName} — ${frequency.charAt(0).toUpperCase() + frequency.slice(1)} Report</h2>
-      <p style="color:#757575;margin-top:0;">Generated on ${new Date().toLocaleDateString('en-IN', { dateStyle: 'long' })}</p>
+  const templateName =
+    frequency === 'weekly'
+      ? 'report-weekly'
+      : frequency === 'yearly'
+        ? 'report-yearly'
+        : 'report-monthly';
 
-      <table style="width:100%;border-collapse:collapse;margin:16px 0;">
-        <tr>
-          <td style="padding:12px;background:#e8f5e9;border-radius:8px 0 0 8px;">
-            <strong>Income</strong><br/><span style="font-size:20px;color:#2e7d32;">${sym}${totalIncome.toLocaleString('en-IN')}</span>
-          </td>
-          <td style="padding:12px;background:#ffebee;">
-            <strong>Expenses</strong><br/><span style="font-size:20px;color:#c62828;">${sym}${totalExpenses.toLocaleString('en-IN')}</span>
-          </td>
-          <td style="padding:12px;background:${net >= 0 ? '#e3f2fd' : '#fff3e0'};border-radius:0 8px 8px 0;">
-            <strong>Net</strong><br/><span style="font-size:20px;color:${net >= 0 ? '#1565c0' : '#e65100'};">${net >= 0 ? '+' : '-'}${sym}${Math.abs(net).toLocaleString('en-IN')}</span>
-          </td>
-        </tr>
-      </table>
+  const now = new Date();
+  const dateRange =
+    frequency === 'yearly'
+      ? now.getFullYear().toString()
+      : `${trackerName} — ${now.toLocaleDateString('en-IN', { dateStyle: 'long' })}`;
 
-      ${
-        categories.length > 0
-          ? `
-        <h3 style="color:#333;margin-bottom:8px;">Top Categories</h3>
-        <table style="width:100%;border-collapse:collapse;">
-          <thead>
-            <tr style="background:#f5f5f5;">
-              <th style="padding:8px 12px;text-align:left;">Category</th>
-              <th style="padding:8px 12px;text-align:right;">Amount</th>
-              <th style="padding:8px 12px;text-align:right;">Txns</th>
-            </tr>
-          </thead>
-          <tbody>${categoryRows}</tbody>
-        </table>
-      `
-          : '<p style="color:#999;">No transactions in this period.</p>'
-      }
+  const insight =
+    net >= 0
+      ? `Great job! You saved ${sym}${net.toLocaleString('en-IN')} this period.`
+      : `Heads up! You spent ${sym}${Math.abs(net).toLocaleString('en-IN')} more than your income this period.`;
 
-      <p style="margin-top:24px;color:#999;font-size:12px;">
-        This is an automated report from Spentiva. You can manage your report schedules in the app settings.
-      </p>
-    </div>
-  `;
+  const variables: Record<string, string> = {
+    userName: trackerName,
+    dateRange,
+    year: now.getFullYear().toString(),
+    totalExpenses: `${sym}${totalExpenses.toLocaleString('en-IN')}`,
+    totalIncome: `${sym}${totalIncome.toLocaleString('en-IN')}`,
+    netBalance: `${net >= 0 ? '+' : '-'}${sym}${Math.abs(net).toLocaleString('en-IN')}`,
+    transactionCount: String(summary?.transactionCount ?? 0),
+    avgMonthly: `${sym}${Math.round(totalExpenses / 12).toLocaleString('en-IN')}`,
+    categoryRows,
+    monthlyRows: '',
+    comparisonText: '',
+    insight,
+    appUrl: config.APP_URL,
+  };
+
+  return compileMjml(templateName, variables);
 };
 
 const processSchedule = async (schedule: any): Promise<void> => {

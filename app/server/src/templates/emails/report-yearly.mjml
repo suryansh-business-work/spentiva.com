@@ -1,0 +1,168 @@
+<mjml>
+  <mj-head>
+    <mj-title>Yearly Report - Spentiva</mj-title>
+    <mj-font
+      name="Inter"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+    <mj-attributes>
+      <mj-all font-family="Inter, Arial, sans-serif" />
+      <mj-text font-size="14px" color="#334155" line-height="1.6" />
+      <mj-section background-color="#ffffff" padding="0" />
+    </mj-attributes>
+    <mj-style>
+      .stat-value { font-size: 22px; font-weight: 700; margin: 0; }
+      .stat-label { font-size: 10px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f8fafc">
+    <!-- Header -->
+    <mj-section
+      background-color="#ffffff"
+      padding="28px 24px 20px"
+      border-bottom="2px solid #10b981"
+    >
+      <mj-column>
+        <mj-text font-size="22px" font-weight="700" color="#0f172a" letter-spacing="-0.3px">
+          Spentiva
+        </mj-text>
+        <mj-text font-size="13px" color="#6b7280" padding-top="4px">
+          Yearly Report &middot; {{ year }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Greeting -->
+    <mj-section background-color="#ffffff" padding="24px 28px 12px">
+      <mj-column>
+        <mj-text font-size="15px" font-weight="600" color="#111827">
+          Hi {{ userName }},
+        </mj-text>
+        <mj-text padding-top="6px" font-size="13px" color="#6b7280">
+          Here's your annual financial overview for {{ year }}.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Summary Cards -->
+    <mj-section background-color="#ffffff" padding="12px 20px 20px">
+      <mj-column width="25%" background-color="#fef2f2" border-radius="8px" padding="14px 10px">
+        <mj-text css-class="stat-label" align="center">TOTAL EXPENSES</mj-text>
+        <mj-text css-class="stat-value" align="center" color="#dc2626" padding-top="4px">
+          {{ totalExpenses }}
+        </mj-text>
+      </mj-column>
+      <mj-column width="25%" background-color="#f0fdf4" border-radius="8px" padding="14px 10px">
+        <mj-text css-class="stat-label" align="center">TOTAL INCOME</mj-text>
+        <mj-text css-class="stat-value" align="center" color="#16a34a" padding-top="4px">
+          {{ totalIncome }}
+        </mj-text>
+      </mj-column>
+      <mj-column width="25%" background-color="#eff6ff" border-radius="8px" padding="14px 10px">
+        <mj-text css-class="stat-label" align="center">NET SAVINGS</mj-text>
+        <mj-text css-class="stat-value" align="center" color="#2563eb" padding-top="4px">
+          {{ netBalance }}
+        </mj-text>
+      </mj-column>
+      <mj-column width="25%" background-color="#faf5ff" border-radius="8px" padding="14px 10px">
+        <mj-text css-class="stat-label" align="center">AVG/MONTH</mj-text>
+        <mj-text css-class="stat-value" align="center" color="#7c3aed" padding-top="4px">
+          {{ avgMonthly }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Top Categories -->
+    <mj-section background-color="#ffffff" padding="0 28px 12px">
+      <mj-column>
+        <mj-text font-size="14px" font-weight="600" color="#111827" padding-bottom="8px">
+          Top Expense Categories
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="0 28px 20px">
+      <mj-column>
+        <mj-table font-size="13px" color="#334155">
+          <tr style="background:#f8fafc;text-align:left;">
+            <th style="padding:8px 12px;font-weight:600;color:#64748b;">Category</th>
+            <th style="padding:8px 12px;font-weight:600;color:#64748b;text-align:right;">Amount</th>
+            <th style="padding:8px 12px;font-weight:600;color:#64748b;text-align:right;">Txns</th>
+          </tr>
+          {{ categoryRows }}
+        </mj-table>
+      </mj-column>
+    </mj-section>
+
+    <!-- Monthly Breakdown -->
+    <mj-section background-color="#ffffff" padding="0 28px 12px">
+      <mj-column>
+        <mj-text font-size="14px" font-weight="600" color="#111827" padding-bottom="8px">
+          Monthly Breakdown
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="0 28px 20px">
+      <mj-column>
+        <mj-table font-size="13px" color="#334155">
+          <tr style="background:#f8fafc;text-align:left;">
+            <th style="padding:8px 12px;font-weight:600;color:#64748b;">Month</th>
+            <th style="padding:8px 12px;font-weight:600;color:#64748b;text-align:right;">Expenses</th>
+            <th style="padding:8px 12px;font-weight:600;color:#64748b;text-align:right;">Income</th>
+          </tr>
+          {{ monthlyRows }}
+        </mj-table>
+      </mj-column>
+    </mj-section>
+
+    <!-- Insights -->
+    <mj-section background-color="#ffffff" padding="0 28px 24px">
+      <mj-column>
+        <mj-wrapper
+          background-color="#f0fdf4"
+          padding="12px 16px"
+          border-radius="6px"
+          border-left="4px solid #10b981"
+        >
+          <mj-section background-color="transparent" padding="0">
+            <mj-column>
+              <mj-text font-size="13px" color="#166534">
+                {{ insight }}
+              </mj-text>
+            </mj-column>
+          </mj-section>
+        </mj-wrapper>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="0 28px 24px">
+      <mj-column>
+        <mj-button
+          background-color="#10b981"
+          color="#ffffff"
+          font-size="14px"
+          font-weight="600"
+          border-radius="6px"
+          padding="0"
+          inner-padding="12px 28px"
+          href="{{ appUrl }}"
+        >
+          View Analytics
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section background-color="#f8fafc" padding="20px 24px" border-top="1px solid #e2e8f0">
+      <mj-column>
+        <mj-text align="center" font-size="11px" color="#94a3b8">
+          &copy; 2025 Spentiva &middot; Smart Expense Tracking
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#94a3b8" padding-top="4px">
+          You can manage report schedules from your app settings.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
