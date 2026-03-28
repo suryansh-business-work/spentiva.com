@@ -17,7 +17,6 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator: React.FC = () => {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const isLoading = useAuthStore((s) => s.isLoading);
 
   const screenOptions = useMemo(
     () => ({
@@ -26,8 +25,6 @@ export const RootNavigator: React.FC = () => {
     }),
     []
   );
-
-  if (isLoading) return null;
 
   return (
     <Stack.Navigator screenOptions={screenOptions}>

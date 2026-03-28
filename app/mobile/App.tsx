@@ -9,9 +9,11 @@ import { RootNavigator } from '@/navigation';
 import { lightTheme, darkTheme } from '@/theme';
 import { LoadingOverlay } from '@/components';
 import { fontAssets } from '@/fonts';
+import { logger } from '@/utils/logger';
 
 const App: React.FC = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [initError, setInitError] = useState(false);
   const isDarkMode = useThemeStore((s) => s.isDarkMode);
   const initializeTheme = useThemeStore((s) => s.initialize);
   const initializeAuth = useAuthStore((s) => s.initialize);
@@ -20,28 +22,37 @@ const App: React.FC = () => {
   const theme = isDarkMode ? darkTheme : lightTheme;
 
   const loadResources = useCallback(async () => {
-    await Font.loadAsync(fontAssets);
+    try {
+      await Font.loadAsync(fontAssets);
+    } catch (err) {
+      logger.error('Failed to load fonts', err);
+    }
     setFontsLoaded(true);
-    await Promise.all([initializeTheme(), initializeAuth()]);
+    try {
+      await Promise.all([initializeTheme(), initializeAuth()]);
+    } catch (err) {
+      logger.error('Failed to initialize app', err);
+      setInitError(true);
+    }
   }, [initializeTheme, initializeAuth]);
 
   useEffect(() => {
     loadResources();
   }, [loadResources]);
 
-  if (!fontsLoaded || isLoading) {
-    return <LoadingOverlay visible message="Loading Spentiva..." />;
-  }
-
   return (
     <PaperProvider theme={theme}>
       <SafeAreaProvider>
-        <SnackbarProvider>
-          <NavigationContainer>
-            <StatusBar style={isDarkMode ? 'light' : 'dark'} />
-            <RootNavigator />
-          </NavigationContainer>
-        </SnackbarProvider>
+        {(!fontsLoaded || isLoading) && !initError ? (
+          <LoadingOverlay visible message="Loading Spentiva..." />
+        ) : (
+          <SnackbarProvider>
+            <NavigationContainer>
+              <StatusBar style={isDarkMode ? 'light' : 'dark'} />
+              <RootNavigator />
+            </NavigationContainer>
+          </SnackbarProvider>
+        )}
       </SafeAreaProvider>
     </PaperProvider>
   );

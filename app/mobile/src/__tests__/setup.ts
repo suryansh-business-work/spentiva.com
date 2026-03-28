@@ -28,7 +28,9 @@ jest.mock('expo-linear-gradient', () => ({
   LinearGradient: ({ children }: { children: React.ReactNode }) => children,
 }));
 
-jest.mock('react-native-vector-icons/MaterialCommunityIcons', () => 'MaterialCommunityIcons');
+jest.mock('@expo/vector-icons', () => ({
+  MaterialCommunityIcons: 'MaterialCommunityIcons',
+}));
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn(() => Promise.resolve()),
@@ -81,3 +83,68 @@ jest.mock('expo-contacts', () => ({
   requestPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
   getContactsAsync: jest.fn(() => Promise.resolve({ data: [] })),
 }));
+
+jest.mock('expo-image-manipulator', () => ({
+  manipulateAsync: jest.fn((uri: string) =>
+    Promise.resolve({ uri, width: 1920, height: 1080 }),
+  ),
+  SaveFormat: { JPEG: 'jpeg' },
+}));
+
+jest.mock('expo-haptics', () => ({
+  impactAsync: jest.fn(),
+  ImpactFeedbackStyle: { Medium: 'medium' },
+}));
+
+jest.mock('expo-constants', () => ({
+  expoConfig: { extra: {} },
+}));
+
+const mockNavigate = jest.fn();
+const mockGoBack = jest.fn();
+const mockReset = jest.fn();
+
+jest.mock('@react-navigation/native', () => {
+  const actual = jest.requireActual('@react-navigation/native');
+  return {
+    ...actual,
+    useNavigation: () => ({
+      navigate: mockNavigate,
+      goBack: mockGoBack,
+      reset: mockReset,
+      dispatch: jest.fn(),
+      addListener: jest.fn(() => jest.fn()),
+      canGoBack: jest.fn(() => true),
+      isFocused: jest.fn(() => true),
+      getParent: jest.fn(),
+      getState: jest.fn(() => ({ routes: [], index: 0 })),
+      setOptions: jest.fn(),
+    }),
+    useRoute: () => ({
+      params: { trackerId: 'tracker-1', expenseId: 'expense-1', token: 'reset-token' },
+      name: 'Test',
+      key: 'test-key',
+    }),
+    useFocusEffect: jest.fn((cb: () => void) => cb()),
+    useIsFocused: jest.fn(() => true),
+    NavigationContainer: ({ children }: { children: React.ReactNode }) => children,
+  };
+});
+
+jest.mock('@react-navigation/native-stack', () => ({
+  createNativeStackNavigator: () => ({
+    Navigator: ({ children }: { children: React.ReactNode }) => children,
+    Screen: ({ children }: { children: React.ReactNode }) => children,
+    Group: ({ children }: { children: React.ReactNode }) => children,
+  }),
+}));
+
+jest.mock('@react-navigation/bottom-tabs', () => ({
+  createBottomTabNavigator: () => ({
+    Navigator: ({ children }: { children: React.ReactNode }) => children,
+    Screen: ({ children }: { children: React.ReactNode }) => children,
+  }),
+}));
+
+(globalThis as Record<string, unknown>).__mockNavigate = mockNavigate;
+(globalThis as Record<string, unknown>).__mockGoBack = mockGoBack;

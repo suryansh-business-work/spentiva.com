@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from 'react-native-paper';
 import type { MainTabParamList } from '@/types/navigation';
 import { TrackersScreen } from '@/screens/TrackersScreen';
@@ -10,7 +10,11 @@ import { MoreScreen } from '@/screens/MoreScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-const TAB_ICONS: Record<keyof MainTabParamList, string> = {
+import type { ComponentProps } from 'react';
+
+type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
+
+const TAB_ICONS: Record<keyof MainTabParamList, IconName> = {
   Trackers: 'view-dashboard-outline',
   Analytics: 'chart-bar',
   Usage: 'chart-donut',

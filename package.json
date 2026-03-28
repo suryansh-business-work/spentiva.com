@@ -20,5 +20,8 @@
   "homepage": "https://github.com/suryansh-business-work/spentiva.com#readme",
   "dependencies": {
     "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.2"
   }
 }

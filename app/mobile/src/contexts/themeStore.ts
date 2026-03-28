@@ -16,9 +16,13 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
   isDarkMode: false,
 
   initialize: async () => {
-    const saved = await getThemeMode();
-    if (saved !== null) {
-      set({ isDarkMode: saved });
+    try {
+      const saved = await getThemeMode();
+      if (saved !== null) {
+        set({ isDarkMode: saved });
+      }
+    } catch {
+      // Fallback to default theme on storage failure
     }
   },
 

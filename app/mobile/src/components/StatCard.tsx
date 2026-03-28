@@ -1,10 +1,14 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+import type { ComponentProps } from 'react';
+
+type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
 
 interface StatCardProps {
-  icon: string;
+  icon: IconName;
   label: string;
   value: string;
   color?: string;
