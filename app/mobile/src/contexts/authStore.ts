@@ -7,7 +7,7 @@ import {
   getAuthToken,
   getUser,
 } from '@/utils/storage';
-import { http } from '@/utils/http';
+import { http, setOnUnauthorized } from '@/utils/http';
 import config from '@/config';
 import { logger } from '@/utils/logger';
 
@@ -138,3 +138,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     }
   },
 }));
+
+// Register 401 handler — no circular dependency since callback is set after store creation
+setOnUnauthorized(() => {
+  useAuthStore.getState().logout();
+});

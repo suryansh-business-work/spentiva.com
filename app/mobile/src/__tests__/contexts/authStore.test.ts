@@ -6,6 +6,7 @@ jest.mock('@/utils/http', () => ({
   http: {
     get: jest.fn(),
   },
+  setOnUnauthorized: jest.fn(),
 }));
 
 const mockHttp = http as jest.Mocked<typeof http>;

@@ -19,6 +19,13 @@ interface ApiResult<T> {
 
 const API_TIMEOUT = 30000; // 30 seconds
 
+/** Callback injected by authStore to handle 401 without circular imports */
+let onUnauthorized: (() => void) | null = null;
+
+export const setOnUnauthorized = (cb: () => void) => {
+  onUnauthorized = cb;
+};
+
 const request = async <T>(
   endpoint: string,
   options: RequestOptions
@@ -60,12 +67,8 @@ const request = async <T>(
     const json = await response.json();
 
     if (!response.ok) {
-      // Auto-logout on 401 Unauthorized
-      if (response.status === 401 && !options.skipAuth) {
-        const { clearAllAuthData } = await import('@/utils/storage');
-        await clearAllAuthData();
-        const { useAuthStore } = await import('@/contexts');
-        useAuthStore.getState().logout();
+      if (response.status === 401 && !options.skipAuth && onUnauthorized) {
+        onUnauthorized();
       }
       return {
         success: false,
