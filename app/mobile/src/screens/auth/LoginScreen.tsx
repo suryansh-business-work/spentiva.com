@@ -35,14 +35,18 @@ export const LoginScreen: React.FC = () => {
 
   const handleLogin = useCallback(
     async (values: LoginValues) => {
-      const result = await http.post<{ token: string }>(
-        config.AUTH.LOGIN,
-        values,
-      );
-      if (result.success && result.data?.token) {
-        await login(result.data.token);
-      } else {
-        showSnackbar(result.message || 'Login failed', 'error');
+      try {
+        const result = await http.post<{ token: string }>(
+          config.AUTH.LOGIN,
+          values,
+        );
+        if (result.success && result.data?.token) {
+          await login(result.data.token);
+        } else {
+          showSnackbar(result.message || 'Login failed', 'error');
+        }
+      } catch {
+        showSnackbar('Login failed. Please try again.', 'error');
       }
     },
     [login, showSnackbar]

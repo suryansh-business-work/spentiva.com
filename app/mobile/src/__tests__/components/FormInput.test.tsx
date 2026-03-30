@@ -11,7 +11,7 @@ jest.mock('react-native-paper', () => {
   const { View, TextInput: RNTextInput } = require('react-native');
   return {
     ...actual,
-    TextInput: ({ label, error, ...props }: { label?: string; error?: boolean; [k: string]: unknown }) =>
+    TextInput: ({ label, error: _error, ...props }: { label?: string; error?: boolean; [k: string]: unknown }) =>
       React.createElement(View, null,
         label ? React.createElement(require('react-native').Text, null, label) : null,
         React.createElement(RNTextInput, props),

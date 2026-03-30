@@ -43,19 +43,23 @@ export const RegisterScreen: React.FC = () => {
 
   const handleRegister = useCallback(
     async (values: RegisterValues) => {
-      const result = await http.post<{ token: string }>(
-        config.AUTH.REGISTER,
-        {
-          firstName: values.firstName,
-          lastName: values.lastName,
-          email: values.email,
-          password: values.password,
-        },
-      );
-      if (result.success && result.data?.token) {
-        await login(result.data.token);
-      } else {
-        showSnackbar(result.message || 'Registration failed', 'error');
+      try {
+        const result = await http.post<{ token: string }>(
+          config.AUTH.REGISTER,
+          {
+            firstName: values.firstName,
+            lastName: values.lastName,
+            email: values.email,
+            password: values.password,
+          },
+        );
+        if (result.success && result.data?.token) {
+          await login(result.data.token);
+        } else {
+          showSnackbar(result.message || 'Registration failed', 'error');
+        }
+      } catch {
+        showSnackbar('Registration failed. Please try again.', 'error');
       }
     },
     [login, showSnackbar]

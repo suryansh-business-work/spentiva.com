@@ -1,0 +1,83 @@
+appId: com.spentiva.mobile
+---
+
+# E2E Test: Full User Journey
+# Complete end-to-end scenario: Login → Browse → Add Expense → Analytics → Settings → Logout
+
+# Step 1: Launch fresh
+- launchApp:
+    clearState: true
+
+# Step 2: Login
+- assertVisible: "Welcome Back"
+- tapOn: "Email"
+- inputText: "test@spentiva.com"
+- tapOn: "Password"
+- inputText: "Test@123456"
+- tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Trackers"
+    timeout: 15000
+
+# Step 3: Browse Trackers
+- assertVisible: "Trackers"
+- assertVisible: "Search trackers..."
+
+# Step 4: Check Analytics
+- tapOn: "Analytics"
+- assertVisible: "Analytics"
+- tapOn: "This Month"
+
+# Step 5: Check Usage
+- tapOn: "Usage"
+- assertVisible: "Usage"
+
+# Step 6: Navigate to More
+- tapOn: "More"
+- assertVisible: "More"
+
+# Step 7: Check Profile
+- tapOn: "Profile"
+- assertVisible: "Profile"
+- assertVisible: "First Name"
+- back
+
+# Step 8: Check Billing
+- tapOn: "Billing"
+- assertVisible: "Billing"
+- assertVisible: "Current Plan"
+- back
+
+# Step 9: Check Support
+- tapOn: "Support"
+- assertVisible: "Support"
+- back
+
+# Step 10: Check Settings
+- tapOn: "Settings"
+- assertVisible: "Settings"
+- assertVisible: "Dark Mode"
+- assertVisible: "Version"
+
+# Toggle dark mode
+- tapOn:
+    text: "Dark Mode"
+    optional: true
+
+# Go back
+- back
+
+# Step 11: Navigate back through tabs
+- tapOn: "Trackers"
+- assertVisible: "Trackers"
+
+# Step 12: Logout
+- tapOn: "More"
+- tapOn: "Logout"
+- extendedWaitUntil:
+    visible: "Welcome Back"
+    timeout: 10000
+
+# Step 13: Verify session cleared
+- assertVisible: "Welcome Back"
+- assertVisible: "Sign in to Spentiva"

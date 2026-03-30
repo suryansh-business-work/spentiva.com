@@ -23,7 +23,7 @@ export const MoreScreen: React.FC = () => {
   }, [logout]);
 
   const initials = user
-    ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
+    ? `${user.firstName?.charAt(0) ?? ''}${user.lastName?.charAt(0) ?? ''}`
     : '?';
 
   return (

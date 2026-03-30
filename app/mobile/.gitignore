@@ -1,6 +1,7 @@
 node_modules/
 .expo/
 dist/
+builds/
 android/
 ios/
 package-lock.json
@@ -8,6 +9,8 @@ package-lock.json
 *.p8
 *.p12
 *.key
+*.keystore
+!android/app/debug.keystore
 *.mobileprovision
 *.orig.*
 web-build/
@@ -16,3 +19,6 @@ web-build/
 .env.development
 .env.production
 coverage/
+*.apk
+*.aab
+*.ipa

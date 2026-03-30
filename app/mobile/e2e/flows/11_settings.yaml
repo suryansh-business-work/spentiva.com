@@ -1,0 +1,40 @@
+appId: com.spentiva.mobile
+---
+
+# E2E Test: Settings Screen
+# Tests settings display, dark mode toggle, external links
+
+# Login first
+- launchApp:
+    clearState: true
+- tapOn: "Email"
+- inputText: "test@spentiva.com"
+- tapOn: "Password"
+- inputText: "Test@123456"
+- tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Trackers"
+    timeout: 15000
+
+# Navigate to Settings
+- tapOn: "More"
+- tapOn: "Settings"
+
+# Verify settings screen
+- assertVisible: "Settings"
+- assertVisible: "Appearance"
+- assertVisible: "Dark Mode"
+- assertVisible: "About"
+- assertVisible: "Version"
+- assertVisible: "Privacy Policy"
+- assertVisible: "Terms of Service"
+
+# Test 1: Toggle dark mode ON
+- tapOn: "Dark Mode"
+
+# Test 2: Toggle dark mode OFF
+- tapOn: "Dark Mode"
+
+# Test 3: Go back
+- back
+- assertVisible: "More"

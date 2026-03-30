@@ -7,6 +7,7 @@ interface RequestOptions {
   body?: unknown;
   headers?: Record<string, string>;
   skipAuth?: boolean;
+  timeout?: number;
 }
 
 interface ApiResult<T> {
@@ -15,6 +16,8 @@ interface ApiResult<T> {
   message: string;
   status: number;
 }
+
+const API_TIMEOUT = 30000; // 30 seconds
 
 const request = async <T>(
   endpoint: string,
@@ -43,7 +46,17 @@ const request = async <T>(
       fetchOptions.body = JSON.stringify(options.body);
     }
 
-    const response = await fetch(url, fetchOptions);
+    const controller = new AbortController();
+    fetchOptions.signal = controller.signal;
+    const timeoutId = setTimeout(() => controller.abort(), options.timeout ?? API_TIMEOUT);
+
+    let response: Response;
+    try {
+      response = await fetch(url, fetchOptions);
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
     const json = await response.json();
 
     if (!response.ok) {
@@ -62,6 +75,15 @@ const request = async <T>(
       status: response.status,
     };
   } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      logger.error(`API Request timeout: ${endpoint}`);
+      return {
+        success: false,
+        data: null,
+        message: 'Request timed out. Please check your connection.',
+        status: 0,
+      };
+    }
     const message = error instanceof Error ? error.message : 'Unknown error';
     logger.error(`API Request failed: ${endpoint}`, error);
     return {

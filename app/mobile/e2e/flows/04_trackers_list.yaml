@@ -1,0 +1,45 @@
+appId: com.spentiva.mobile
+---
+
+# E2E Test: Trackers List Screen
+# Tests tracker listing, search, and refresh
+
+# Login first
+- launchApp:
+    clearState: true
+- tapOn: "Email"
+- inputText: "test@spentiva.com"
+- tapOn: "Password"
+- inputText: "Test@123456"
+- tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Trackers"
+    timeout: 15000
+
+# Verify trackers screen
+- assertVisible: "Trackers"
+- assertVisible: "Search trackers..."
+
+# Test 1: Pull to refresh
+- swipe:
+    direction: DOWN
+    duration: 1000
+
+# Test 2: Search functionality
+- tapOn: "Search trackers..."
+- inputText: "test"
+- back
+- tapOn: "Search trackers..."
+- clearText
+- back
+
+# Test 3: Verify FAB button is visible
+- assertVisible:
+    id: "fab"
+    optional: true
+
+# Test 4: Tap on a tracker (if exists)
+- tapOn:
+    text: ".*"
+    index: 0
+    optional: true

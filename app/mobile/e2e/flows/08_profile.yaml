@@ -1,0 +1,49 @@
+appId: com.spentiva.mobile
+---
+
+# E2E Test: Profile Screen
+# Tests profile display and edit functionality
+
+# Login first
+- launchApp:
+    clearState: true
+- tapOn: "Email"
+- inputText: "test@spentiva.com"
+- tapOn: "Password"
+- inputText: "Test@123456"
+- tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Trackers"
+    timeout: 15000
+
+# Navigate to Profile
+- tapOn: "More"
+- tapOn: "Profile"
+
+# Verify profile screen elements
+- assertVisible: "Profile"
+- assertVisible: "First Name"
+- assertVisible: "Last Name"
+- assertVisible: "Save Changes"
+- assertVisible: "Account Status"
+- assertVisible: "Two-Factor Auth"
+- assertVisible: "Logout"
+
+# Test 1: Edit first name
+- tapOn: "First Name"
+- clearText
+- inputText: "UpdatedName"
+
+# Test 2: Save changes
+- tapOn: "Save Changes"
+- extendedWaitUntil:
+    visible: "Profile updated successfully"
+    timeout: 10000
+    optional: true
+
+# Test 3: Logout dialog
+- scroll:
+    direction: DOWN
+- tapOn: "Logout"
+- assertVisible: "Are you sure you want to logout?"
+- tapOn: "Cancel"

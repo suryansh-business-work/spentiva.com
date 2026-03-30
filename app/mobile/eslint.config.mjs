@@ -32,6 +32,13 @@ export default [
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
         RequestInit: 'readonly',
+        global: 'readonly',
+        globalThis: 'readonly',
+        AbortController: 'readonly',
+        DOMException: 'readonly',
+        Response: 'readonly',
+        URLSearchParams: 'readonly',
+        WeakSet: 'readonly',
       },
     },
     plugins: {
@@ -54,5 +61,22 @@ export default [
   },
   {
     ignores: ['node_modules/', 'dist/', '.expo/', 'coverage/', 'babel.config.js'],
+  },
+  {
+    files: ['scripts/**/*.js'],
+    languageOptions: {
+      globals: {
+        require: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+        process: 'readonly',
+        console: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+      },
+    },
+    rules: {
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
+    },
   },
 ];

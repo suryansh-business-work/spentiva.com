@@ -1,0 +1,55 @@
+appId: com.spentiva.mobile
+---
+
+# E2E Test: Analytics Screen
+# Tests analytics display and filter switching
+
+# Login first
+- launchApp:
+    clearState: true
+- tapOn: "Email"
+- inputText: "test@spentiva.com"
+- tapOn: "Password"
+- inputText: "Test@123456"
+- tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Trackers"
+    timeout: 15000
+
+# Navigate to Analytics tab
+- tapOn: "Analytics"
+
+# Verify analytics screen
+- assertVisible: "Analytics"
+
+# Test 1: Check filter chips are visible
+- assertVisible: "Today"
+- assertVisible: "This Week"
+- assertVisible: "This Month"
+- assertVisible: "This Year"
+- assertVisible: "All Time"
+
+# Test 2: Switch between filters
+- tapOn: "Today"
+- tapOn: "This Week"
+- tapOn: "This Year"
+- tapOn: "All Time"
+- tapOn: "This Month"
+
+# Test 3: Check stat cards if data exists
+- assertVisible:
+    text: "Expenses"
+    optional: true
+- assertVisible:
+    text: "Income"
+    optional: true
+- assertVisible:
+    text: "Balance"
+    optional: true
+- assertVisible:
+    text: "Transactions"
+    optional: true
+
+# Test 4: Scroll to see categories
+- scroll:
+    direction: DOWN

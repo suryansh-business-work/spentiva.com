@@ -1,0 +1,33 @@
+appId: com.spentiva.mobile
+---
+
+# E2E Test: Logout Flow
+# Tests complete logout and session clearance
+
+# Login first
+- launchApp:
+    clearState: true
+- tapOn: "Email"
+- inputText: "test@spentiva.com"
+- tapOn: "Password"
+- inputText: "Test@123456"
+- tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Trackers"
+    timeout: 15000
+
+# Navigate to More and Logout
+- tapOn: "More"
+- assertVisible: "Logout"
+- tapOn: "Logout"
+
+# Should navigate back to login screen
+- extendedWaitUntil:
+    visible: "Welcome Back"
+    timeout: 10000
+
+# Verify session is cleared - relaunch should show login
+- launchApp
+- extendedWaitUntil:
+    visible: "Welcome Back"
+    timeout: 10000

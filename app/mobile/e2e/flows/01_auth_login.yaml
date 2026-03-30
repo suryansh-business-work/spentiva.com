@@ -1,0 +1,50 @@
+appId: com.spentiva.mobile
+---
+
+# E2E Test: Login Flow
+# Tests real login scenario with form validation and API interaction
+
+- launchApp:
+    clearState: true
+
+# Verify login screen loads correctly
+- assertVisible: "Welcome Back"
+- assertVisible: "Sign in to Spentiva"
+- assertVisible: "Sign In"
+- assertVisible: "Forgot Password?"
+- assertVisible: "Create Account"
+
+# Test 1: Submit empty form - should show validation errors
+- tapOn: "Sign In"
+- assertVisible: "Email is required"
+- assertVisible: "Password is required"
+
+# Test 2: Enter invalid email format
+- tapOn: "Email"
+- inputText: "invalid-email"
+- tapOn: "Password"
+- assertVisible: "Invalid email"
+
+# Test 3: Enter short password
+- clearText
+- tapOn: "Email"
+- clearText
+- inputText: "test@example.com"
+- tapOn: "Password"
+- inputText: "12345"
+- tapOn: "Sign In"
+- assertVisible: "Min 6 characters"
+
+# Test 4: Enter valid credentials and login
+- tapOn: "Email"
+- clearText
+- inputText: "test@spentiva.com"
+- tapOn: "Password"
+- clearText
+- inputText: "Test@123456"
+- tapOn: "Sign In"
+
+# Wait for API response and navigation
+- extendedWaitUntil:
+    visible: "Trackers"
+    timeout: 15000

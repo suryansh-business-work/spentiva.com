@@ -1,0 +1,56 @@
+appId: com.spentiva.mobile
+---
+
+# E2E Test: More Screen & Navigation to Subpages
+# Tests More menu, profile card, and navigation
+
+# Login first
+- launchApp:
+    clearState: true
+- tapOn: "Email"
+- inputText: "test@spentiva.com"
+- tapOn: "Password"
+- inputText: "Test@123456"
+- tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Trackers"
+    timeout: 15000
+
+# Navigate to More tab
+- tapOn: "More"
+
+# Verify More screen
+- assertVisible: "More"
+- assertVisible: "Profile"
+- assertVisible: "Billing"
+- assertVisible: "Support"
+- assertVisible: "Settings"
+- assertVisible: "Logout"
+
+# Test 1: Navigate to Profile
+- tapOn: "Profile"
+- assertVisible: "Profile"
+- back
+
+# Test 2: Navigate to Billing
+- tapOn: "Billing"
+- assertVisible: "Billing"
+- assertVisible: "Current Plan"
+- back
+
+# Test 3: Navigate to Support
+- tapOn: "Support"
+- assertVisible: "Support"
+- back
+
+# Test 4: Navigate to Settings
+- tapOn: "Settings"
+- assertVisible: "Settings"
+- assertVisible: "Dark Mode"
+- assertVisible: "Version"
+- back
+
+# Test 5: Theme toggle
+- assertVisible: "Dark Mode"
+- tapOn: "Dark Mode"
+- tapOn: "Light Mode"

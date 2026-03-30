@@ -1,0 +1,61 @@
+appId: com.spentiva.mobile
+---
+
+# E2E Test: Registration Flow
+# Tests new user registration with full form validation
+
+- launchApp:
+    clearState: true
+
+# Navigate to Register screen
+- assertVisible: "Welcome Back"
+- tapOn: "Create Account"
+
+# Verify register screen loads
+- assertVisible: "Create Account"
+- assertVisible: "Join Spentiva today"
+
+# Test 1: Submit empty form
+- tapOn:
+    text: "Create Account"
+    index: 1
+- assertVisible: "First name is required"
+- assertVisible: "Last name is required"
+
+# Test 2: Fill form with mismatched passwords
+- tapOn: "First Name"
+- inputText: "Test"
+- tapOn: "Last Name"
+- inputText: "User"
+- tapOn: "Email"
+- inputText: "newuser@spentiva.com"
+- tapOn: "Password"
+- inputText: "Password123"
+- tapOn: "Confirm Password"
+- inputText: "Different123"
+- tapOn:
+    text: "Create Account"
+    index: 1
+- assertVisible: "Passwords must match"
+
+# Test 3: Fill form correctly
+- tapOn: "Confirm Password"
+- clearText
+- inputText: "Password123"
+- tapOn:
+    text: "Create Account"
+    index: 1
+
+# Wait for successful registration
+- extendedWaitUntil:
+    visible: "Trackers"
+    timeout: 15000
+
+# Test 4: Navigate back to login
+- launchApp:
+    clearState: true
+- assertVisible: "Welcome Back"
+- tapOn: "Create Account"
+- assertVisible: "Already have an account? Sign In"
+- tapOn: "Already have an account? Sign In"
+- assertVisible: "Welcome Back"

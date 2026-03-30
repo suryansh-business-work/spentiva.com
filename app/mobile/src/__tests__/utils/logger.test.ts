@@ -13,6 +13,7 @@ describe('logger', () => {
 
   it('logs info messages in dev mode', () => {
     logger.info('test info');
+    // eslint-disable-next-line no-console
     expect(console.log).toHaveBeenCalled();
   });
 

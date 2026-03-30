@@ -49,11 +49,22 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           isLoading: false,
         });
       } else {
-        set({ isLoading: false });
+        // Explicitly clear partial state and mark unauthenticated
+        set({
+          token: null,
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+        });
       }
     } catch {
       logger.error('Failed to initialize auth');
-      set({ isLoading: false });
+      set({
+        token: null,
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+      });
     }
   },
 
@@ -61,7 +72,15 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     await setAuthToken(token);
     set({ token });
     await get().fetchCurrentUser();
-    set({ isAuthenticated: true });
+    const user = get().user;
+    if (user) {
+      set({ isAuthenticated: true });
+    } else {
+      // User fetch failed - clear token and remain unauthenticated
+      await clearAllAuthData();
+      set({ token: null, isAuthenticated: false });
+      throw new Error('Failed to fetch user data after login');
+    }
   },
 
   logout: async () => {

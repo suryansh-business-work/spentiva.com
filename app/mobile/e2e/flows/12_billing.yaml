@@ -1,0 +1,40 @@
+appId: com.spentiva.mobile
+---
+
+# E2E Test: Billing Screen
+# Tests billing plans display
+
+# Login first
+- launchApp:
+    clearState: true
+- tapOn: "Email"
+- inputText: "test@spentiva.com"
+- tapOn: "Password"
+- inputText: "Test@123456"
+- tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Trackers"
+    timeout: 15000
+
+# Navigate to Billing
+- tapOn: "More"
+- tapOn: "Billing"
+
+# Verify billing screen
+- assertVisible: "Billing"
+- assertVisible: "Current Plan"
+- assertVisible: "Available Plans"
+
+# Verify plan cards
+- assertVisible: "Free"
+- assertVisible: "$0"
+- scroll:
+    direction: DOWN
+- assertVisible: "Pro"
+- scroll:
+    direction: DOWN
+- assertVisible: "Business Pro"
+
+# Go back
+- back
+- assertVisible: "More"

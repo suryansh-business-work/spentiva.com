@@ -1,0 +1,40 @@
+appId: com.spentiva.mobile
+---
+
+# E2E Test: Usage Screen
+# Tests usage statistics display
+
+# Login first
+- launchApp:
+    clearState: true
+- tapOn: "Email"
+- inputText: "test@spentiva.com"
+- tapOn: "Password"
+- inputText: "Test@123456"
+- tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Trackers"
+    timeout: 15000
+
+# Navigate to Usage tab
+- tapOn: "Usage"
+
+# Verify usage screen
+- assertVisible: "Usage"
+
+# Test: Check usage stats if data exists
+- assertVisible:
+    text: "Total Messages"
+    optional: true
+- assertVisible:
+    text: "Total Tokens"
+    optional: true
+- assertVisible:
+    text: "Your Messages"
+    optional: true
+- assertVisible:
+    text: "AI Messages"
+    optional: true
+- assertVisible:
+    text: "Message Distribution"
+    optional: true

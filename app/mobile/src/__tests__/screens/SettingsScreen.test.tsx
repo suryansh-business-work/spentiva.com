@@ -4,6 +4,15 @@ import { PaperProvider } from 'react-native-paper';
 import { lightTheme } from '@/theme';
 import { SettingsScreen } from '@/screens/SettingsScreen';
 
+jest.mock('@/contexts', () => ({
+  useThemeStore: (selector: (s: Record<string, unknown>) => unknown) =>
+    selector({ isDarkMode: false, toggleTheme: jest.fn() }),
+}));
+
+jest.mock('expo-constants', () => ({
+  expoConfig: { version: '1.0.0' },
+}));
+
 const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <PaperProvider theme={lightTheme}>{children}</PaperProvider>
 );
@@ -19,8 +28,15 @@ describe('SettingsScreen', () => {
     expect(getByText('More')).toBeTruthy();
   });
 
-  it('renders placeholder content', () => {
+  it('renders dark mode toggle', () => {
     const { getByText } = render(<SettingsScreen />, { wrapper: Wrapper });
-    expect(getByText('App settings will be implemented here.')).toBeTruthy();
+    expect(getByText('Dark Mode')).toBeTruthy();
+  });
+
+  it('renders version and links', () => {
+    const { getByText } = render(<SettingsScreen />, { wrapper: Wrapper });
+    expect(getByText('Version')).toBeTruthy();
+    expect(getByText('Privacy Policy')).toBeTruthy();
+    expect(getByText('Terms of Service')).toBeTruthy();
   });
 });

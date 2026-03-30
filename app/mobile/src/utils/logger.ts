@@ -12,15 +12,31 @@ const shouldLog = (level: LogLevel): boolean => {
   return LOG_LEVELS[level] >= LOG_LEVELS[currentLevel];
 };
 
+const safeStringify = (data: unknown): string => {
+  try {
+    const seen = new WeakSet();
+    return JSON.stringify(data, (_key, value) => {
+      if (typeof value === 'object' && value !== null) {
+        if (seen.has(value)) return '[Circular]';
+        seen.add(value);
+      }
+      return value;
+    });
+  } catch {
+    return '[Unserializable]';
+  }
+};
+
 const formatMessage = (level: LogLevel, message: string, data?: unknown): string => {
   const timestamp = new Date().toISOString();
-  const dataStr = data ? ` | ${JSON.stringify(data)}` : '';
+  const dataStr = data ? ` | ${safeStringify(data)}` : '';
   return `[${timestamp}] [${level.toUpperCase()}] ${message}${dataStr}`;
 };
 
 export const logger = {
   info: (message: string, data?: unknown): void => {
     if (shouldLog('info')) {
+      // eslint-disable-next-line no-console
       console.log(formatMessage('info', message, data));
     }
   },

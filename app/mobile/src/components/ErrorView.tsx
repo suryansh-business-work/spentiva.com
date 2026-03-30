@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontFamily: 'Inter-SemiBold',
+    fontWeight: '600',
     marginBottom: 8,
   },
   message: {
@@ -63,6 +63,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   retry: {
-    fontFamily: 'Inter-SemiBold',
+    fontWeight: '600',
   },
 });
