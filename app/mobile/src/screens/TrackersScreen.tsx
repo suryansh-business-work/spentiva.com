@@ -1,11 +1,12 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { FlatList, StyleSheet, RefreshControl, View } from 'react-native';
-import { FAB, Searchbar, useTheme } from 'react-native-paper';
+import { FAB, Searchbar, useTheme, Portal, Dialog, TextInput, RadioButton, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ScreenHeader, TrackerCard, EmptyState, ErrorView } from '@/components';
+import { ScreenHeader, TrackerCard, EmptyState, ErrorView, AppButton } from '@/components';
 import { trackerService } from '@/services';
+import { useSnackbar } from '@/contexts';
 import type { Tracker } from '@/types';
 import type { RootStackParamList } from '@/types/navigation';
 
@@ -14,10 +15,15 @@ type Nav = NativeStackNavigationProp<RootStackParamList>;
 export const TrackersScreen: React.FC = () => {
   const theme = useTheme();
   const navigation = useNavigation<Nav>();
+  const { showSnackbar } = useSnackbar();
   const [search, setSearch] = useState('');
   const [trackers, setTrackers] = useState<Tracker[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newType, setNewType] = useState<'personal' | 'business'>('personal');
+  const [creating, setCreating] = useState(false);
 
   const fetchTrackers = useCallback(async () => {
     setLoading(true);
@@ -45,6 +51,26 @@ export const TrackersScreen: React.FC = () => {
     },
     [navigation]
   );
+
+  const handleCreate = useCallback(async () => {
+    if (!newName.trim()) return;
+    setCreating(true);
+    const res = await trackerService.create({
+      name: newName.trim(),
+      type: newType,
+      currency: 'USD',
+    });
+    if (res.success) {
+      showSnackbar('Tracker created', 'success');
+      setDialogVisible(false);
+      setNewName('');
+      setNewType('personal');
+      fetchTrackers();
+    } else {
+      showSnackbar(res.message || 'Failed to create tracker', 'error');
+    }
+    setCreating(false);
+  }, [newName, newType, showSnackbar, fetchTrackers]);
 
   const renderItem = useCallback(
     ({ item }: { item: Tracker }) => (
@@ -92,8 +118,37 @@ export const TrackersScreen: React.FC = () => {
         icon="plus"
         style={[styles.fab, { backgroundColor: theme.colors.primary }]}
         color={theme.colors.onPrimary}
-        onPress={() => {/* TODO: Open create tracker dialog */}}
+        onPress={() => setDialogVisible(true)}
       />
+      <Portal>
+        <Dialog visible={dialogVisible} onDismiss={() => setDialogVisible(false)}>
+          <Dialog.Title>Create Tracker</Dialog.Title>
+          <Dialog.Content style={styles.dialogContent}>
+            <TextInput
+              label="Tracker Name"
+              value={newName}
+              onChangeText={setNewName}
+              mode="outlined"
+              autoFocus
+            />
+            <Text variant="labelLarge" style={styles.typeLabel}>Type</Text>
+            <RadioButton.Group onValueChange={(v) => setNewType(v as 'personal' | 'business')} value={newType}>
+              <RadioButton.Item label="Personal" value="personal" />
+              <RadioButton.Item label="Business" value="business" />
+            </RadioButton.Group>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <AppButton title="Cancel" mode="text" onPress={() => setDialogVisible(false)} />
+            <AppButton
+              title="Create"
+              mode="contained"
+              onPress={handleCreate}
+              loading={creating}
+              disabled={creating || !newName.trim()}
+            />
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </SafeAreaView>
   );
 };
@@ -105,4 +160,6 @@ const styles = StyleSheet.create({
   list: { paddingBottom: 80 },
   emptyList: { flex: 1 },
   fab: { position: 'absolute', right: 16, bottom: 16, borderRadius: 16 },
+  dialogContent: { gap: 12 },
+  typeLabel: { marginTop: 8 },
 });

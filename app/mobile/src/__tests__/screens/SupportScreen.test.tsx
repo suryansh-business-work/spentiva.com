@@ -10,6 +10,12 @@ jest.mock('@/services', () => ({
   },
 }));
 
+jest.mock('@/contexts', () => ({
+  useSnackbar: () => ({
+    showSnackbar: jest.fn(),
+  }),
+}));
+
 const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <PaperProvider theme={lightTheme}>{children}</PaperProvider>
 );

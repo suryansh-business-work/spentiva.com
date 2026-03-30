@@ -9,6 +9,15 @@ jest.mock('@/contexts', () => ({
     selector({
       user: { _id: '1', firstName: 'Test', lastName: 'User', email: 'test@test.com', roleSlug: 'free', isVerified: true, mfaEnabled: false },
     }),
+  useSnackbar: () => ({
+    showSnackbar: jest.fn(),
+  }),
+}));
+
+jest.mock('@/services', () => ({
+  paymentService: {
+    create: jest.fn().mockResolvedValue({ success: true, data: null, message: 'OK', status: 200 }),
+  },
 }));
 
 const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (

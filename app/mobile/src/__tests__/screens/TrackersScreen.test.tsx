@@ -11,6 +11,12 @@ jest.mock('@/services', () => ({
   },
 }));
 
+jest.mock('@/contexts', () => ({
+  useSnackbar: () => ({
+    showSnackbar: jest.fn(),
+  }),
+}));
+
 const mockTrackerService = trackerService as jest.Mocked<typeof trackerService>;
 
 const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (

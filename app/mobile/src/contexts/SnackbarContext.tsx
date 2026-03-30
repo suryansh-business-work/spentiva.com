@@ -1,9 +1,22 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { Snackbar } from 'react-native-paper';
 
+type SnackbarType = 'success' | 'error' | 'info';
+
+const SNACKBAR_COLORS: Record<SnackbarType, string> = {
+  success: '#16A34A',
+  error: '#DC2626',
+  info: '#2563EB',
+};
+
+interface SnackbarItem {
+  message: string;
+  type: SnackbarType;
+}
+
 interface SnackbarContextValue {
-  showSnackbar: (message: string, type?: 'success' | 'error' | 'info') => void;
+  showSnackbar: (message: string, type?: SnackbarType) => void;
 }
 
 const SnackbarContext = createContext<SnackbarContextValue | null>(null);
@@ -20,14 +33,36 @@ interface SnackbarProviderProps {
 
 export const SnackbarProvider: React.FC<SnackbarProviderProps> = ({ children }) => {
   const [visible, setVisible] = useState(false);
-  const [message, setMessage] = useState('');
+  const [current, setCurrent] = useState<SnackbarItem>({ message: '', type: 'info' });
+  const queue = useRef<SnackbarItem[]>([]);
+  const isShowing = useRef(false);
 
-  const showSnackbar = useCallback((msg: string, _type?: 'success' | 'error' | 'info') => {
-    setMessage(msg);
+  const showNext = useCallback(() => {
+    if (queue.current.length === 0) {
+      isShowing.current = false;
+      return;
+    }
+    const next = queue.current.shift()!;
+    setCurrent(next);
     setVisible(true);
+    isShowing.current = true;
   }, []);
 
-  const onDismiss = useCallback(() => setVisible(false), []);
+  const showSnackbar = useCallback((msg: string, type: SnackbarType = 'info') => {
+    queue.current.push({ message: msg, type });
+    if (!isShowing.current) showNext();
+  }, [showNext]);
+
+  const onDismiss = useCallback(() => {
+    setVisible(false);
+  }, []);
+
+  useEffect(() => {
+    if (!visible && isShowing.current) {
+      const timer = setTimeout(showNext, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [visible, showNext]);
 
   const value = useMemo(() => ({ showSnackbar }), [showSnackbar]);
 
@@ -38,9 +73,10 @@ export const SnackbarProvider: React.FC<SnackbarProviderProps> = ({ children }) 
         visible={visible}
         onDismiss={onDismiss}
         duration={3000}
+        style={{ backgroundColor: SNACKBAR_COLORS[current.type] }}
         action={{ label: 'Close', onPress: onDismiss }}
       >
-        {message}
+        {current.message}
       </Snackbar>
     </SnackbarContext.Provider>
   );

@@ -28,6 +28,14 @@ interface AuthActions {
 
 type AuthStore = AuthState & AuthActions;
 
+/** Prevents concurrent initialize calls */
+let initializePromise: Promise<void> | null = null;
+
+/** Reset for testing only */
+export const resetInitializeGuard = () => {
+  initializePromise = null;
+};
+
 export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   token: null,
@@ -35,47 +43,57 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   isLoading: true,
 
   initialize: async () => {
-    try {
-      const [token, cachedUser] = await Promise.all([
-        getAuthToken(),
-        getUser<User>(),
-      ]);
-
-      if (!token) {
-        set({ token: null, user: null, isAuthenticated: false, isLoading: false });
-        return;
-      }
-
-      // Restore cached state immediately for fast startup
-      if (cachedUser) {
-        set({ token, user: cachedUser, isAuthenticated: true, isLoading: false });
-      }
-
-      // Re-validate token with server in background
-      const result = await http.get<{ user: User }>(config.AUTH.ME);
-      if (result.success && result.data) {
-        const { user } = result.data;
-        await persistUser(user);
-        set({ token, user, isAuthenticated: true, isLoading: false });
-      } else if (result.status === 401) {
-        // Token expired/invalid - force logout
-        await clearAllAuthData();
-        set({ token: null, user: null, isAuthenticated: false, isLoading: false });
-      } else if (!cachedUser) {
-        // No cached user and ME failed - can't authenticate
-        await clearAllAuthData();
-        set({ token: null, user: null, isAuthenticated: false, isLoading: false });
-      }
-      // If ME failed but we have cached user, keep using cached data
-    } catch {
-      logger.error('Failed to initialize auth');
-      set({
-        token: null,
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-      });
+    // Prevent concurrent initialization
+    if (initializePromise) {
+      await initializePromise;
+      return;
     }
+    initializePromise = (async () => {
+      try {
+        const [token, cachedUser] = await Promise.all([
+          getAuthToken(),
+          getUser<User>(),
+        ]);
+
+        if (!token) {
+          set({ token: null, user: null, isAuthenticated: false, isLoading: false });
+          return;
+        }
+
+        // Restore cached state immediately for fast startup
+        if (cachedUser) {
+          set({ token, user: cachedUser, isAuthenticated: true, isLoading: false });
+        }
+
+        // Re-validate token with server in background
+        const result = await http.get<{ user: User }>(config.AUTH.ME);
+        if (result.success && result.data) {
+          const { user } = result.data;
+          await persistUser(user);
+          set({ token, user, isAuthenticated: true, isLoading: false });
+        } else if (result.status === 401) {
+          // Token expired/invalid - force logout
+          await clearAllAuthData();
+          set({ token: null, user: null, isAuthenticated: false, isLoading: false });
+        } else if (!cachedUser) {
+          // No cached user and ME failed - can't authenticate
+          await clearAllAuthData();
+          set({ token: null, user: null, isAuthenticated: false, isLoading: false });
+        }
+        // If ME failed but we have cached user, keep using cached data
+      } catch {
+        logger.error('Failed to initialize auth');
+        set({
+          token: null,
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+        });
+      } finally {
+        initializePromise = null;
+      }
+    })();
+    await initializePromise;
   },
 
   login: async (token: string) => {

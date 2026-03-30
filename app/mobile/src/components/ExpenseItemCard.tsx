@@ -13,14 +13,19 @@ export const ExpenseItemCard: React.FC<ExpenseItemCardProps> = React.memo(
   ({ expense, onPress }) => {
     const theme = useTheme();
     const isIncome = expense.type === 'income';
-    const amountColor = isIncome ? '#10B981' : '#EF4444';
+    const amountColor = isIncome ? theme.colors.primary : theme.colors.error;
     const amountPrefix = isIncome ? '+' : '-';
+    const dateLabel = new Date(expense.timestamp).toLocaleDateString(undefined, {
+      month: 'short',
+      day: 'numeric',
+    });
 
     return (
       <Card
         style={[styles.card, { backgroundColor: theme.colors.surface }]}
         onPress={() => onPress(expense)}
         mode="outlined"
+        accessibilityLabel={`${isIncome ? 'Income' : 'Expense'}: ${expense.description || expense.category}, ${amountPrefix}${expense.currency} ${expense.amount.toFixed(2)}`}
       >
         <Card.Content style={styles.content}>
           <View style={styles.left}>
@@ -34,7 +39,7 @@ export const ExpenseItemCard: React.FC<ExpenseItemCardProps> = React.memo(
                 {expense.description || expense.category}
               </Text>
               <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                {expense.category} · {expense.paymentMethod}
+                {expense.category} · {expense.paymentMethod} · {dateLabel}
               </Text>
             </View>
           </View>

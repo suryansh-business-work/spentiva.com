@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { useTheme, Dialog, Portal, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -39,6 +39,8 @@ export const EditExpenseScreen: React.FC = () => {
   const [expense, setExpense] = useState<Expense | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchExpense = useCallback(async () => {
     setLoading(true);
@@ -77,6 +79,19 @@ export const EditExpenseScreen: React.FC = () => {
     },
     [expenseId, showSnackbar, navigation]
   );
+
+  const handleDelete = useCallback(async () => {
+    setDeleting(true);
+    const res = await expenseService.delete(expenseId);
+    if (res.success) {
+      showSnackbar('Expense deleted', 'success');
+      navigation.goBack();
+    } else {
+      showSnackbar(res.message || 'Failed to delete expense', 'error');
+    }
+    setDeleting(false);
+    setDeleteDialogVisible(false);
+  }, [expenseId, showSnackbar, navigation]);
 
   if (loading) return <LoadingOverlay visible message="Loading expense..." />;
   if (error) return <ErrorView message={error} onRetry={fetchExpense} />;
@@ -146,10 +161,36 @@ export const EditExpenseScreen: React.FC = () => {
                 disabled={isSubmitting}
                 fullWidth
               />
+              <AppButton
+                title="Delete Expense"
+                mode="outlined"
+                onPress={() => setDeleteDialogVisible(true)}
+                textColor={theme.colors.error}
+                fullWidth
+              />
             </View>
           )}
         </Formik>
       </ScrollView>
+      <Portal>
+        <Dialog visible={deleteDialogVisible} onDismiss={() => setDeleteDialogVisible(false)}>
+          <Dialog.Title>Delete Expense</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">Are you sure you want to delete this expense? This action cannot be undone.</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <AppButton title="Cancel" mode="text" onPress={() => setDeleteDialogVisible(false)} />
+            <AppButton
+              title="Delete"
+              mode="contained"
+              buttonColor={theme.colors.error}
+              onPress={handleDelete}
+              loading={deleting}
+              disabled={deleting}
+            />
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </SafeAreaView>
   );
 };

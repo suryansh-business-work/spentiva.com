@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { FlatList, StyleSheet, RefreshControl, View } from 'react-native';
-import { Text, FAB, Chip, useTheme } from 'react-native-paper';
+import { Text, FAB, Chip, useTheme, Portal, Dialog, TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { ScreenHeader, Breadcrumb, EmptyState, ErrorView } from '@/components';
+import { ScreenHeader, Breadcrumb, EmptyState, ErrorView, AppButton } from '@/components';
 import { supportService } from '@/services';
+import { useSnackbar } from '@/contexts';
 import type { SupportTicket, TicketStatus } from '@/types';
 
 const STATUS_COLORS: Record<TicketStatus, string> = {
@@ -17,9 +18,14 @@ const STATUS_COLORS: Record<TicketStatus, string> = {
 export const SupportScreen: React.FC = () => {
   const theme = useTheme();
   const navigation = useNavigation();
+  const { showSnackbar } = useSnackbar();
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [subject, setSubject] = useState('');
+  const [description, setDescription] = useState('');
+  const [creating, setCreating] = useState(false);
 
   const fetchTickets = useCallback(async () => {
     setLoading(true);
@@ -88,8 +94,58 @@ export const SupportScreen: React.FC = () => {
         icon="plus"
         style={[styles.fab, { backgroundColor: theme.colors.primary }]}
         color={theme.colors.onPrimary}
-        onPress={() => {/* TODO: Create ticket dialog */}}
+        onPress={() => setDialogVisible(true)}
       />
+      <Portal>
+        <Dialog visible={dialogVisible} onDismiss={() => setDialogVisible(false)}>
+          <Dialog.Title>Create Ticket</Dialog.Title>
+          <Dialog.Content style={styles.dialogContent}>
+            <TextInput
+              label="Subject"
+              value={subject}
+              onChangeText={setSubject}
+              mode="outlined"
+              autoFocus
+            />
+            <TextInput
+              label="Description"
+              value={description}
+              onChangeText={setDescription}
+              mode="outlined"
+              multiline
+              numberOfLines={4}
+            />
+          </Dialog.Content>
+          <Dialog.Actions>
+            <AppButton title="Cancel" mode="text" onPress={() => setDialogVisible(false)} />
+            <AppButton
+              title="Submit"
+              mode="contained"
+              onPress={async () => {
+                if (!subject.trim() || !description.trim()) return;
+                setCreating(true);
+                const res = await supportService.create({
+                  type: 'general',
+                  subject: subject.trim(),
+                  description: description.trim(),
+                });
+                if (res.success) {
+                  showSnackbar('Ticket created', 'success');
+                  setDialogVisible(false);
+                  setSubject('');
+                  setDescription('');
+                  fetchTickets();
+                } else {
+                  showSnackbar(res.message || 'Failed to create ticket', 'error');
+                }
+                setCreating(false);
+              }}
+              loading={creating}
+              disabled={creating || !subject.trim() || !description.trim()}
+            />
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </SafeAreaView>
   );
 };
@@ -104,4 +160,5 @@ const styles = StyleSheet.create({
   chipText: { fontSize: 11 },
   date: { marginTop: 4 },
   fab: { position: 'absolute', right: 16, bottom: 16, borderRadius: 16 },
+  dialogContent: { gap: 12 },
 });

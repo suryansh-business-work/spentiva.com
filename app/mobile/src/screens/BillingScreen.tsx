@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { Text, Card, useTheme, List, Divider } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenHeader, Breadcrumb, AppButton } from '@/components';
-import { useAuthStore } from '@/contexts';
+import { useAuthStore, useSnackbar } from '@/contexts';
+import { paymentService } from '@/services';
 import config from '@/config';
 
 const { PLANS } = config;
@@ -13,8 +14,26 @@ export const BillingScreen: React.FC = () => {
   const theme = useTheme();
   const navigation = useNavigation();
   const user = useAuthStore((s) => s.user);
+  const { showSnackbar } = useSnackbar();
 
   const currentPlan = user?.roleSlug === 'businesspro' ? 'BUSINESS_PRO' : user?.roleSlug === 'pro' ? 'PRO' : 'FREE';
+
+  const handleUpgrade = useCallback(async (plan: string) => {
+    try {
+      const res = await paymentService.create({
+        plan,
+        planDuration: 'monthly',
+        paymentMethod: 'card',
+      });
+      if (res.success) {
+        showSnackbar('Plan upgrade initiated', 'success');
+      } else {
+        showSnackbar(res.message || 'Upgrade failed', 'error');
+      }
+    } catch {
+      showSnackbar('Failed to initiate upgrade', 'error');
+    }
+  }, [showSnackbar]);
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.background }]} edges={['top']}>
@@ -52,7 +71,7 @@ export const BillingScreen: React.FC = () => {
             <List.Item title={`${PLANS.PRO.trackers} Trackers`} left={(p) => <List.Icon {...p} icon="check" />} />
             <List.Item title={`${PLANS.PRO.messages} Messages`} left={(p) => <List.Icon {...p} icon="check" />} />
             {currentPlan !== 'PRO' && (
-              <AppButton title="Upgrade to Pro" mode="contained" onPress={() => {}} fullWidth />
+              <AppButton title="Upgrade to Pro" mode="contained" onPress={() => handleUpgrade('pro')} fullWidth />
             )}
           </Card.Content>
         </Card>
@@ -65,7 +84,7 @@ export const BillingScreen: React.FC = () => {
             <List.Item title="Unlimited Trackers" left={(p) => <List.Icon {...p} icon="check" />} />
             <List.Item title="Unlimited Messages" left={(p) => <List.Icon {...p} icon="check" />} />
             {currentPlan !== 'BUSINESS_PRO' && (
-              <AppButton title="Upgrade to Business Pro" mode="contained" onPress={() => {}} fullWidth />
+              <AppButton title="Upgrade to Business Pro" mode="contained" onPress={() => handleUpgrade('businesspro')} fullWidth />
             )}
           </Card.Content>
         </Card>

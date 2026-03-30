@@ -64,24 +64,51 @@ const request = async <T>(
       clearTimeout(timeoutId);
     }
 
-    const json = await response.json();
+    let json: Record<string, unknown>;
+    try {
+      json = await response.json();
+    } catch {
+      // Non-JSON response (e.g., HTML error page or empty body)
+      return {
+        success: false,
+        data: null,
+        message: response.ok ? 'Empty response' : `Server error (${response.status})`,
+        status: response.status,
+      };
+    }
 
     if (!response.ok) {
       if (response.status === 401 && !options.skipAuth && onUnauthorized) {
         onUnauthorized();
       }
+      if (response.status === 429) {
+        return {
+          success: false,
+          data: null,
+          message: 'Too many requests. Please try again later.',
+          status: 429,
+        };
+      }
+      if (response.status === 503) {
+        return {
+          success: false,
+          data: null,
+          message: 'Service temporarily unavailable. Please try again later.',
+          status: 503,
+        };
+      }
       return {
         success: false,
         data: null,
-        message: json.message || 'Request failed',
+        message: (json.message as string) || 'Request failed',
         status: response.status,
       };
     }
 
     return {
       success: true,
-      data: json.data ?? json,
-      message: json.message || 'Success',
+      data: (json.data ?? json) as T,
+      message: (json.message as string) || 'Success',
       status: response.status,
     };
   } catch (error) {

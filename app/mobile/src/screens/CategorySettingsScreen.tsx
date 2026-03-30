@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { FlatList, StyleSheet, RefreshControl, View } from 'react-native';
-import { Text, IconButton, useTheme, FAB } from 'react-native-paper';
+import { Text, IconButton, useTheme, FAB, Portal, Dialog, TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
-import { ScreenHeader, Breadcrumb, EmptyState, ErrorView } from '@/components';
+import { ScreenHeader, Breadcrumb, EmptyState, ErrorView, AppButton } from '@/components';
 import { categoryService } from '@/services';
 import { useSnackbar } from '@/contexts';
 import type { Category } from '@/types';
@@ -21,6 +21,9 @@ export const CategorySettingsScreen: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [newCatName, setNewCatName] = useState('');
+  const [creating, setCreating] = useState(false);
 
   const fetchCategories = useCallback(async () => {
     setLoading(true);
@@ -104,8 +107,49 @@ export const CategorySettingsScreen: React.FC = () => {
         icon="plus"
         style={[styles.fab, { backgroundColor: theme.colors.primary }]}
         color={theme.colors.onPrimary}
-        onPress={() => {/* TODO: Add category dialog */}}
+        onPress={() => setDialogVisible(true)}
       />
+      <Portal>
+        <Dialog visible={dialogVisible} onDismiss={() => setDialogVisible(false)}>
+          <Dialog.Title>Add Category</Dialog.Title>
+          <Dialog.Content>
+            <TextInput
+              label="Category Name"
+              value={newCatName}
+              onChangeText={setNewCatName}
+              mode="outlined"
+              autoFocus
+            />
+          </Dialog.Content>
+          <Dialog.Actions>
+            <AppButton title="Cancel" mode="text" onPress={() => setDialogVisible(false)} />
+            <AppButton
+              title="Add"
+              mode="contained"
+              onPress={async () => {
+                if (!newCatName.trim()) return;
+                setCreating(true);
+                const res = await categoryService.create({
+                  name: newCatName.trim(),
+                  trackerId,
+                  subcategories: [],
+                });
+                if (res.success) {
+                  showSnackbar('Category added', 'success');
+                  setDialogVisible(false);
+                  setNewCatName('');
+                  fetchCategories();
+                } else {
+                  showSnackbar(res.message || 'Failed to add category', 'error');
+                }
+                setCreating(false);
+              }}
+              loading={creating}
+              disabled={creating || !newCatName.trim()}
+            />
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </SafeAreaView>
   );
 };

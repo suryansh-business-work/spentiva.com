@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/contexts/authStore';
+import { useAuthStore, resetInitializeGuard } from '@/contexts/authStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { http } from '@/utils/http';
 
@@ -14,6 +14,7 @@ const mockHttp = http as jest.Mocked<typeof http>;
 describe('authStore', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    resetInitializeGuard();
     useAuthStore.setState({
       user: null,
       token: null,

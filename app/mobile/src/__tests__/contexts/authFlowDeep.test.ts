@@ -4,7 +4,7 @@
  * Covers edge cases, race conditions, and error paths.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useAuthStore } from '@/contexts/authStore';
+import { useAuthStore, resetInitializeGuard } from '@/contexts/authStore';
 import { http } from '@/utils/http';
 
 jest.mock('@/utils/http', () => ({
@@ -31,6 +31,7 @@ const createMockUser = (overrides = {}) => ({
 describe('Auth Flow - Deep Level Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    resetInitializeGuard();
     useAuthStore.setState({
       user: null,
       token: null,
@@ -70,16 +71,14 @@ describe('Auth Flow - Deep Level Tests', () => {
 
     it('handles concurrent initialize calls', async () => {
       const user = createMockUser();
+      // With the concurrent guard, only ONE initialize actually runs (2 getItem calls)
       (AsyncStorage.getItem as jest.Mock)
         .mockResolvedValueOnce('token-1')
-        .mockResolvedValueOnce(JSON.stringify(user))
-        .mockResolvedValueOnce('token-2')
-        .mockResolvedValueOnce(JSON.stringify({ ...user, firstName: 'Updated' }));
+        .mockResolvedValueOnce(JSON.stringify(user));
       mockHttp.get
-        .mockResolvedValueOnce({ success: true, data: { user }, message: 'OK', status: 200 })
-        .mockResolvedValueOnce({ success: true, data: { user: { ...user, firstName: 'Updated' } }, message: 'OK', status: 200 });
+        .mockResolvedValueOnce({ success: true, data: { user }, message: 'OK', status: 200 });
 
-      // Call initialize twice concurrently
+      // Call initialize twice concurrently — second one piggybacks on first
       await Promise.all([
         useAuthStore.getState().initialize(),
         useAuthStore.getState().initialize(),
@@ -88,14 +87,13 @@ describe('Auth Flow - Deep Level Tests', () => {
       const state = useAuthStore.getState();
       expect(state.isAuthenticated).toBe(true);
       expect(state.isLoading).toBe(false);
-      // One of the two should win
-      expect(state.token).toBeTruthy();
+      expect(state.token).toBe('token-1');
+      // Only one http.get call should have been made
+      expect(mockHttp.get).toHaveBeenCalledTimes(1);
     });
 
     it('handles AsyncStorage timing out', async () => {
-      (AsyncStorage.getItem as jest.Mock).mockImplementation(
-        () => new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10))
-      );
+      (AsyncStorage.getItem as jest.Mock).mockRejectedValue(new Error('Timeout'));
 
       await useAuthStore.getState().initialize();
 

@@ -129,7 +129,7 @@ describe('HTTP Client - Deep Level Tests', () => {
       const result = await http.get('/bad-json');
 
       expect(result.success).toBe(false);
-      expect(result.message).toBe('Invalid JSON');
+      expect(result.message).toBe('Empty response');
     });
 
     it('handles non-Error thrown object', async () => {

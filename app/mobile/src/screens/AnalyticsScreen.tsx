@@ -73,8 +73,8 @@ export const AnalyticsScreen: React.FC = () => {
         {summary ? (
           <>
             <View style={styles.statsRow}>
-              <StatCard icon="cash-minus" label="Expenses" value={`$${summary.totalExpenses.toFixed(0)}`} color="#EF4444" />
-              <StatCard icon="cash-plus" label="Income" value={`$${summary.totalIncome.toFixed(0)}`} color="#10B981" />
+              <StatCard icon="cash-minus" label="Expenses" value={`$${summary.totalExpenses.toFixed(0)}`} color={theme.colors.error} />
+              <StatCard icon="cash-plus" label="Income" value={`$${summary.totalIncome.toFixed(0)}`} color={theme.colors.primary} />
             </View>
             <View style={styles.statsRow}>
               <StatCard icon="scale-balance" label="Balance" value={`$${summary.netBalance.toFixed(0)}`} />
@@ -113,6 +113,6 @@ const styles = StyleSheet.create({
   statsRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
   section: { marginTop: 16 },
   sectionTitle: { fontFamily: 'Inter-SemiBold', marginBottom: 12 },
-  categoryRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: '#E2E8F0' },
+  categoryRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: 'rgba(0,0,0,0.12)' },
   categoryName: { fontFamily: 'Inter-Medium' },
 });
