@@ -60,6 +60,13 @@ const request = async <T>(
     const json = await response.json();
 
     if (!response.ok) {
+      // Auto-logout on 401 Unauthorized
+      if (response.status === 401 && !options.skipAuth) {
+        const { clearAllAuthData } = await import('@/utils/storage');
+        await clearAllAuthData();
+        const { useAuthStore } = await import('@/contexts');
+        useAuthStore.getState().logout();
+      }
       return {
         success: false,
         data: null,

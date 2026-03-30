@@ -43,12 +43,13 @@ describe('Auth Flow - Deep Level Tests', () => {
       (AsyncStorage.getItem as jest.Mock)
         .mockResolvedValueOnce('valid-token')
         .mockResolvedValueOnce('not-valid-json{{{'); // corrupted
+      mockHttp.get.mockResolvedValueOnce({ success: false, data: null, message: 'Unauthorized', status: 401 });
 
       await useAuthStore.getState().initialize();
 
       const state = useAuthStore.getState();
       // getJsonItem catches parse error and returns null
-      // so token && user fails -> isAuthenticated: false
+      // no cached user and ME fails -> isAuthenticated: false
       expect(state.isAuthenticated).toBe(false);
       expect(state.isLoading).toBe(false);
     });
@@ -73,6 +74,9 @@ describe('Auth Flow - Deep Level Tests', () => {
         .mockResolvedValueOnce(JSON.stringify(user))
         .mockResolvedValueOnce('token-2')
         .mockResolvedValueOnce(JSON.stringify({ ...user, firstName: 'Updated' }));
+      mockHttp.get
+        .mockResolvedValueOnce({ success: true, data: { user }, message: 'OK', status: 200 })
+        .mockResolvedValueOnce({ success: true, data: { user: { ...user, firstName: 'Updated' } }, message: 'OK', status: 200 });
 
       // Call initialize twice concurrently
       await Promise.all([

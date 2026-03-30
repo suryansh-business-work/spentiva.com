@@ -36,6 +36,12 @@ describe('authStore', () => {
       (AsyncStorage.getItem as jest.Mock)
         .mockResolvedValueOnce('stored-token')
         .mockResolvedValueOnce(JSON.stringify(mockUser));
+      mockHttp.get.mockResolvedValueOnce({
+        success: true,
+        data: { user: mockUser },
+        message: 'OK',
+        status: 200,
+      });
 
       await useAuthStore.getState().initialize();
 

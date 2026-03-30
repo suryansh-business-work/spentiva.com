@@ -9,7 +9,17 @@ import * as Font from 'expo-font';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthStore } from '@/contexts/authStore';
 import { useThemeStore } from '@/contexts/themeStore';
+import { http } from '@/utils/http';
 import App from '../../App';
+
+jest.mock('@/utils/http', () => ({
+  http: {
+    get: jest.fn().mockResolvedValue({ success: false, data: null, message: 'Not found', status: 404 }),
+    post: jest.fn(),
+  },
+}));
+
+const mockHttp = http as jest.Mocked<typeof http>;
 
 // Mock the NavigationContainer to avoid native module issues
 jest.mock('@react-navigation/native', () => {
@@ -179,6 +189,7 @@ describe('App Startup - Deep Level Tests', () => {
       (AsyncStorage.getItem as jest.Mock)
         .mockResolvedValueOnce('stored-token')
         .mockResolvedValueOnce(null); // No user in storage
+      mockHttp.get.mockResolvedValueOnce({ success: false, data: null, message: 'Unauthorized', status: 401 });
 
       await useAuthStore.getState().initialize();
 

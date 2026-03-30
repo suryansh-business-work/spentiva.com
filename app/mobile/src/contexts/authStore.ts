@@ -36,27 +36,37 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   initialize: async () => {
     try {
-      const [token, user] = await Promise.all([
+      const [token, cachedUser] = await Promise.all([
         getAuthToken(),
         getUser<User>(),
       ]);
 
-      if (token && user) {
-        set({
-          token,
-          user,
-          isAuthenticated: true,
-          isLoading: false,
-        });
-      } else {
-        // Explicitly clear partial state and mark unauthenticated
-        set({
-          token: null,
-          user: null,
-          isAuthenticated: false,
-          isLoading: false,
-        });
+      if (!token) {
+        set({ token: null, user: null, isAuthenticated: false, isLoading: false });
+        return;
       }
+
+      // Restore cached state immediately for fast startup
+      if (cachedUser) {
+        set({ token, user: cachedUser, isAuthenticated: true, isLoading: false });
+      }
+
+      // Re-validate token with server in background
+      const result = await http.get<{ user: User }>(config.AUTH.ME);
+      if (result.success && result.data) {
+        const { user } = result.data;
+        await persistUser(user);
+        set({ token, user, isAuthenticated: true, isLoading: false });
+      } else if (result.status === 401) {
+        // Token expired/invalid - force logout
+        await clearAllAuthData();
+        set({ token: null, user: null, isAuthenticated: false, isLoading: false });
+      } else if (!cachedUser) {
+        // No cached user and ME failed - can't authenticate
+        await clearAllAuthData();
+        set({ token: null, user: null, isAuthenticated: false, isLoading: false });
+      }
+      // If ME failed but we have cached user, keep using cached data
     } catch {
       logger.error('Failed to initialize auth');
       set({
@@ -108,12 +118,13 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       if (userResult.success && userResult.data) {
         const { user } = userResult.data;
         await persistUser(user);
-        set({ user });
+        set({ user, isLoading: false });
+      } else {
+        logger.error('ME endpoint failed', userResult.message);
+        set({ isLoading: false });
       }
-
-      set({ isLoading: false });
-    } catch {
-      logger.error('Failed to fetch current user');
+    } catch (error) {
+      logger.error('Failed to fetch current user', error);
       set({ isLoading: false });
     }
   },
