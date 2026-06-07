@@ -19,6 +19,8 @@ import { TokenExpiredProvider, useTokenExpired } from './contexts/TokenExpiredCo
 import { requestNotificationPermission } from './services/notificationService';
 import { themeConfig, getDarkModeConfig } from './theme/palette';
 import { setTokenExpiredCallback } from './utils/axiosSetup';
+import { ApolloProvider } from '@apollo/client';
+import { apolloClient, setGraphqlTokenExpiredCallback } from './graphql/apollo-client';
 // Import axios setup to initialize interceptors
 import './utils/axiosSetup';
 
@@ -45,6 +47,7 @@ const AppContent = () => {
   useEffect(() => {
     requestNotificationPermission();
     setTokenExpiredCallback(showTokenExpiredModal);
+    setGraphqlTokenExpiredCallback(showTokenExpiredModal);
   }, [showTokenExpiredModal]);
 
   if (authLoading) {
@@ -172,13 +175,15 @@ const AppContent = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <ThemeModeProvider>
-        <TokenExpiredProvider>
-          <AppContent />
-        </TokenExpiredProvider>
-      </ThemeModeProvider>
-    </AuthProvider>
+    <ApolloProvider client={apolloClient}>
+      <AuthProvider>
+        <ThemeModeProvider>
+          <TokenExpiredProvider>
+            <AppContent />
+          </TokenExpiredProvider>
+        </ThemeModeProvider>
+      </AuthProvider>
+    </ApolloProvider>
   );
 }
 

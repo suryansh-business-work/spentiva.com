@@ -1,22 +1,13 @@
 import React from 'react';
 import { Box, Typography, Paper, Link as MuiLink } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@apollo/client';
 import LoginForm from './LoginForm';
-import { postRequest } from '../../../utils/http';
-import { endpoints } from '../../../config/api';
+import { loginSchema, type LoginValues } from './login.schema';
+import { LoginMutation } from '../../../graphql/operations/auth';
 import { setAuthToken } from '../../../utils/localStorage';
-
-const loginSchema = Yup.object().shape({
-  email: Yup.string().email('Invalid email').required('Email is required'),
-  password: Yup.string().min(6, 'Min 6 characters').required('Password is required'),
-});
-
-interface LoginValues {
-  email: string;
-  password: string;
-}
 
 interface LoginProps {
   onLoginSuccess: () => void;
@@ -25,23 +16,30 @@ interface LoginProps {
 const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
   const [error, setError] = React.useState('');
+  const [login] = useMutation(LoginMutation);
 
-  const handleLogin = async (values: LoginValues) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' },
+  });
+
+  const onSubmit = async (values: LoginValues) => {
     setError('');
     try {
-      const response = await postRequest(endpoints.auth.login, values);
-      const data = response?.data;
-      if (data?.data?.token) {
-        setAuthToken(data.data.token);
-        if (data.data.user) {
-          localStorage.setItem('user', JSON.stringify(data.data.user));
-        }
+      const { data } = await login({ variables: { input: values } });
+      if (data?.login?.token) {
+        setAuthToken(data.login.token);
+        localStorage.setItem('user', JSON.stringify(data.login.user));
         onLoginSuccess();
       } else {
-        setError(data?.message || 'Login failed');
+        setError('Login failed');
       }
-    } catch (err: any) {
-      setError(err?.response?.data?.message || 'Login failed. Please try again.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
     }
   };
 
@@ -80,17 +78,9 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           </Typography>
         )}
 
-        <Formik
-          initialValues={{ email: '', password: '' }}
-          validationSchema={loginSchema}
-          onSubmit={handleLogin}
-        >
-          {(formikProps) => (
-            <Form>
-              <LoginForm {...formikProps} />
-            </Form>
-          )}
-        </Formik>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <LoginForm register={register} errors={errors} isSubmitting={isSubmitting} />
+        </form>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
           <MuiLink

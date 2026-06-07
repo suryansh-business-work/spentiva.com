@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { getRequest } from '../utils/http';
-import { endpoints } from '../config/api';
+import { apolloClient } from '../graphql/apollo-client';
+import { MeQuery } from '../graphql/operations/auth';
 import { getAuthToken, removeAuthToken } from '../utils/localStorage';
 import { User } from '../types';
 
@@ -33,18 +33,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchCurrentUser = useCallback(async (authToken: string) => {
+  const fetchCurrentUser = useCallback(async () => {
     try {
-      const response = await getRequest(endpoints.auth.me, {}, authToken);
-      const data = response?.data || response;
-      const userData = data?.data?.user;
+      const { data } = await apolloClient.query({ query: MeQuery, fetchPolicy: 'network-only' });
+      const userData = data?.me;
 
       if (userData) {
-        // Normalize _id to id
-        if (userData._id && !userData.id) {
-          userData.id = userData._id;
-        }
-        setUser(userData);
+        setUser(userData as unknown as User);
         localStorage.setItem('user', JSON.stringify(userData));
       } else {
         logout();
@@ -68,10 +63,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUser(JSON.parse(savedUser));
           setLoading(false);
         } catch {
-          fetchCurrentUser(savedToken);
+          fetchCurrentUser();
         }
       } else {
-        fetchCurrentUser(savedToken);
+        fetchCurrentUser();
       }
     } else {
       setLoading(false);
@@ -93,7 +88,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const refreshUser = async () => {
     const currentToken = getAuthToken();
     if (currentToken) {
-      await fetchCurrentUser(currentToken);
+      await fetchCurrentUser();
     }
   };
 
