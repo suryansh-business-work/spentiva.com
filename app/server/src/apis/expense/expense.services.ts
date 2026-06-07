@@ -1,5 +1,10 @@
 import ExpenseModel from './expense.models';
 import { ExpenseParser } from '../../services/expenseParser';
+import TrackerModel from '../tracker/tracker.models';
+import { createTrackerSnapshot, logUsage } from '../usage-log/usage-log.services';
+import { encode } from 'gpt-tokenizer';
+import type { ChatMessage, OpenAIUsage, ParsedExpense } from '../../types';
+import { logger } from '../../utils/logger';
 
 /**
  * Expense Service - Business logic for expenses
@@ -11,6 +16,119 @@ export class ExpenseService {
   static async parseExpense(message: string, trackerId?: string, trackerCurrency?: string) {
     const parsed = await ExpenseParser.parseExpense(message, trackerId, trackerCurrency);
     return parsed;
+  }
+
+  /**
+   * Parse expenses for a tracker and record AI usage logs.
+   * Shared by the REST controller and the GraphQL resolver so the
+   * tracker-snapshot + token-logging flow lives in one place.
+   */
+  static async parseExpenseForTracker(params: {
+    userId: string;
+    trackerId: string;
+    input: string;
+  }): Promise<{ expenses: ParsedExpense[]; count: number; usage?: OpenAIUsage }> {
+    const { userId, trackerId, input } = params;
+
+    const tracker = await TrackerModel.findOne({ _id: trackerId, userId });
+    if (!tracker) {
+      throw new Error('Tracker not found');
+    }
+
+    const trackerCurrency = tracker.currency || 'INR';
+    const trackerSnapshot = createTrackerSnapshot(tracker);
+
+    // Log the user message with estimated tokens first.
+    try {
+      await logUsage(userId, trackerSnapshot, 'user', input, encode(input).length);
+    } catch (error) {
+      logger.error('[Parse Expense] Error logging user message', {
+        error: (error as Error).message,
+      });
+    }
+
+    const parsed = await ExpenseParser.parseExpense(input, trackerId, trackerCurrency);
+    if ('error' in parsed) {
+      throw new Error(parsed.message || parsed.error || 'Failed to parse expense');
+    }
+
+    const { expenses, usage } = parsed;
+
+    // Re-log with the ACTUAL OpenAI token counts.
+    if (usage) {
+      try {
+        await logUsage(userId, trackerSnapshot, 'user', input, usage.prompt_tokens || 0);
+        const first = expenses[0];
+        const responseText =
+          expenses.length === 1 && first
+            ? `Parsed 1 expense: ${first.amount} for ${first.subcategory || first.category} via ${first.paymentMethod}`
+            : `Parsed ${expenses.length} expenses totaling ${expenses.reduce((sum, e) => sum + e.amount, 0)}`;
+        await logUsage(userId, trackerSnapshot, 'assistant', responseText, usage.completion_tokens || 0);
+      } catch (error) {
+        logger.error('[Parse Expense] Error logging actual tokens', {
+          error: (error as Error).message,
+        });
+      }
+    }
+
+    return { expenses, count: expenses.length, usage };
+  }
+
+  /**
+   * Conversational chat for a tracker, recording AI usage logs.
+   * Shared by the REST controller and the GraphQL resolver.
+   */
+  static async chatForTracker(params: {
+    userId: string;
+    trackerId?: string;
+    message: string;
+    history?: ChatMessage[];
+  }): Promise<{ response: string }> {
+    const { userId, trackerId, message, history = [] } = params;
+
+    let trackerSnapshot: ReturnType<typeof createTrackerSnapshot> | null = null;
+    if (trackerId) {
+      const tracker = await TrackerModel.findOne({ _id: trackerId, userId });
+      if (tracker) {
+        trackerSnapshot = createTrackerSnapshot(tracker);
+        try {
+          await logUsage(userId, trackerSnapshot, 'user', message, encode(message).length);
+        } catch (error) {
+          logger.error('[Chat] Error logging user message', { error: (error as Error).message });
+        }
+      }
+    }
+
+    const chatResult = await ExpenseParser.getChatResponse(message, history);
+
+    if (trackerSnapshot && chatResult.usage) {
+      try {
+        await logUsage(userId, trackerSnapshot, 'user', message, chatResult.usage.prompt_tokens || 0);
+        await logUsage(
+          userId,
+          trackerSnapshot,
+          'assistant',
+          chatResult.response,
+          chatResult.usage.completion_tokens || 0
+        );
+      } catch (error) {
+        logger.error('[Chat] Error logging actual tokens', { error: (error as Error).message });
+      }
+    } else if (trackerSnapshot && chatResult.response) {
+      try {
+        await logUsage(
+          userId,
+          trackerSnapshot,
+          'assistant',
+          chatResult.response,
+          encode(chatResult.response).length
+        );
+      } catch (error) {
+        logger.error('[Chat] Error logging AI response', { error: (error as Error).message });
+      }
+    }
+
+    return { response: chatResult.response };
   }
 
   /**

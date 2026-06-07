@@ -1,45 +1,34 @@
 import React from 'react';
 import { TextField, Button, Box } from '@mui/material';
-import { FormikProps } from 'formik';
+import type { UseFormRegister, FieldErrors } from 'react-hook-form';
+import type { LoginValues } from './login.schema';
 
-interface LoginValues {
-  email: string;
-  password: string;
+interface LoginFormProps {
+  register: UseFormRegister<LoginValues>;
+  errors: FieldErrors<LoginValues>;
+  isSubmitting: boolean;
 }
 
-const LoginForm: React.FC<FormikProps<LoginValues>> = ({
-  values,
-  errors,
-  touched,
-  handleChange,
-  handleBlur,
-  isSubmitting,
-}) => {
+const LoginForm: React.FC<LoginFormProps> = ({ register, errors, isSubmitting }) => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <TextField
         fullWidth
-        name="email"
         label="Email"
         type="email"
-        value={values.email}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={touched.email && Boolean(errors.email)}
-        helperText={touched.email && errors.email}
+        {...register('email')}
+        error={Boolean(errors.email)}
+        helperText={errors.email?.message}
         autoComplete="email"
         autoFocus
       />
       <TextField
         fullWidth
-        name="password"
         label="Password"
         type="password"
-        value={values.password}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={touched.password && Boolean(errors.password)}
-        helperText={touched.password && errors.password}
+        {...register('password')}
+        error={Boolean(errors.password)}
+        helperText={errors.password?.message}
         autoComplete="current-password"
       />
       <Button

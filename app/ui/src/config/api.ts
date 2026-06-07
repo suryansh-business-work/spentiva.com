@@ -5,6 +5,14 @@ export const getApiUrl = () => {
   return 'https://server.spentiva.com/v1/api';
 };
 
+/** GraphQL endpoint (shares host with the REST API). */
+export const getGraphqlUrl = () => {
+  if (import.meta.env.MODE === 'development') {
+    return 'http://localhost:8002/graphql';
+  }
+  return 'https://server.spentiva.com/graphql';
+};
+
 // All endpoint URLs organized by domain
 export const endpoints = {
   auth: {

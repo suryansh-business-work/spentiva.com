@@ -1,31 +1,31 @@
 import React from 'react';
 import { TextField, Button, Box } from '@mui/material';
-import { FormikProps } from 'formik';
+import type { UseFormRegister, FieldErrors } from 'react-hook-form';
 
-interface ForgotPasswordValues {
+export interface ForgotPasswordValues {
   email: string;
 }
 
-const ForgotPasswordForm: React.FC<FormikProps<ForgotPasswordValues>> = ({
-  values,
+interface ForgotPasswordFormProps {
+  register: UseFormRegister<ForgotPasswordValues>;
+  errors: FieldErrors<ForgotPasswordValues>;
+  isSubmitting: boolean;
+}
+
+const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
+  register,
   errors,
-  touched,
-  handleChange,
-  handleBlur,
   isSubmitting,
 }) => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <TextField
         fullWidth
-        name="email"
         label="Email"
         type="email"
-        value={values.email}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={touched.email && Boolean(errors.email)}
-        helperText={touched.email && errors.email}
+        {...register('email')}
+        error={Boolean(errors.email)}
+        helperText={errors.email?.message}
         autoComplete="email"
         autoFocus
       />

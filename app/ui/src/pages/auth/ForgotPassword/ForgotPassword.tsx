@@ -1,28 +1,39 @@
 import React from 'react';
 import { Box, Typography, Paper, Link as MuiLink } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
-import ForgotPasswordForm from './ForgotPasswordForm';
-import { postRequest } from '../../../utils/http';
-import { endpoints } from '../../../config/api';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@apollo/client';
+import { z } from 'zod';
+import ForgotPasswordForm, { type ForgotPasswordValues } from './ForgotPasswordForm';
+import { ForgotPasswordMutation } from '../../../graphql/operations/auth';
 
-const schema = Yup.object().shape({
-  email: Yup.string().email('Invalid email').required('Email is required'),
+const schema = z.object({
+  email: z.string().min(1, 'Email is required').email('Invalid email'),
 });
 
 const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
   const [error, setError] = React.useState('');
   const [success, setSuccess] = React.useState(false);
+  const [forgotPassword] = useMutation(ForgotPasswordMutation);
 
-  const handleSubmit = async (values: { email: string }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ForgotPasswordValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { email: '' },
+  });
+
+  const onSubmit = async (values: ForgotPasswordValues) => {
     setError('');
     try {
-      await postRequest(endpoints.auth.forgotPassword, values);
+      await forgotPassword({ variables: { email: values.email } });
       setSuccess(true);
-    } catch (err: any) {
-      setError(err?.response?.data?.message || 'Something went wrong');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
     }
   };
 
@@ -78,17 +89,9 @@ const ForgotPassword: React.FC = () => {
           </Box>
         ) : (
           <>
-            <Formik
-              initialValues={{ email: '' }}
-              validationSchema={schema}
-              onSubmit={handleSubmit}
-            >
-              {(formikProps) => (
-                <Form>
-                  <ForgotPasswordForm {...formikProps} />
-                </Form>
-              )}
-            </Formik>
+            <form onSubmit={handleSubmit(onSubmit)} noValidate>
+              <ForgotPasswordForm register={register} errors={errors} isSubmitting={isSubmitting} />
+            </form>
 
             <Box sx={{ textAlign: 'center', mt: 2 }}>
               <MuiLink

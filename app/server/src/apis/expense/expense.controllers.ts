@@ -25,95 +25,21 @@ export const parseExpenseController = async (req: any, res: Response) => {
       return badRequestResponse(res, null, 'Tracker ID is required');
     }
 
-    // Get tracker information for snapshot
-    let trackerSnapshot = null;
-    let trackerCurrency = 'INR';
-    if (req.user?.userId && trackerId) {
-      try {
-        const tracker = await TrackerModel.findOne({
-          _id: trackerId,
-          userId: req.user.userId,
-        });
-
-        if (tracker) {
-          trackerCurrency = tracker.currency || 'INR';
-          const { createTrackerSnapshot } = await import('../usage-log/usage-log.services');
-          trackerSnapshot = createTrackerSnapshot(tracker);
-        } else {
-          return badRequestResponse(res, null, 'Tracker not found');
-        }
-      } catch (err) {
-        console.error('[Parse Expense] Error fetching tracker:', err);
-        return errorResponse(res, err, 'Error fetching tracker information');
-      }
-    }
-
-    // Log user message with tracker snapshot
-    if (trackerSnapshot) {
-      try {
-        const { encode } = await import('gpt-tokenizer');
-        const userTokens = encode(input).length;
-
-        const { logUsage } = await import('../usage-log/usage-log.services');
-        await logUsage(req.user.userId, trackerSnapshot, 'user', input, userTokens);
-        console.log('[Parse Expense] User message logged with estimated tokens:', userTokens);
-      } catch (logError) {
-        console.error('[Parse Expense] Error logging user message:', logError);
-        // Continue processing even if logging fails
-      }
-    }
-
-    const parsed = await ExpenseService.parseExpense(input, trackerId, trackerCurrency);
-
-    // Check for errors
-    if ('error' in parsed) {
-      return badRequestResponse(res, parsed, 'Failed to parse expense');
-    }
-
-    // Destructure expenses and usage from the response
-    const { expenses: parsedExpenses, usage } = parsed;
-    const firstExpense = parsedExpenses[0];
-
-    // Log AI response with tracker snapshot using ACTUAL OpenAI token counts
-    if (trackerSnapshot && usage) {
-      try {
-        const { logUsage } = await import('../usage-log/usage-log.services');
-
-        // Use actual token counts from OpenAI
-        const actualUserTokens = usage.prompt_tokens || 0;
-        const actualAiTokens = usage.completion_tokens || 0;
-
-        console.log('[Parse Expense] Actual OpenAI Usage:', {
-          prompt_tokens: actualUserTokens,
-          completion_tokens: actualAiTokens,
-          total_tokens: usage.total_tokens,
-          expenses_parsed: parsedExpenses.length,
-        });
-
-        // Update the user message log with actual tokens
-        await logUsage(req.user.userId, trackerSnapshot, 'user', input, actualUserTokens);
-
-        // Create response text for logging
-        const responseText =
-          parsedExpenses.length === 1
-            ? `Parsed 1 expense: ₹${firstExpense.amount} for ${firstExpense.subcategory || firstExpense.category} via ${firstExpense.paymentMethod}`
-            : `Parsed ${parsedExpenses.length} expenses totaling ₹${parsedExpenses.reduce((sum, e) => sum + e.amount, 0)}`;
-
-        // Log AI response with actual completion tokens
-        await logUsage(req.user.userId, trackerSnapshot, 'assistant', responseText, actualAiTokens);
-
-        console.log('[Parse Expense] Messages logged with actual OpenAI tokens');
-      } catch (logError) {
-        console.error('[Parse Expense] Error logging with actual tokens:', logError);
-      }
-    }
+    const { expenses, count, usage } = await ExpenseService.parseExpenseForTracker({
+      userId: req.user?.userId,
+      trackerId,
+      input,
+    });
 
     return successResponse(
       res,
-      { expenses: parsedExpenses, count: parsedExpenses.length, usage },
-      `${parsedExpenses.length} expense${parsedExpenses.length > 1 ? 's' : ''} parsed successfully`
+      { expenses, count, usage },
+      `${count} expense${count > 1 ? 's' : ''} parsed successfully`
     );
   } catch (error: any) {
+    if (error.message === 'Tracker not found') {
+      return badRequestResponse(res, null, error.message);
+    }
     console.error('Error parsing expense:', error);
     return errorResponse(res, error, 'Internal server error');
   }
@@ -461,87 +387,14 @@ export const chatController = async (req: any, res: Response) => {
       return badRequestResponse(res, null, 'Message is required');
     }
 
-    // Get tracker snapshot and log user message
-    let trackerSnapshot = null;
-    if (req.user?.userId && trackerId) {
-      try {
-        const tracker = await TrackerModel.findOne({
-          _id: trackerId,
-          userId: req.user.userId,
-        });
+    const { response } = await ExpenseService.chatForTracker({
+      userId: req.user?.userId,
+      trackerId,
+      message,
+      history,
+    });
 
-        if (tracker) {
-          const { createTrackerSnapshot, logUsage } =
-            await import('../usage-log/usage-log.services');
-          const { encode } = await import('gpt-tokenizer');
-
-          trackerSnapshot = createTrackerSnapshot(tracker);
-          const userTokens = encode(message).length;
-
-          await logUsage(req.user.userId, trackerSnapshot, 'user', message, userTokens);
-        }
-      } catch (err) {
-        console.error('[Chat] Error logging user message:', err);
-      }
-    }
-
-    const { ExpenseParser } = await import('../../services/expenseParser');
-    const chatResult = await ExpenseParser.getChatResponse(message, history);
-
-    // Log AI response with ACTUAL OpenAI token usage
-    if (trackerSnapshot && chatResult.usage) {
-      try {
-        const { logUsage } = await import('../usage-log/usage-log.services');
-
-        // Use actual token counts from OpenAI
-        const actualUserTokens = chatResult.usage.prompt_tokens || 0;
-        const actualAiTokens = chatResult.usage.completion_tokens || 0;
-
-        console.log('[Chat] Actual OpenAI Usage:', {
-          prompt_tokens: actualUserTokens,
-          completion_tokens: actualAiTokens,
-          total_tokens: chatResult.usage.total_tokens,
-        });
-
-        // Update user message log with actual prompt tokens
-        await logUsage(req.user.userId, trackerSnapshot, 'user', message, actualUserTokens);
-
-        // Log AI response with actual completion tokens
-        await logUsage(
-          req.user.userId,
-          trackerSnapshot,
-          'assistant',
-          chatResult.response,
-          actualAiTokens
-        );
-
-        console.log('[Chat] Messages logged with actual OpenAI tokens');
-      } catch (err) {
-        console.error('[Chat] Error logging with actual tokens:', err);
-      }
-    } else if (trackerSnapshot && chatResult.response) {
-      // Fallback if usage is not available
-      try {
-        const { logUsage } = await import('../usage-log/usage-log.services');
-        const { encode } = await import('gpt-tokenizer');
-
-        const aiTokens = encode(chatResult.response).length;
-
-        await logUsage(
-          req.user.userId,
-          trackerSnapshot,
-          'assistant',
-          chatResult.response,
-          aiTokens
-        );
-
-        console.log('[Chat] AI response logged with estimated tokens (fallback)');
-      } catch (err) {
-        console.error('[Chat] Error logging AI response:', err);
-      }
-    }
-
-    return successResponse(res, { response: chatResult.response }, 'Chat response generated');
+    return successResponse(res, { response }, 'Chat response generated');
   } catch (error: any) {
     console.error('Error in chat:', error);
     return errorResponse(res, error, 'Internal server error');

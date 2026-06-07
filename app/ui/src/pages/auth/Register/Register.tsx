@@ -1,34 +1,13 @@
 import React from 'react';
 import { Box, Typography, Paper, Link as MuiLink } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@apollo/client';
 import RegisterForm from './RegisterForm';
-import { postRequest } from '../../../utils/http';
-import { endpoints } from '../../../config/api';
+import { registerSchema, type RegisterValues } from './register.schema';
+import { RegisterMutation } from '../../../graphql/operations/auth';
 import { setAuthToken } from '../../../utils/localStorage';
-
-const registerSchema = Yup.object().shape({
-  firstName: Yup.string().required('First name is required'),
-  lastName: Yup.string().required('Last name is required'),
-  email: Yup.string().email('Invalid email').required('Email is required'),
-  password: Yup.string()
-    .min(8, 'Min 8 characters')
-    .matches(/[A-Z]/, 'Must contain uppercase letter')
-    .matches(/[0-9]/, 'Must contain a number')
-    .required('Password is required'),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password')], 'Passwords must match')
-    .required('Confirm password is required'),
-});
-
-interface RegisterValues {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
 
 interface RegisterProps {
   onRegisterSuccess: () => void;
@@ -37,28 +16,39 @@ interface RegisterProps {
 const Register: React.FC<RegisterProps> = ({ onRegisterSuccess }) => {
   const navigate = useNavigate();
   const [error, setError] = React.useState('');
+  const [registerUser] = useMutation(RegisterMutation);
 
-  const handleRegister = async (values: RegisterValues) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' },
+  });
+
+  const onSubmit = async (values: RegisterValues) => {
     setError('');
     try {
-      const response = await postRequest(endpoints.auth.register, {
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        password: values.password,
+      const { data } = await registerUser({
+        variables: {
+          input: {
+            firstName: values.firstName,
+            lastName: values.lastName,
+            email: values.email,
+            password: values.password,
+          },
+        },
       });
-      const data = response?.data;
-      if (data?.data?.token) {
-        setAuthToken(data.data.token);
-        if (data.data.user) {
-          localStorage.setItem('user', JSON.stringify(data.data.user));
-        }
+      if (data?.register?.token) {
+        setAuthToken(data.register.token);
+        localStorage.setItem('user', JSON.stringify(data.register.user));
         onRegisterSuccess();
       } else {
-        setError(data?.message || 'Registration failed');
+        setError('Registration failed');
       }
-    } catch (err: any) {
-      setError(err?.response?.data?.message || 'Registration failed. Please try again.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Registration failed. Please try again.');
     }
   };
 
@@ -97,23 +87,9 @@ const Register: React.FC<RegisterProps> = ({ onRegisterSuccess }) => {
           </Typography>
         )}
 
-        <Formik
-          initialValues={{
-            firstName: '',
-            lastName: '',
-            email: '',
-            password: '',
-            confirmPassword: '',
-          }}
-          validationSchema={registerSchema}
-          onSubmit={handleRegister}
-        >
-          {(formikProps) => (
-            <Form>
-              <RegisterForm {...formikProps} />
-            </Form>
-          )}
-        </Formik>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <RegisterForm register={register} errors={errors} isSubmitting={isSubmitting} />
+        </form>
 
         <Box sx={{ textAlign: 'center', mt: 2 }}>
           <MuiLink

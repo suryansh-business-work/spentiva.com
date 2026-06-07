@@ -1,87 +1,64 @@
 import React from 'react';
 import { TextField, Button, Box } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { FormikProps } from 'formik';
+import type { UseFormRegister, FieldErrors } from 'react-hook-form';
+import type { RegisterValues } from './register.schema';
 
-interface RegisterValues {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
+interface RegisterFormProps {
+  register: UseFormRegister<RegisterValues>;
+  errors: FieldErrors<RegisterValues>;
+  isSubmitting: boolean;
 }
 
-const RegisterForm: React.FC<FormikProps<RegisterValues>> = ({
-  values,
-  errors,
-  touched,
-  handleChange,
-  handleBlur,
-  isSubmitting,
-}) => {
+const RegisterForm: React.FC<RegisterFormProps> = ({ register, errors, isSubmitting }) => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             fullWidth
-            name="firstName"
             label="First Name"
-            value={values.firstName}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.firstName && Boolean(errors.firstName)}
-            helperText={touched.firstName && errors.firstName}
+            {...register('firstName')}
+            error={Boolean(errors.firstName)}
+            helperText={errors.firstName?.message}
             autoFocus
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             fullWidth
-            name="lastName"
             label="Last Name"
-            value={values.lastName}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.lastName && Boolean(errors.lastName)}
-            helperText={touched.lastName && errors.lastName}
+            {...register('lastName')}
+            error={Boolean(errors.lastName)}
+            helperText={errors.lastName?.message}
           />
         </Grid>
       </Grid>
       <TextField
         fullWidth
-        name="email"
         label="Email"
         type="email"
-        value={values.email}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={touched.email && Boolean(errors.email)}
-        helperText={touched.email && errors.email}
+        {...register('email')}
+        error={Boolean(errors.email)}
+        helperText={errors.email?.message}
         autoComplete="email"
       />
       <TextField
         fullWidth
-        name="password"
         label="Password"
         type="password"
-        value={values.password}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={touched.password && Boolean(errors.password)}
-        helperText={touched.password && errors.password}
+        {...register('password')}
+        error={Boolean(errors.password)}
+        helperText={errors.password?.message}
         autoComplete="new-password"
       />
       <TextField
         fullWidth
-        name="confirmPassword"
         label="Confirm Password"
         type="password"
-        value={values.confirmPassword}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={touched.confirmPassword && Boolean(errors.confirmPassword)}
-        helperText={touched.confirmPassword && errors.confirmPassword}
+        {...register('confirmPassword')}
+        error={Boolean(errors.confirmPassword)}
+        helperText={errors.confirmPassword?.message}
         autoComplete="new-password"
       />
       <Button

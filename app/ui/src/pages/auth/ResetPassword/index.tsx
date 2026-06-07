@@ -1,49 +1,38 @@
 import React from 'react';
 import { Box, Typography, Paper, Link as MuiLink } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@apollo/client';
 import ResetPasswordForm from './ResetPasswordForm';
-import { postRequest } from '../../../utils/http';
-import { endpoints } from '../../../config/api';
-
-const resetPasswordSchema = Yup.object().shape({
-  token: Yup.string().required('Reset token is required'),
-  password: Yup.string()
-    .min(8, 'Min 8 characters')
-    .matches(/[A-Z]/, 'Must contain uppercase letter')
-    .matches(/[a-z]/, 'Must contain lowercase letter')
-    .matches(/[0-9]/, 'Must contain a number')
-    .required('Password is required'),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password')], 'Passwords must match')
-    .required('Confirm password is required'),
-});
-
-interface ResetPasswordValues {
-  token: string;
-  password: string;
-  confirmPassword: string;
-}
+import { resetPasswordSchema, type ResetPasswordValues } from './reset-password.schema';
+import { ResetPasswordMutation } from '../../../graphql/operations/auth';
 
 const ResetPassword: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [error, setError] = React.useState('');
   const [success, setSuccess] = React.useState(false);
+  const [resetPassword] = useMutation(ResetPasswordMutation);
 
   const tokenFromUrl = searchParams.get('token') || '';
 
-  const handleSubmit = async (values: ResetPasswordValues) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ResetPasswordValues>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: { token: tokenFromUrl, password: '', confirmPassword: '' },
+  });
+
+  const onSubmit = async (values: ResetPasswordValues) => {
     setError('');
     try {
-      await postRequest(endpoints.auth.resetPassword, {
-        token: values.token,
-        password: values.password,
-      });
+      await resetPassword({ variables: { token: values.token, password: values.password } });
       setSuccess(true);
-    } catch (err: any) {
-      setError(err?.response?.data?.message || 'Failed to reset password');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to reset password');
     }
   };
 
@@ -99,21 +88,9 @@ const ResetPassword: React.FC = () => {
           </Box>
         ) : (
           <>
-            <Formik
-              initialValues={{
-                token: tokenFromUrl,
-                password: '',
-                confirmPassword: '',
-              }}
-              validationSchema={resetPasswordSchema}
-              onSubmit={handleSubmit}
-            >
-              {(formikProps) => (
-                <Form>
-                  <ResetPasswordForm {...formikProps} />
-                </Form>
-              )}
-            </Formik>
+            <form onSubmit={handleSubmit(onSubmit)} noValidate>
+              <ResetPasswordForm register={register} errors={errors} isSubmitting={isSubmitting} />
+            </form>
 
             <Box sx={{ textAlign: 'center', mt: 2 }}>
               <MuiLink

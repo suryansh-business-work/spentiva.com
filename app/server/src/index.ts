@@ -33,6 +33,7 @@ import paymentRoutes from './apis/payment/payment.routes';
 import refundRoutes from './apis/refund/refund.routes';
 import reportScheduleRoutes from './apis/report-schedule/report-schedule.routes';
 import { startReportCron } from './services/reportCron';
+import { setupGraphQL } from './graphql/server';
 
 const app = express();
 const PORT = config.PORT;
@@ -158,30 +159,45 @@ app.use('/v1/api/report-schedule', reportScheduleRoutes);
 // This will only apply to routes not matched above
 app.use('/v1/api', apiLimiter);
 
-// Global Error Handler (must be after all routes)
-app.use((err: any, _req: any, res: any, _next: any) => {
-  // Handle JSON parse errors
-  if (err instanceof SyntaxError && 'status' in err && err.status === 400 && 'body' in err) {
-    logger.error('Bad JSON payload', { error: err.message });
-    const { badRequestResponse } = require('./utils/response-object');
-    return badRequestResponse(res, null, 'Invalid JSON payload provided');
-  }
+/**
+ * Bootstrap sequence: mount the GraphQL endpoint (async), then the global
+ * error handler (must be last), then start listening.
+ */
+async function bootstrap(): Promise<void> {
+  // === GraphQL API (mounted after body parser & CORS) ===
+  await setupGraphQL(app);
 
-  logger.error('Global error handler', { error: err.message, stack: err.stack });
-  const { errorResponse } = require('./utils/response-object');
-  return errorResponse(res, err, 'Internal server error');
-});
+  // Global Error Handler (must be after all routes)
+  app.use((err: any, _req: any, res: any, _next: any) => {
+    // Handle JSON parse errors
+    if (err instanceof SyntaxError && 'status' in err && err.status === 400 && 'body' in err) {
+      logger.error('Bad JSON payload', { error: err.message });
+      const { badRequestResponse } = require('./utils/response-object');
+      return badRequestResponse(res, null, 'Invalid JSON payload provided');
+    }
 
-app.listen(PORT, () => {
-  logger.info('🚀 Spentiva Server Started', {
-    port: PORT,
-    environment: config.NODE_ENV,
-    nodeVersion: process.version,
+    logger.error('Global error handler', { error: err.message, stack: err.stack });
+    const { errorResponse } = require('./utils/response-object');
+    return errorResponse(res, err, 'Internal server error');
   });
-  console.log(`\n✅ Server running on http://localhost:${PORT}`);
-  console.log(`📚 API Docs: http://localhost:${PORT}/api/docs`);
-  console.log(`💚 Health Check: http://localhost:${PORT}/v1/api/health\n`);
 
-  // Start scheduled report cron
-  startReportCron();
+  app.listen(PORT, () => {
+    logger.info('🚀 Spentiva Server Started', {
+      port: PORT,
+      environment: config.NODE_ENV,
+      nodeVersion: process.version,
+    });
+    console.log(`\n✅ Server running on http://localhost:${PORT}`);
+    console.log(`📚 API Docs: http://localhost:${PORT}/api/docs`);
+    console.log(`🔮 GraphQL: http://localhost:${PORT}/graphql`);
+    console.log(`💚 Health Check: http://localhost:${PORT}/v1/api/health\n`);
+
+    // Start scheduled report cron
+    startReportCron();
+  });
+}
+
+bootstrap().catch((error) => {
+  logger.error('Failed to start server', { error: (error as Error).message });
+  process.exit(1);
 });
