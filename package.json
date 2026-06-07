@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "run:all": "concurrently -k -n server,ui,website,mobile -c blue,green,magenta,yellow \"pnpm -C app/server dev\" \"pnpm -C app/ui dev\" \"pnpm -C website dev\" \"pnpm -C app/mobile start\"",
-    "dev:web": "concurrently -k -n server,ui,website -c blue,green,magenta \"pnpm -C app/server dev\" \"pnpm -C app/ui dev\" \"pnpm -C website dev\"",
+    "kill:ports": "kill-port 5000 5001 5002 8002 8081",
+    "run:all": "pnpm kill:ports && concurrently -k -n server,ui,website,mobile -c blue,green,magenta,yellow \"pnpm -C app/server dev\" \"pnpm -C app/ui dev\" \"pnpm -C website dev\" \"pnpm -C app/mobile start\"",
+    "dev:web": "pnpm kill:ports && concurrently -k -n server,ui,website -c blue,green,magenta \"pnpm -C app/server dev\" \"pnpm -C app/ui dev\" \"pnpm -C website dev\"",
     "install:all": "pnpm -C app/server install && pnpm -C app/ui install && pnpm -C website install && pnpm -C app/mobile install",
     "update:all": "pnpm -C app/server update --latest && pnpm -C app/ui update --latest && pnpm -C website update --latest && pnpm -C app/mobile update --latest",
     "build:all": "pnpm -C app/server build && pnpm -C app/ui build && pnpm -C website build",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
+    "kill-port": "^2.0.1",
     "typescript": "^6.0.2"
   }
 }
