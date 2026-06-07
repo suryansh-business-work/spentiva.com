@@ -4,6 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "run:all": "concurrently -k -n server,ui,website,mobile -c blue,green,magenta,yellow \"pnpm -C app/server dev\" \"pnpm -C app/ui dev\" \"pnpm -C website dev\" \"pnpm -C app/mobile start\"",
+    "dev:web": "concurrently -k -n server,ui,website -c blue,green,magenta \"pnpm -C app/server dev\" \"pnpm -C app/ui dev\" \"pnpm -C website dev\"",
+    "install:all": "pnpm -C app/server install && pnpm -C app/ui install && pnpm -C website install && pnpm -C app/mobile install",
+    "update:all": "pnpm -C app/server update --latest && pnpm -C app/ui update --latest && pnpm -C website update --latest && pnpm -C app/mobile update --latest",
+    "build:all": "pnpm -C app/server build && pnpm -C app/ui build && pnpm -C website build",
+    "lint:all": "concurrently -n server,ui,mobile \"pnpm -C app/server lint\" \"pnpm -C app/ui lint\" \"pnpm -C app/mobile lint\"",
+    "test:all": "concurrently -n server,mobile \"pnpm -C app/server test\" \"pnpm -C app/mobile test\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,6 +29,7 @@
     "sharp": "^0.34.5"
   },
   "devDependencies": {
+    "concurrently": "^9.1.2",
     "typescript": "^6.0.2"
   }
 }

@@ -1,0 +1,417 @@
+input AnalyticsInput {
+  categoryId: String
+  customEnd: String
+  customStart: String
+
+  """
+  One of: today, yesterday, last_7_days, this_month, last_month, this_year, custom
+  """
+  filter: String
+  trackerId: String
+
+  """One of: all, expense, income"""
+  type: String
+  year: Int
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+type BulkDeleteResult {
+  deletedCount: Int!
+  message: String!
+}
+
+type Category {
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+  subcategories: [SubCategory!]!
+  trackerId: String!
+  type: CategoryType!
+  updatedAt: DateTime!
+}
+
+type CategoryConfig {
+  categories: JSON!
+  paymentMethods: JSON!
+}
+
+enum CategoryType {
+  credit_mode
+  debit_mode
+  expense
+  income
+}
+
+input ChatMessageInput {
+  content: String!
+  role: String!
+}
+
+input CreateCategoryInput {
+  name: String!
+  subcategories: [SubCategoryInput!]
+  trackerId: String!
+  type: CategoryType
+}
+
+input CreateTrackerInput {
+  currency: Currency!
+  description: String
+  name: String!
+  type: TrackerType!
+}
+
+enum Currency {
+  EUR
+  GBP
+  INR
+  USD
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+type DeleteOtpResult {
+  trackerName: String!
+}
+
+type Expense {
+  amount: Float!
+  category: String!
+  categoryId: String!
+  createdAt: DateTime!
+  createdBy: String
+  createdByName: String
+  creditFrom: String
+  currency: String
+  description: String
+  id: ID!
+  lastUpdatedBy: String
+  lastUpdatedByName: String
+  paymentMethod: String
+  subcategory: String
+  timestamp: DateTime!
+  trackerId: String
+  type: TransactionType!
+  updatedAt: DateTime!
+  userId: String
+}
+
+input ExpenseInput {
+  amount: Float!
+  category: String!
+  categoryId: String!
+  creditFrom: String
+  currency: String
+  description: String
+  paymentMethod: String
+  subcategory: String
+  timestamp: DateTime
+  type: TransactionType
+}
+
+type ExpenseList {
+  expenses: [Expense!]!
+  pagination: ExpensePagination!
+}
+
+type ExpensePagination {
+  limit: Int!
+  page: Int!
+  total: Int!
+  totalPages: Int!
+}
+
+input ForgotPasswordInput {
+  email: String!
+}
+
+enum InviteResponse {
+  accepted
+  rejected
+}
+
+type InviteResponseResult {
+  status: InviteStatus!
+  trackerId: String!
+  trackerName: String!
+}
+
+enum InviteStatus {
+  accepted
+  pending
+  rejected
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  _empty: Boolean
+  addSupportTicketAttachment(attachment: JSON!, ticketId: ID!): JSON
+  addSupportTicketUpdate(addedBy: String, message: String!, ticketId: ID!): JSON
+  bulkDeleteExpenses(ids: [ID!]!): BulkDeleteResult!
+
+  """Conversational assistant for expense tracking (AI)."""
+  chat(history: [ChatMessageInput!], message: String!, trackerId: String): String!
+  confirmTrackerDelete(id: ID!, otp: String!): Boolean!
+  createCategory(input: CreateCategoryInput!): Category!
+  createExpenses(expenses: [ExpenseInput!]!, trackerId: String): [Expense!]!
+  createPayment(input: JSON!): JSON!
+  createRefund(input: JSON!): JSON!
+  createReportSchedule(input: JSON!): JSON!
+  createSupportTicket(attachments: JSON, description: String!, subject: String!, type: String!): JSON!
+  createTracker(input: CreateTrackerInput!): Tracker!
+  deleteCategory(id: ID!): Boolean!
+  deleteExpense(id: ID!): Boolean!
+
+  """Delete logs older than N days (maintenance)."""
+  deleteOldUsageLogs(daysOld: Int): JSON!
+  deletePayment(paymentId: ID!): Boolean!
+  deleteRefund(refundId: ID!): Boolean!
+  deleteReportSchedule(id: ID!): Boolean!
+  deleteSupportTicket(ticketId: ID!): Boolean!
+  deleteTracker(id: ID!): Boolean!
+
+  """Delete all usage logs for a tracker."""
+  deleteUsageLogsByTracker(trackerId: ID!): JSON!
+
+  """Delete all usage logs for the authenticated user."""
+  deleteUsageLogsByUser: JSON!
+  expirePendingPayments(expiryMinutes: Int): Int!
+  forgotPassword(input: ForgotPasswordInput!): Boolean!
+  login(input: LoginInput!): AuthPayload!
+
+  """Parse natural-language input into structured expenses (AI)."""
+  parseExpense(input: String!, trackerId: String!): ParseExpenseResult!
+  register(input: RegisterInput!): AuthPayload!
+  removeSharedUser(email: String!, id: ID!): ShareResult!
+  requestTrackerDeleteOtp(id: ID!): DeleteOtpResult!
+  resendShareInvite(email: String!, id: ID!): Boolean!
+  resetPassword(input: ResetPasswordInput!): Boolean!
+  respondToInvite(id: ID!, response: InviteResponse!): InviteResponseResult!
+  shareTracker(id: ID!, input: ShareTrackerInput!): ShareResult!
+  updateCategory(id: ID!, input: UpdateCategoryInput!): Category!
+  updateExpense(id: ID!, input: UpdateExpenseInput!): Expense!
+  updatePaymentState(paymentId: ID!, reason: String!, state: String!): JSON
+  updateProfile(input: UpdateProfileInput!): User!
+  updateRefundStatus(refundDate: DateTime, refundId: ID!, status: String!): JSON
+  updateReportSchedule(id: ID!, input: JSON!): JSON!
+  updateSupportTicketStatus(status: String!, ticketId: ID!): JSON
+  updateTracker(id: ID!, input: UpdateTrackerInput!): Tracker!
+}
+
+type OpenAIUsage {
+  completion_tokens: Int!
+  prompt_tokens: Int!
+  total_tokens: Int!
+}
+
+type ParseExpenseResult {
+  count: Int!
+  expenses: [ParsedExpense!]!
+  usage: OpenAIUsage
+}
+
+type ParsedExpense {
+  amount: Float!
+  category: String!
+  categoryId: String!
+  creditFrom: String
+  currency: String!
+  description: String
+  paymentMethod: String
+  subcategory: String
+  timestamp: DateTime
+  type: TransactionType!
+}
+
+type Query {
+  """Liveness probe for the GraphQL endpoint."""
+  _health: String!
+  analyticsByCategory(input: AnalyticsInput): JSON!
+  analyticsByMonth(input: AnalyticsInput): JSON!
+  analyticsBySource(input: AnalyticsInput): JSON!
+  analyticsSummary(input: AnalyticsInput): JSON!
+  analyticsTotal(input: AnalyticsInput): JSON!
+  categories(trackerId: String, type: CategoryType): [Category!]!
+  category(id: ID!): Category!
+
+  """Static, predefined categories + payment methods (public)."""
+  categoryConfig: CategoryConfig!
+  expense(id: ID!): Expense!
+  expenses(limit: Int, page: Int, trackerId: String): ExpenseList!
+
+  """Service health including database connectivity (public)."""
+  health: JSON!
+
+  """Returns the currently authenticated user."""
+  me: User!
+  payment(paymentId: ID!): JSON
+  paymentStats: JSON!
+  payments(limit: Int, planType: String, skip: Int, state: String): JSON!
+  refund(refundId: ID!): JSON
+  refundStats: JSON!
+  refunds(limit: Int, skip: Int, status: String): JSON!
+  refundsByPayment(paymentId: ID!): JSON!
+
+  """Report schedule for a specific tracker (or null)."""
+  reportScheduleByTracker(trackerId: ID!): JSON
+
+  """All report schedules for the authenticated user."""
+  reportSchedules: [JSON!]!
+  supportTicket(ticketId: ID!): JSON
+  supportTicketStats: JSON!
+
+  """Tickets for the user (or all tickets for admins)."""
+  supportTickets(limit: Int, skip: Int, status: String, type: String): JSON!
+  tracker(id: ID!): Tracker!
+
+  """Usage graphs for a specific tracker."""
+  trackerUsageGraphs(trackerId: ID!): JSON!
+
+  """Paginated AI message logs for a specific tracker."""
+  trackerUsageLogs(limit: Int, offset: Int, trackerId: ID!): JSON!
+
+  """Usage statistics for a specific tracker."""
+  trackerUsageStats(trackerId: ID!): JSON!
+  trackers: [Tracker!]!
+
+  """Usage logs for the authenticated user, optionally filtered by tracker."""
+  usageLogs(limit: Int, trackerId: String): JSON!
+
+  """Overall usage graphs (last 30 days)."""
+  usageOverallGraphs: JSON!
+
+  """Overall usage statistics for the authenticated user."""
+  usageOverview: JSON!
+  userPayments(limit: Int, planType: String, state: String, userId: ID!): JSON!
+  userRefunds(limit: Int, status: String, userId: ID!): JSON!
+}
+
+input RegisterInput {
+  email: String!
+  firstName: String!
+  lastName: String!
+  password: String!
+}
+
+input ResetPasswordInput {
+  password: String!
+  token: String!
+}
+
+type ShareResult {
+  sharedWith: [SharedUser!]!
+}
+
+input ShareTrackerInput {
+  email: String!
+  role: SharedRole!
+}
+
+enum SharedRole {
+  editor
+  viewer
+}
+
+type SharedUser {
+  email: String!
+  invitedAt: DateTime!
+  name: String
+  role: SharedRole!
+  status: InviteStatus!
+  userId: String!
+}
+
+type SubCategory {
+  id: String!
+  name: String!
+}
+
+input SubCategoryInput {
+  id: String!
+  name: String!
+}
+
+type Tracker {
+  botImage: String
+  createdAt: DateTime!
+  currency: Currency!
+  description: String
+  id: ID!
+  isOwner: Boolean
+  name: String!
+  sharedWith: [SharedUser!]!
+  type: TrackerType!
+  updatedAt: DateTime!
+}
+
+enum TrackerType {
+  business
+  personal
+}
+
+enum TransactionType {
+  expense
+  income
+}
+
+input UpdateCategoryInput {
+  name: String
+  subcategories: [SubCategoryInput!]
+  type: CategoryType
+}
+
+input UpdateExpenseInput {
+  amount: Float
+  category: String
+  categoryId: String
+  creditFrom: String
+  currency: String
+  description: String
+  paymentMethod: String
+  subcategory: String
+  timestamp: DateTime
+  type: TransactionType
+}
+
+input UpdateProfileInput {
+  firstName: String
+  lastName: String
+  profilePicture: String
+}
+
+input UpdateTrackerInput {
+  botImage: String
+  currency: Currency
+  description: String
+  name: String
+  type: TrackerType
+}
+
+type User {
+  createdAt: DateTime!
+  email: String!
+  firstName: String!
+  id: ID!
+  isVerified: Boolean!
+  lastLoginAt: DateTime
+  lastName: String!
+  profilePicture: String
+  role: String!
+  updatedAt: DateTime!
+}

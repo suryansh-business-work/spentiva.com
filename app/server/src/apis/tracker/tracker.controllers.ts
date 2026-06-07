@@ -240,38 +240,11 @@ export const requestDeleteOtpController = async (req: any, res: Response) => {
     const email = req.user.email;
     const { id } = req.params;
 
-    // Check if email service is available before generating OTP
-    const { sendEmail, isSmtpConfigured } = await import('../../services/emailService');
-    if (!isSmtpConfigured()) {
-      return badRequestResponse(
-        res,
-        null,
-        'Email service is not configured. OTP verification is unavailable.'
-      );
-    }
-
-    const { otp, trackerName } = await TrackerService.requestDeleteOtp(userId, id);
-
-    // Send OTP via email (mark as critical)
-    await sendEmail({
-      to: email,
-      subject: `Delete Tracker "${trackerName}" - Verification Code`,
-      critical: true,
-      html: `
-        <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;">
-          <h2 style="color:#d32f2f;">Tracker Deletion Verification</h2>
-          <p>You requested to delete the tracker <strong>"${trackerName}"</strong>.</p>
-          <p>Your verification code is:</p>
-          <div style="font-size:32px;font-weight:bold;letter-spacing:8px;text-align:center;padding:16px;
-            background:#f5f5f5;border-radius:8px;margin:16px 0;">${otp}</div>
-          <p style="color:#757575;">This code expires in <strong>5 minutes</strong>. If you did not request this, please ignore this email.</p>
-        </div>
-      `,
-    });
+    await TrackerService.requestDeleteOtpAndEmail(userId, email, id);
 
     return successResponse(res, null, 'Verification code sent to your email');
   } catch (error: any) {
-    if (error.message === 'Tracker not found') {
+    if (error.message === 'Tracker not found' || error.message?.includes('Email service')) {
       return badRequestResponse(res, null, error.message);
     }
     return errorResponse(res, error, 'Failed to send verification code');
